@@ -15,6 +15,7 @@
   --color-yellow-soft: #fff9e6;
   --color-brown: #af6e2a;
   --color-brown-soft: #fbf5ef;
+  --breakpoint-xs: 375px;
 }
 
 @layer base {
