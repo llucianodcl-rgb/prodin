@@ -8,6 +8,7 @@ import Layout from './components/layout/Layout';
 import Dashboard from './pages/Dashboard';
 import Ingredients from './pages/Ingredients';
 import Extra from './pages/Extra';
+import ExtraDetails from './pages/ExtraDetails';
 import Recipes from './pages/Recipes';
 import RecipeForm from './pages/RecipeForm';
 import RecipeDetails from './pages/RecipeDetails';
@@ -91,6 +92,7 @@ const router = createBrowserRouter([
            { index: true, element: <Dashboard /> },
            { path: "ingredientes", element: <Ingredients /> },
            { path: "extra", element: <Extra /> },
+           { path: "extra/:id", element: <ExtraDetails /> },
            { path: "receitas", element: <Recipes /> },
            { path: "receitas/nova", element: <RecipeForm /> },
            { path: "receitas/:id/editar", element: <RecipeForm /> },

@@ -4,7 +4,7 @@ import { useStore } from "../store/useStore";
 import { Recipe, RecipeIngredient, ExtraCost, Unit } from "../types";
 import { formatCurrency, getIngredientUnitCost, getSuggestedUnitPrice, getActualMetrics, getBaseQuantity } from "../lib/utils";
 import { v4 as uuidv4 } from "uuid";
-import { ArrowLeft, Plus, Trash2, Save, Calculator, AlertTriangle, CheckCircle } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Save, Calculator, AlertTriangle, CheckCircle, Edit2, Copy } from "lucide-react";
 import { CurrencyInput } from "../components/ui/CurrencyInput";
 
 export default function RecipeForm() {
@@ -128,6 +128,27 @@ export default function RecipeForm() {
     }));
   };
 
+  const handleEditIngredient = (riId: string) => {
+    const ri = formData.ingredients.find(i => i.id === riId);
+    if (ri) {
+      setSelectIngId(ri.ingredientId);
+      setSelectIngQty(ri.quantityUsed.toString());
+      setSelectIngUnit(ri.unit || "un");
+      handleRemoveIngredient(riId);
+    }
+  };
+
+  const handleDuplicateIngredient = (riId: string) => {
+    const ri = formData.ingredients.find(i => i.id === riId);
+    if (ri) {
+      const newRi = { ...ri, id: uuidv4() };
+      setFormData(prev => ({
+        ...prev,
+        ingredients: [...prev.ingredients, newRi]
+      }));
+    }
+  };
+
   const handleAddExtraCost = () => {
     if (!extraName || !extraValue) return;
     const newEc: ExtraCost = {
@@ -148,6 +169,26 @@ export default function RecipeForm() {
       ...prev,
       extraCosts: (prev.extraCosts || []).filter(ec => ec.id !== ecId)
     }));
+  };
+
+  const handleEditExtraCost = (ecId: string) => {
+    const ec = (formData.extraCosts || []).find(e => e.id === ecId);
+    if (ec) {
+      setExtraName(ec.name);
+      setExtraValue(ec.value);
+      handleRemoveExtraCost(ecId);
+    }
+  };
+
+  const handleDuplicateExtraCost = (ecId: string) => {
+    const ec = (formData.extraCosts || []).find(e => e.id === ecId);
+    if (ec) {
+      const newEc = { ...ec, id: uuidv4() };
+      setFormData(prev => ({
+        ...prev,
+        extraCosts: [...(prev.extraCosts || []), newEc]
+      }));
+    }
   };
 
   const handleSuggestPrice = () => {
@@ -323,13 +364,32 @@ export default function RecipeForm() {
                              )}
                            </div>
                          </div>
-                         <button 
-                           type="button" 
-                           onClick={() => handleRemoveIngredient(ri.id)}
-                           className="p-2 text-slate-300 hover:text-rose-500 transition-colors"
-                         >
-                           <Trash2 size={18} />
-                         </button>
+                         <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                           <button 
+                             type="button" 
+                             onClick={() => handleEditIngredient(ri.id)}
+                             className="p-2 text-slate-400 hover:text-indigo-600 transition-colors"
+                             title="Editar"
+                           >
+                             <Edit2 size={18} />
+                           </button>
+                           <button 
+                             type="button" 
+                             onClick={() => handleDuplicateIngredient(ri.id)}
+                             className="p-2 text-slate-400 hover:text-green-600 transition-colors"
+                             title="Duplicar"
+                           >
+                             <Copy size={18} />
+                           </button>
+                           <button 
+                             type="button" 
+                             onClick={() => handleRemoveIngredient(ri.id)}
+                             className="p-2 text-slate-300 hover:text-rose-500 transition-colors"
+                             title="Excluir"
+                           >
+                             <Trash2 size={18} />
+                           </button>
+                         </div>
                        </li>
                      )
                    })}
@@ -430,13 +490,32 @@ export default function RecipeForm() {
                        <span className="font-medium text-slate-900 dark:text-white">{ec.name}</span>
                        <span className="ml-2 text-sm text-slate-500">{formatCurrency(ec.value)}</span>
                      </div>
-                     <button 
-                       type="button" 
-                       onClick={() => handleRemoveExtraCost(ec.id)}
-                       className="p-1 text-slate-300 hover:text-rose-500 transition-colors"
-                     >
-                       <Trash2 size={16} />
-                     </button>
+                     <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                       <button 
+                         type="button" 
+                         onClick={() => handleEditExtraCost(ec.id)}
+                         className="p-1 text-slate-400 hover:text-indigo-600 transition-colors"
+                         title="Editar"
+                       >
+                         <Edit2 size={16} />
+                       </button>
+                       <button 
+                         type="button" 
+                         onClick={() => handleDuplicateExtraCost(ec.id)}
+                         className="p-1 text-slate-400 hover:text-green-600 transition-colors"
+                         title="Duplicar"
+                       >
+                         <Copy size={16} />
+                       </button>
+                       <button 
+                         type="button" 
+                         onClick={() => handleRemoveExtraCost(ec.id)}
+                         className="p-1 text-slate-400 hover:text-rose-500 transition-colors"
+                         title="Excluir"
+                       >
+                         <Trash2 size={16} />
+                       </button>
+                     </div>
                    </li>
                  ))}
                </ul>
@@ -553,7 +632,8 @@ export default function RecipeForm() {
                      <div>
                        <h3 className="font-bold text-emerald-900 dark:text-emerald-300">Excelente! O preço informado atinge a meta de lucro definida.</h3>
                        <ul className="mt-2 text-sm text-emerald-800 dark:text-emerald-200 flex flex-wrap gap-4">
-                         <li>• Multiplicador: <strong>{metrics.actualMultiplier.toFixed(2)}x</strong></li>
+                         <li>• Multiplicador alcançado: <strong>{metrics.actualMultiplier.toFixed(2)}x</strong></li>
+                         <li>• Multiplicador desejado: <strong>{targetMult}x</strong></li>
                          <li>• Lucro unitário: <strong>{formatCurrency(metrics.netProfitUnit)}</strong></li>
                          <li>• Margem: <strong>{metrics.profitMargin.toFixed(1)}%</strong></li>
                        </ul>

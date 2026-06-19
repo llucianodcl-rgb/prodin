@@ -53,6 +53,36 @@ export default function Sales() {
     }
   }
 
+  const calcularReforcoProducao = (
+    rendimentoTotal: number,
+    listaDeIngredientes: any[],
+    deficit: number
+  ) => {
+    if (rendimentoTotal <= 0) return [];
+    const fatorDeEscala = deficit / rendimentoTotal;
+
+    return listaDeIngredientes.map(item => {
+      const ing = ingredients.find((i) => i.id === item.ingredientId);
+      const name = ing ? ing.name : "Ingrediente Desconhecido";
+      const displayUnit = item.unit || ing?.unit || "";
+      const quantity = item.quantityUsed * fatorDeEscala;
+      
+      let convertionStr = "";
+      // If the unit is 'un' and we have fraction, we can show weight equivalent
+      if (ing?.unit === 'un' && typeof ing.weightPerUn === 'number' && ing.weightPerUn > 0 && ing.weightPerUnUnit) {
+         const weight = quantity * ing.weightPerUn;
+         convertionStr = `${weight.toFixed(2)} ${ing.weightPerUnUnit}`;
+      }
+
+      return {
+        name,
+        quantity,
+        unit: displayUnit,
+        convertionStr
+      };
+    }).filter(i => i.quantity > 0);
+  };
+
   return (
     <div className="space-y-6">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -143,6 +173,14 @@ export default function Sales() {
                     <span className="font-bold text-slate-700 dark:text-slate-200">{formatCurrency(extraCost)}</span>
                  </div>
 
+                 <div className="flex justify-between items-center bg-pink-soft/50 dark:bg-pink-900/20 px-4 py-3 rounded-xl shadow-sm border border-pink/20 dark:border-pink-500/20">
+                    <span className="text-pink-700 dark:text-pink-300 font-bold text-sm">Kits Possíveis</span>
+                    <div className="text-right">
+                      <span className="font-black text-pink dark:text-pink-400 text-lg">{possibleKits} {possibleKits === 1 ? 'Kit' : 'Kits'}</span>
+                      <p className="text-[10px] text-pink-600/70 dark:text-pink-400/50 uppercase font-bold">Rendimento: {yieldAmount.toFixed(0)} un</p>
+                    </div>
+                 </div>
+
                  {leftoverSweets > 0 && (
                    <div className="mt-4 p-4 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20">
                      <div className="flex items-start gap-3">
@@ -156,6 +194,21 @@ export default function Sales() {
                            • Faltam <strong>{missingSweets.toFixed(1)} uni</strong> para fechar outro kit<br />
                            • Valor das sobras: <strong>{formatCurrency(monetaryLoss)}</strong>
                          </p>
+
+                         {missingSweets > 0 && (
+                           <div className="mt-3 text-sm text-amber-800 dark:text-amber-200 bg-amber-100/50 dark:bg-amber-900/40 rounded-lg p-3 border border-amber-200/50 dark:border-amber-500/30">
+                             <p className="font-medium mb-2">
+                               Para completar o próximo kit, você precisa produzir mais {missingSweets.toFixed(1)} unidades. Para isso, prepare uma mini-receita com:
+                             </p>
+                             <ul className="space-y-1 list-disc list-inside">
+                               {calcularReforcoProducao(yieldAmount, selectedRecipe.ingredients, missingSweets).map((item, idx) => (
+                                 <li key={idx}>
+                                   {item.name}: <strong>{item.quantity.toFixed(2)} {item.unit} {item.convertionStr ? `(${item.convertionStr})` : ""}</strong>
+                                 </li>
+                               ))}
+                             </ul>
+                           </div>
+                         )}
                        </div>
                      </div>
                    </div>

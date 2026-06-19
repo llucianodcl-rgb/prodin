@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useStore } from "../store/useStore";
 import { Ingredient, Unit } from "../types";
 import { formatCurrency } from "../lib/utils";
-import { Plus, Search, Edit2, Trash2, X, Copy, AlertTriangle, CheckCircle, Calculator } from "lucide-react";
+import { Plus, Search, Edit2, Trash2, X, Copy, AlertTriangle, CheckCircle, Calculator, ChevronRight } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { CurrencyInput } from "../components/ui/CurrencyInput";
+import { useNavigate } from "react-router-dom";
 
 export default function Extra() {
+  const navigate = useNavigate();
   const { extras, addExtra, updateExtra, deleteExtra, duplicateExtra, addToast, ingredientDrafts, setIngredientDraft, clearIngredientDraft } = useStore();
   
   // Reusing ingredientDrafts for simplicity or could create extraDrafts
@@ -261,8 +263,12 @@ export default function Extra() {
                   </td>
                 </tr>
               ) : (
-                filteredExtras.map(ex => (
-                  <tr key={ex.id} className="hover:bg-pink-soft/20 dark:hover:bg-slate-800/50 transition-colors group">
+                 filteredExtras.map(ex => (
+                  <tr 
+                    key={ex.id} 
+                    className="hover:bg-pink-soft/20 dark:hover:bg-slate-800/50 transition-colors group cursor-pointer"
+                    onClick={() => navigate(`/extra/${ex.id}`)}
+                  >
                     <td className="px-6 py-4 font-bold text-slate-900 dark:text-white uppercase tracking-wide text-xs">{ex.name}</td>
                     <td className="px-6 py-4 text-slate-500 dark:text-slate-400 font-medium italic text-xs">{ex.brand || '-'}</td>
                     <td className="px-6 py-4 text-slate-500 dark:text-slate-400">
@@ -281,7 +287,7 @@ export default function Extra() {
                     <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
                       {formatCurrency(ex.pricePaid)}
                     </td>
-                    <td className="px-6 py-4 text-right space-x-2">
+                    <td className="px-6 py-4 text-right space-x-2" onClick={e => e.stopPropagation()}>
                        <button 
                          type="button"
                          onClick={(e) => {
@@ -324,6 +330,16 @@ export default function Extra() {
                          className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
                        >
                          <Trash2 size={18} />
+                       </button>
+                       <button 
+                         type="button"
+                         onClick={(e) => {
+                           e.stopPropagation();
+                           navigate(`/extra/${ex.id}`);
+                         }}
+                         className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-lg transition-colors"
+                       >
+                         <ChevronRight size={18} />
                        </button>
                     </td>
                   </tr>
@@ -569,7 +585,8 @@ export default function Extra() {
                           <div>
                             <h3 className="font-bold text-emerald-900 dark:text-emerald-300 text-xs uppercase tracking-wider">Excelente! O preço informado atinge a meta de lucro definida.</h3>
                             <ul className="mt-2 text-sm text-emerald-800 dark:text-emerald-200 space-y-1">
-                              <li>• Multiplicador: <strong>{actualMultiplier.toFixed(2)}x</strong></li>
+                              <li>• Multiplicador alcançado: <strong>{actualMultiplier.toFixed(2)}x</strong></li>
+                              <li>• Multiplicador desejado: <strong>{targetMult}x</strong></li>
                               <li>• Lucro unitário: <strong>{formatCurrency(netProfitUnit)}</strong></li>
                               <li>• Margem: <strong>{profitMargin.toFixed(1)}%</strong></li>
                             </ul>
