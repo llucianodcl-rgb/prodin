@@ -17,6 +17,7 @@ import Sales from './pages/Sales';
 import { useAuth } from './contexts/AuthContext';
 import { ChefHat, Loader2, LogIn } from 'lucide-react';
 import FirestoreSync from './components/layout/FirestoreSync';
+import { UpdateManager } from './components/UpdateManager';
 
 function ProtectedRoute() {
   const { user, appUser, loading, signInWithGoogle, logout } = useAuth();
@@ -106,6 +107,11 @@ const router = createBrowserRouter([
 ]);
 
 export default function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <UpdateManager />
+      <RouterProvider router={router} />
+    </>
+  );
 }
 

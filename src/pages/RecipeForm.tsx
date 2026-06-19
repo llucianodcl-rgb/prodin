@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useStore } from "../store/useStore";
-import { Recipe, RecipeIngredient, ExtraCost, Unit } from "../types";
+import { Recipe, RecipeIngredient, Unit } from "../types";
 import { formatCurrency, getIngredientUnitCost, getSuggestedUnitPrice, getActualMetrics, getBaseQuantity } from "../lib/utils";
 import { v4 as uuidv4 } from "uuid";
 import { ArrowLeft, Plus, Trash2, Save, Calculator, AlertTriangle, CheckCircle, Edit2, Copy } from "lucide-react";
@@ -37,7 +37,6 @@ export default function RecipeForm() {
       ingredients: [],
       finalWeight: 0,
       weightPerUnit: 0,
-      extraCosts: [],
       profitMultiplier: 3,
       targetPricePerUnit: 0,
     };
@@ -46,9 +45,6 @@ export default function RecipeForm() {
   const [selectIngId, setSelectIngId] = useState(draft?.selectIngId || "");
   const [selectIngQty, setSelectIngQty] = useState(draft?.selectIngQty || "");
   const [selectIngUnit, setSelectIngUnit] = useState<Unit>(draft?.selectIngUnit || "un");
-
-  const [extraName, setExtraName] = useState(draft?.extraName || "");
-  const [extraValue, setExtraValue] = useState<number | ''>(draft?.extraValue || '');
 
   const [saveStatus, setSaveStatus] = useState('');
 
@@ -63,9 +59,7 @@ export default function RecipeForm() {
           formData,
           selectIngId,
           selectIngQty,
-          selectIngUnit,
-          extraName,
-          extraValue
+          selectIngUnit
         });
         setSaveStatus('Rascunho salvo');
         setTimeout(() => { if (isMounted) setSaveStatus('') }, 2000);
@@ -76,7 +70,7 @@ export default function RecipeForm() {
       isMounted = false;
       clearTimeout(timer);
     };
-  }, [formData, selectIngId, selectIngQty, selectIngUnit, extraName, extraValue, draftKey, setRecipeDraft]);
+  }, [formData, selectIngId, selectIngQty, selectIngUnit, draftKey, setRecipeDraft]);
 
   const calculateAutoWeight = () => {
     return (formData.ingredients || []).reduce((sum, ri) => {
@@ -145,48 +139,6 @@ export default function RecipeForm() {
       setFormData(prev => ({
         ...prev,
         ingredients: [...prev.ingredients, newRi]
-      }));
-    }
-  };
-
-  const handleAddExtraCost = () => {
-    if (!extraName || !extraValue) return;
-    const newEc: ExtraCost = {
-      id: uuidv4(),
-      name: extraName,
-      value: Number(extraValue)
-    };
-    setFormData(prev => ({
-      ...prev,
-      extraCosts: [...(prev.extraCosts || []), newEc]
-    }));
-    setExtraName("");
-    setExtraValue("");
-  };
-
-  const handleRemoveExtraCost = (ecId: string) => {
-    setFormData(prev => ({
-      ...prev,
-      extraCosts: (prev.extraCosts || []).filter(ec => ec.id !== ecId)
-    }));
-  };
-
-  const handleEditExtraCost = (ecId: string) => {
-    const ec = (formData.extraCosts || []).find(e => e.id === ecId);
-    if (ec) {
-      setExtraName(ec.name);
-      setExtraValue(ec.value);
-      handleRemoveExtraCost(ecId);
-    }
-  };
-
-  const handleDuplicateExtraCost = (ecId: string) => {
-    const ec = (formData.extraCosts || []).find(e => e.id === ecId);
-    if (ec) {
-      const newEc = { ...ec, id: uuidv4() };
-      setFormData(prev => ({
-        ...prev,
-        extraCosts: [...(prev.extraCosts || []), newEc]
       }));
     }
   };
@@ -449,80 +401,7 @@ export default function RecipeForm() {
              ) : null}
           </section>
 
-          {/* Section 4: Extra Costs */}
-          <section className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-4">
-             <h2 className="text-xl font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">Custos Extras</h2>
-             
-             <div className="flex flex-col sm:flex-row gap-2 items-end">
-               <div className="flex-1 w-full">
-                 <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Descrição</label>
-                 <input 
-                   type="text"
-                   value={extraName}
-                   onChange={e => setExtraName(capitalize(e.target.value))}
-                   className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
-                   placeholder="Ex: Embalagem, Energia, Taxa Cartão"
-                 />
-               </div>
-               <div className="w-full sm:w-32">
-                 <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Valor (R$)</label>
-                 <CurrencyInput 
-                   value={extraValue === '' ? 0 : extraValue}
-                   onChangeValue={value => setExtraValue(value)}
-                   className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
-                 />
-               </div>
-               <button 
-                 type="button"
-                 onClick={handleAddExtraCost}
-                 disabled={!extraName || !extraValue}
-                 className="w-full sm:w-auto mt-2 sm:mt-0 px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg transition-colors font-medium flex items-center justify-center disabled:opacity-50"
-               >
-                 <Plus size={20} />
-               </button>
-             </div>
-
-             <div>
-               <ul className="divide-y divide-slate-100 dark:divide-slate-700">
-                 {(formData.extraCosts || []).map(ec => (
-                   <li key={ec.id} className="py-2 flex justify-between items-center group">
-                     <div>
-                       <span className="font-medium text-slate-900 dark:text-white">{ec.name}</span>
-                       <span className="ml-2 text-sm text-slate-500">{formatCurrency(ec.value)}</span>
-                     </div>
-                     <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                       <button 
-                         type="button" 
-                         onClick={() => handleEditExtraCost(ec.id)}
-                         className="p-1 text-slate-400 hover:text-indigo-600 transition-colors"
-                         title="Editar"
-                       >
-                         <Edit2 size={16} />
-                       </button>
-                       <button 
-                         type="button" 
-                         onClick={() => handleDuplicateExtraCost(ec.id)}
-                         className="p-1 text-slate-400 hover:text-green-600 transition-colors"
-                         title="Duplicar"
-                       >
-                         <Copy size={16} />
-                       </button>
-                       <button 
-                         type="button" 
-                         onClick={() => handleRemoveExtraCost(ec.id)}
-                         className="p-1 text-slate-400 hover:text-rose-500 transition-colors"
-                         title="Excluir"
-                       >
-                         <Trash2 size={16} />
-                       </button>
-                     </div>
-                   </li>
-                 ))}
-               </ul>
-             </div>
-          </section>
-
-          {/* Section 5: Pricing */}
+          {/* Section 4: Pricing */}
           <section className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-4">
              <h2 className="text-xl font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">Precificação Final</h2>
              
@@ -657,5 +536,5 @@ export default function RecipeForm() {
 
        </form>
     </div>
-  )
+  );
 }

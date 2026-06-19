@@ -13,6 +13,12 @@ async function startServer() {
   // Body parser
   app.use(express.json());
 
+  // Version identifier for update detection
+  const SERVER_STARTUP_TIME = Date.now().toString();
+  app.get("/api/version", (req, res) => {
+    res.json({ version: SERVER_STARTUP_TIME });
+  });
+
   // 1. GitHub Auth URL construction endpoint
   app.get("/api/auth/github/url", (req, res) => {
     const clientId = process.env.GITHUB_CLIENT_ID;
