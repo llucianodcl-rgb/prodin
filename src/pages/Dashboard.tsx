@@ -39,83 +39,83 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <header className="flex flex-row items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-brown dark:text-white">Resumo Doce</h1>
-          <p className="text-slate-500 dark:text-slate-400">Visão geral do seu negócio de confeitaria.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-brown dark:text-white">Resumo Doce</h1>
+          <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400">Visão geral do seu negócio.</p>
         </div>
         <Link 
           to="/receitas/nova"
-          className="inline-flex items-center justify-center space-x-2 bg-mint hover:bg-mint/90 text-white px-5 py-2.5 rounded-xl font-bold shadow-soft transition-all hover:scale-[1.02] active:scale-[0.98]"
+          className="inline-flex items-center justify-center space-x-2 bg-mint hover:bg-mint/90 text-white px-3 py-2 sm:px-5 sm:py-2.5 rounded-xl font-bold shadow-soft transition-all hover:scale-[1.02] active:scale-[0.98] shrink-0"
         >
-          <PlusCircle size={20} />
-          <span>Nova Receita</span>
+          <PlusCircle size={18} className="sm:w-5 sm:h-5" />
+          <span className="text-xs sm:text-base">Nova Receita</span>
         </Link>
       </header>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard 
-          title="Faturamento Est." 
+          title="Faturamento" 
           value={formatCurrency(totalEstimatedRevenue)} 
-          icon={<DollarSign size={24} className="text-pink" />} 
-          subtitle="Se vender todo o estoque"
+          icon={<DollarSign size={20} className="text-pink sm:w-6 sm:h-6" />} 
+          subtitle="Estimado"
           color="pink"
         />
         <MetricCard 
-          title="Lucro Estimado" 
+          title="Lucro" 
           value={formatCurrency(totalEstimatedProfit)} 
-          icon={<TrendingUp size={24} className="text-mint" />} 
-          subtitle="Lucro líquido projetado"
+          icon={<TrendingUp size={20} className="text-mint sm:w-6 sm:h-6" />} 
+          subtitle="Projetado"
           color="mint"
         />
          <MetricCard 
-          title="Receitas Ativas" 
+          title="Receitas" 
           value={totalRecipes} 
-          icon={<Package size={24} className="text-yellow" />} 
-          subtitle="Cadastradas no sistema"
+          icon={<Package size={20} className="text-yellow sm:w-6 sm:h-6" />} 
+          subtitle="Ativas"
           color="yellow"
         />
         <MetricCard 
-          title="Custo Médio" 
+          title="Custo" 
           value={formatCurrency(averageCost)} 
-          icon={<DollarSign size={24} className="text-brown" />} 
-          subtitle="Produção por receita"
+          icon={<DollarSign size={20} className="text-brown sm:w-6 sm:h-6" />} 
+          subtitle="Médio"
           color="brown"
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-pink/10 dark:border-slate-700">
-          <h3 className="text-lg font-bold text-brown dark:text-white mb-4">Receita Mais Lucrativa</h3>
+      <div className="grid grid-cols-2 gap-4 sm:gap-6">
+        <div className="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-3xl shadow-sm border border-pink/10 dark:border-slate-700">
+          <h3 className="text-sm sm:text-lg font-bold text-brown dark:text-white mb-2 sm:mb-4">Mais Lucrativa</h3>
           {mostProfitableRecipe ? (
-             <div className="flex justify-between items-center bg-mint-soft/30 dark:bg-slate-900/50 p-4 rounded-xl border border-mint/10">
+             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-mint-soft/30 dark:bg-slate-900/50 p-3 sm:p-4 rounded-xl border border-mint/10 gap-2">
                <div>
-                 <p className="font-bold text-brown dark:text-white">{mostProfitableRecipe.name}</p>
-                 <p className="text-sm text-mint font-medium">Margem: {getActualMetrics(mostProfitableRecipe, ingredients).profitMargin.toFixed(1)}%</p>
+                 <p className="font-bold text-brown dark:text-white text-xs sm:text-base truncate max-w-[100px] sm:max-w-none">{mostProfitableRecipe.name}</p>
+                 <p className="text-[10px] sm:text-sm text-mint font-medium">{getActualMetrics(mostProfitableRecipe, ingredients).profitMargin.toFixed(1)}%</p>
                </div>
-               <Link to={`/receitas/${mostProfitableRecipe.id}`} className="text-pink dark:text-pink-400 text-sm font-bold hover:underline">
-                 Ver detalhes &rarr;
+               <Link to={`/receitas/${mostProfitableRecipe.id}`} className="text-pink dark:text-pink-400 text-[10px] sm:text-sm font-bold hover:underline shrink-0">
+                 Detalhes &rarr;
                </Link>
              </div>
           ) : (
-            <p className="text-slate-500 dark:text-slate-400 text-sm">Cadastre uma receita para ver os dados.</p>
+            <p className="text-slate-500 dark:text-slate-400 text-[10px] sm:text-sm">Sem dados.</p>
           )}
         </div>
 
-        <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-pink/10 dark:border-slate-700">
-          <h3 className="text-lg font-bold text-brown dark:text-white mb-4">Receita Menos Lucrativa</h3>
+        <div className="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-3xl shadow-sm border border-pink/10 dark:border-slate-700">
+          <h3 className="text-sm sm:text-lg font-bold text-brown dark:text-white mb-2 sm:mb-4">Menos Lucrativa</h3>
           {leastProfitableRecipe ? (
-             <div className="flex justify-between items-center bg-pink-soft/30 dark:bg-slate-900/50 p-4 rounded-xl border border-pink/10">
+             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-pink-soft/30 dark:bg-slate-900/50 p-3 sm:p-4 rounded-xl border border-pink/10 gap-2">
                <div>
-                 <p className="font-bold text-brown dark:text-white">{leastProfitableRecipe.name}</p>
-                 <p className="text-sm text-pink font-medium">Margem: {getActualMetrics(leastProfitableRecipe, ingredients).profitMargin.toFixed(1)}%</p>
+                 <p className="font-bold text-brown dark:text-white text-xs sm:text-base truncate max-w-[100px] sm:max-w-none">{leastProfitableRecipe.name}</p>
+                 <p className="text-[10px] sm:text-sm text-pink font-medium">{getActualMetrics(leastProfitableRecipe, ingredients).profitMargin.toFixed(1)}%</p>
                </div>
-               <Link to={`/receitas/${leastProfitableRecipe.id}`} className="text-pink dark:text-pink-400 text-sm font-bold hover:underline">
-                 Ver detalhes &rarr;
+               <Link to={`/receitas/${leastProfitableRecipe.id}`} className="text-pink dark:text-pink-400 text-[10px] sm:text-sm font-bold hover:underline shrink-0">
+                 Detalhes &rarr;
                </Link>
              </div>
           ) : (
-            <p className="text-slate-500 dark:text-slate-400 text-sm">Cadastre uma receita para ver os dados.</p>
+            <p className="text-slate-500 dark:text-slate-400 text-[10px] sm:text-sm">Sem dados.</p>
           )}
         </div>
       </div>
@@ -146,14 +146,14 @@ function MetricCard({ title, value, icon, subtitle, color = 'mint' }: { title: s
   }[color as keyof typeof iconBg] || 'bg-slate-50';
 
   return (
-    <div className={cn("p-6 rounded-3xl shadow-sm border transition-shadow hover:shadow-md", bgSoft, borderColor)}>
-       <div className="flex justify-between items-start">
-         <p className="text-sm font-bold text-brown opacity-80">{title}</p>
-         <div className={cn("p-2 rounded-xl", iconBg)}>{icon}</div>
+    <div className={cn("p-4 sm:p-6 rounded-3xl shadow-sm border transition-shadow hover:shadow-md", bgSoft, borderColor)}>
+       <div className="flex justify-between items-start gap-1">
+         <p className="text-xs sm:text-sm font-bold text-brown opacity-80 leading-tight">{title}</p>
+         <div className={cn("p-2 rounded-xl shrink-0", iconBg)}>{icon}</div>
        </div>
        <div className="mt-4">
-         <h2 className="text-2xl font-black text-brown dark:text-white tracking-tight">{value}</h2>
-         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">{subtitle}</p>
+         <h2 className="text-lg sm:text-2xl font-black text-brown dark:text-white tracking-tight truncate">{value}</h2>
+         <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">{subtitle}</p>
        </div>
     </div>
   )

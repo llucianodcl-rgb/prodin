@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useStore } from "../store/useStore";
 import { formatCurrency, getRecipeTotalCost, getQuantityProduced, getIngredientUnitCost } from "../lib/utils";
-import { Calculator, Package } from "lucide-react";
+import { Calculator, Package, AlertTriangle } from "lucide-react";
 
 export default function Sales() {
   const { recipes, ingredients, extras, salesDraft, setSalesDraft } = useStore();
@@ -25,6 +25,11 @@ export default function Sales() {
   let finalPrice = 0;
   let extraCost = 0;
   let sweetsTotalCost = 0;
+  let possibleKits = 0;
+  let leftoverSweets = 0;
+  let missingSweets = 0;
+  let monetaryLoss = 0;
+  let yieldAmount = 0;
 
   if (selectedRecipe) {
     unitCost = selectedRecipe.targetPricePerUnit || 0;
@@ -37,6 +42,15 @@ export default function Sales() {
     }
 
     finalPrice = sweetsTotalCost + extraCost;
+
+    yieldAmount = getQuantityProduced(selectedRecipe, ingredients);
+    
+    if (quantity > 0) {
+      possibleKits = Math.floor(yieldAmount / quantity);
+      leftoverSweets = yieldAmount % quantity;
+      missingSweets = leftoverSweets > 0 ? (quantity - leftoverSweets) : 0;
+      monetaryLoss = leftoverSweets * unitCost;
+    }
   }
 
   return (
@@ -128,6 +142,24 @@ export default function Sales() {
                     <span className="text-slate-500 dark:text-slate-400 font-medium text-sm">Custo da Embalagem / Extra</span>
                     <span className="font-bold text-slate-700 dark:text-slate-200">{formatCurrency(extraCost)}</span>
                  </div>
+
+                 {leftoverSweets > 0 && (
+                   <div className="mt-4 p-4 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20">
+                     <div className="flex items-start gap-3">
+                       <AlertTriangle className="text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" size={20} />
+                       <div>
+                         <h3 className="font-bold text-amber-900 dark:text-amber-300 text-xs uppercase tracking-wider">Atenção: Sobra de Doces</h3>
+                         <p className="mt-2 text-sm text-amber-800 dark:text-amber-200 leading-relaxed">
+                           A receita rende <strong>{yieldAmount.toFixed(1)} uni</strong>. Com kits de <strong>{quantity} uni</strong>, você monta <strong>{possibleKits} {possibleKits === 1 ? 'kit' : 'kits'}</strong> e sobram <strong>{leftoverSweets.toFixed(1)} uni</strong>.
+                         </p>
+                         <p className="mt-2 text-sm text-amber-800 dark:text-amber-200 leading-relaxed border-t border-amber-200/50 dark:border-amber-500/20 pt-2">
+                           • Faltam <strong>{missingSweets.toFixed(1)} uni</strong> para fechar outro kit<br />
+                           • Valor das sobras: <strong>{formatCurrency(monetaryLoss)}</strong>
+                         </p>
+                       </div>
+                     </div>
+                   </div>
+                 )}
               </div>
             ) : (
               <div className="flex-1 flex items-center justify-center text-center p-8">
