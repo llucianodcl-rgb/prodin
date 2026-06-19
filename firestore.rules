@@ -17,5 +17,9 @@ service cloud.firestore {
       allow update: if isAdmin();
       allow delete: if isAdmin();
     }
+
+    match /user_data/{userId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+    }
   }
 }

@@ -28,15 +28,12 @@ export default function FirestoreSync({ children }: { children: React.ReactNode 
         
         if (!snapshot.exists()) {
           // Migration: Firestore doesn't have data, push current local data to Firestore
-          const { ingredients, recipes, sales, extras, categories, settings } = localState;
+          const { ingredients, recipes, extras } = localState;
           
           await setDoc(userRef, {
             ingredients,
             recipes,
-            sales,
             extras,
-            categories,
-            settings,
             updatedAt: Date.now()
           });
           setIsReady(true);
@@ -47,10 +44,7 @@ export default function FirestoreSync({ children }: { children: React.ReactNode 
           useStore.setState({
             ingredients: data.ingredients || [],
             recipes: data.recipes || [],
-            sales: data.sales || [],
             extras: data.extras || [],
-            categories: data.categories || localState.categories,
-            settings: data.settings || localState.settings,
           });
           syncing.current = false;
           setIsReady(true);
@@ -69,10 +63,7 @@ export default function FirestoreSync({ children }: { children: React.ReactNode 
             useStore.setState({
               ingredients: data.ingredients || [],
               recipes: data.recipes || [],
-              sales: data.sales || [],
               extras: data.extras || [],
-              categories: data.categories || useStore.getState().categories,
-              settings: data.settings || useStore.getState().settings,
             });
             // Allow synchronous listeners to fire before clearing the flag
             setTimeout(() => {
@@ -110,10 +101,7 @@ export default function FirestoreSync({ children }: { children: React.ReactNode 
           await setDoc(doc(db, 'user_data', user.uid), {
             ingredients: state.ingredients,
             recipes: state.recipes,
-            sales: state.sales,
             extras: state.extras,
-            categories: state.categories,
-            settings: state.settings,
             updatedAt: Date.now()
           }, { merge: true });
         } catch (e) {

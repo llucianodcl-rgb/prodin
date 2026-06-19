@@ -43,7 +43,7 @@ export default function Sales() {
 
     finalPrice = sweetsTotalCost + extraCost;
 
-    yieldAmount = getQuantityProduced(selectedRecipe, ingredients);
+    yieldAmount = getQuantityProduced(selectedRecipe);
     
     if (quantity > 0) {
       possibleKits = Math.floor(yieldAmount / quantity);
