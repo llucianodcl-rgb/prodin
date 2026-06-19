@@ -1,0 +1,28 @@
+{
+  "projectInfo": {
+    "name": "prodin",
+    "description": "App para precificação inteligente na confeitaria com aprovação de usuários."
+  },
+  "entities": [
+    {
+      "name": "User",
+      "tableName": "users",
+      "description": "App users and their access status",
+      "attributes": [
+        { "name": "email", "type": "string", "isRequired": true },
+        { "name": "status", "type": "string", "isRequired": true, "description": "'pendente' or 'ativo'" },
+        { "name": "role", "type": "string", "isRequired": true, "description": "'admin' or 'user'" },
+        { "name": "createdAt", "type": "timestamp", "isRequired": true }
+      ]
+    }
+  ],
+  "relationships": [],
+  "securityRules": {
+    "users": {
+        "read": "request.auth != null && (request.auth.uid == resource.id || request.auth.token.email == 'llucianodcl@gmail.com')",
+        "write": "request.auth != null && (request.auth.uid == resource.id || request.auth.token.email == 'llucianodcl@gmail.com')",
+        "create": "request.auth != null && request.auth.uid == resource.id",
+        "update": "request.auth != null && request.auth.token.email == 'llucianodcl@gmail.com'"
+    }
+  }
+}

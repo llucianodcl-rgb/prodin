@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { useStore } from "../../store/useStore";
 import { cn } from "../../lib/utils";
 import ToastContainer from "./ToastContainer";
+import AdminFAB from "./AdminFAB";
+import SessionDebug from "./SessionDebug";
 
 export default function Layout() {
   const { theme } = useStore();
@@ -47,6 +49,8 @@ export default function Layout() {
       </main>
 
       <ToastContainer />
+      <AdminFAB />
+      <SessionDebug />
       
       {/* Fixed Bottom Navigation for All Screens */}
       <div className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-pink/20 dark:border-slate-800/80 pb-safe z-10 flex justify-center py-2 px-4 shadow-[0_-4px_16px_rgba(0,0,0,0.04)]">

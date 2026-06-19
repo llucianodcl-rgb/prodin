@@ -1,6 +1,7 @@
 import { useStore } from "../store/useStore";
-import { Moon, Sun, ArrowRight, Save, Upload, Download } from "lucide-react";
+import { Moon, Sun, ArrowRight, Save, Upload, Download, LogOut, User as UserIcon } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Settings() {
   const { 
@@ -15,6 +16,8 @@ export default function Settings() {
     clearSettingsDraft,
     addToast
   } = useStore();
+
+  const { user, appUser, logout } = useAuth();
 
   const [importData, setImportData] = useState(settingsDraft?.importData || "");
   const [importStatus, setImportStatus] = useState<string | null>(null);
@@ -82,6 +85,28 @@ export default function Settings() {
       </div>
 
       <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+        {user && (
+          <div className="p-6 border-b border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-pink-soft dark:bg-pink-500/10 p-3 rounded-full hidden sm:block">
+                <UserIcon size={24} className="text-pink" />
+              </div>
+              <div>
+                <h3 className="font-bold text-slate-900 dark:text-white">Sua Conta</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{user.email}</p>
+                <span className="inline-block mt-1 px-2 py-0.5 bg-mint/10 text-mint text-xs font-bold rounded-lg uppercase tracking-wider">
+                  {appUser?.role === 'admin' ? 'Administrador' : 'Usuário Ativo'}
+                </span>
+              </div>
+            </div>
+            <button 
+              onClick={logout}
+              className="flex items-center justify-center space-x-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 px-4 py-2 rounded-xl transition-colors font-medium text-slate-700 dark:text-slate-200 w-full sm:w-auto"
+            >
+              <LogOut size={18} /> <span>Sair da conta</span>
+            </button>
+          </div>
+        )}
         <div className="p-6 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
           <div>
             <h3 className="font-bold text-slate-900 dark:text-white">Aparência</h3>

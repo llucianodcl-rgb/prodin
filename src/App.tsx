@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { RouterProvider, createBrowserRouter, Outlet, Navigate } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import Dashboard from './pages/Dashboard';
 import Ingredients from './pages/Ingredients';
@@ -13,21 +13,87 @@ import RecipeForm from './pages/RecipeForm';
 import RecipeDetails from './pages/RecipeDetails';
 import Settings from './pages/Settings';
 import Sales from './pages/Sales';
+import { useAuth } from './contexts/AuthContext';
+import { ChefHat, Loader2, LogIn } from 'lucide-react';
+
+function ProtectedRoute() {
+  const { user, appUser, loading, signInWithGoogle, logout } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+        <Loader2 className="w-8 h-8 animate-spin text-pink" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900 p-4">
+        <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-soft max-w-sm w-full text-center">
+          <div className="flex justify-center mb-6">
+            <div className="bg-pink-soft dark:bg-pink-500/10 p-4 rounded-full">
+              <ChefHat size={48} className="text-pink font-light" />
+            </div>
+          </div>
+          <h1 className="text-2xl font-black text-brown dark:text-white mb-2">ProDin</h1>
+          <p className="text-slate-500 dark:text-slate-400 mb-8 font-medium">Faça login para continuar.</p>
+          <button
+            onClick={signInWithGoogle}
+            className="w-full flex items-center justify-center space-x-2 bg-pink hover:bg-pink/90 text-white p-3 rounded-xl font-bold shadow-sm transition-all"
+          >
+            <LogIn size={20} />
+            <span>Entrar com Google</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (appUser && appUser.status === 'pendente') {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900 p-4">
+        <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-soft max-w-md w-full text-center">
+          <div className="flex justify-center mb-6">
+            <div className="bg-amber-100 dark:bg-amber-500/20 p-4 rounded-full">
+              <ChefHat size={48} className="text-amber-600 dark:text-amber-400 font-light" />
+            </div>
+          </div>
+          <h1 className="text-2xl font-black text-brown dark:text-white mb-4">Aprovação Pendente</h1>
+          <p className="text-slate-500 dark:text-slate-400 mb-8 font-medium">Sua conta está aguardando a aprovação do administrador. Por favor, aguarde.</p>
+          <button
+            onClick={logout}
+            className="w-full flex items-center justify-center space-x-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 p-3 rounded-xl font-bold transition-all"
+          >
+            Sair
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return <Outlet />;
+}
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />,
+    element: <ProtectedRoute />,
     children: [
-       { index: true, element: <Dashboard /> },
-       { path: "ingredientes", element: <Ingredients /> },
-       { path: "extra", element: <Extra /> },
-       { path: "receitas", element: <Recipes /> },
-       { path: "receitas/nova", element: <RecipeForm /> },
-       { path: "receitas/:id/editar", element: <RecipeForm /> },
-       { path: "receitas/:id", element: <RecipeDetails /> },
-       { path: "vendas", element: <Sales /> },
-       { path: "configuracoes", element: <Settings /> }
+      {
+        element: <Layout />,
+        children: [
+           { index: true, element: <Dashboard /> },
+           { path: "ingredientes", element: <Ingredients /> },
+           { path: "extra", element: <Extra /> },
+           { path: "receitas", element: <Recipes /> },
+           { path: "receitas/nova", element: <RecipeForm /> },
+           { path: "receitas/:id/editar", element: <RecipeForm /> },
+           { path: "receitas/:id", element: <RecipeDetails /> },
+           { path: "vendas", element: <Sales /> },
+           { path: "configuracoes", element: <Settings /> }
+        ]
+      }
     ]
   }
 ]);
