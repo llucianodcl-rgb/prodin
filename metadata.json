@@ -1,0 +1,6 @@
+{
+  "name": "prodin",
+  "description": "Aplicativo web completo para precificação e cálculo de custos de receitas focado em confeiteiros e comércio artesanal.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

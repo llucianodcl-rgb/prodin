@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* Confectionery Palette */
+  --color-mint: #22c0d4;
+  --color-mint-soft: #e0faff;
+  --color-pink: #ff6bbb;
+  --color-pink-soft: #fff0f7;
+  --color-yellow: #f8cf40;
+  --color-yellow-soft: #fff9e6;
+  --color-brown: #af6e2a;
+  --color-brown-soft: #fbf5ef;
+}
+
+@layer base {
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Base print styles */
+@media print {
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+  .no-print, nav, aside, header {
+    display: none !important;
+  }
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+  .print\:block {
+    display: block !important;
+  }
+}
