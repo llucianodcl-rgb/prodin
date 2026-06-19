@@ -16,6 +16,7 @@ interface AuthContextType {
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -24,6 +25,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   signInWithGoogle: async () => {},
   logout: async () => {},
+  deleteAccount: async () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -125,8 +127,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const deleteAccount = async () => {
+    if (!firebaseInitialized || !auth.currentUser) return;
+    try {
+      //auth.currentUser.delete() will handle session termination
+      await auth.currentUser.delete();
+    } catch (error) {
+      console.error("Error deleting user auth", error);
+      throw error;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, appUser, loading, signInWithGoogle, logout }}>
+    <AuthContext.Provider value={{ user, appUser, loading, signInWithGoogle, logout, deleteAccount }}>
       {children}
     </AuthContext.Provider>
   );

@@ -49,6 +49,7 @@ interface AppState {
   salesDraft: any;
   setSalesDraft: (draft: any) => void;
   clearSalesDraft: () => void;
+  resetData: () => void;
 }
 
 export const useStore = create<AppState>()(
@@ -168,6 +169,15 @@ export const useStore = create<AppState>()(
       salesDraft: null,
       setSalesDraft: (draft) => set({ salesDraft: draft }),
       clearSalesDraft: () => set({ salesDraft: null }),
+      resetData: () => set({
+        ingredients: [],
+        extras: [],
+        recipes: [],
+        ingredientDrafts: {},
+        recipeDrafts: {},
+        settingsDraft: null,
+        salesDraft: null
+      }),
     }),
     {
       name: 'prodin-storage',

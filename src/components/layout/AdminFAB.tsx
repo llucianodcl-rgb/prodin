@@ -43,7 +43,7 @@ export default function AdminFAB() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-50 bg-brown dark:bg-slate-700 hover:bg-brown/90 text-white p-4 rounded-full shadow-lg transition-transform hover:scale-105 active:scale-95 flex items-center justify-center"
+        className="fixed bottom-28 right-6 z-50 bg-brown dark:bg-slate-700 hover:bg-brown/90 text-white p-4 rounded-full shadow-lg transition-transform hover:scale-105 active:scale-95 flex items-center justify-center"
       >
         <div className="relative">
           <Users size={24} />

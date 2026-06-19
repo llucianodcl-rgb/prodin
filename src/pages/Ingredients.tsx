@@ -341,7 +341,7 @@ export default function Ingredients() {
           <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-pink/10">
              <div className="flex items-center justify-between p-6 border-b border-pink/10 bg-pink-soft/30 shrink-0">
                <h3 className="text-xl font-bold text-brown dark:text-white">
-                 {editingId ? 'Editar Calda/Massa' : 'Novo Produto'}
+                 {editingId ? 'Editar produto' : 'Novo Produto'}
                </h3>
                <button onClick={handleCloseModal} className="text-brown/40 hover:text-brown transition-colors">
                  <X size={24} />
