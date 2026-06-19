@@ -15,6 +15,7 @@ import Settings from './pages/Settings';
 import Sales from './pages/Sales';
 import { useAuth } from './contexts/AuthContext';
 import { ChefHat, Loader2, LogIn } from 'lucide-react';
+import FirestoreSync from './components/layout/FirestoreSync';
 
 function ProtectedRoute() {
   const { user, appUser, loading, signInWithGoogle, logout } = useAuth();
@@ -72,7 +73,11 @@ function ProtectedRoute() {
     );
   }
 
-  return <Outlet />;
+  return (
+    <FirestoreSync>
+      <Outlet />
+    </FirestoreSync>
+  );
 }
 
 const router = createBrowserRouter([
