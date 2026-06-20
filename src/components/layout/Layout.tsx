@@ -33,10 +33,10 @@ export default function Layout() {
         <div className="max-w-7xl w-full mx-auto flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold bg-gradient-to-r from-pink to-pink-500 bg-clip-text text-transparent dark:from-pink-400 dark:to-pink-300">
-              prodin
+              Prodin
             </h1>
             <p className="text-xs text-brown font-medium opacity-70">
-              Precificação Inteligente
+              Produção inteligente
             </p>
           </div>
         </div>
