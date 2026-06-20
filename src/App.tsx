@@ -14,6 +14,7 @@ import RecipeForm from './pages/RecipeForm';
 import RecipeDetails from './pages/RecipeDetails';
 import Settings from './pages/Settings';
 import Sales from './pages/Sales';
+import Users from './pages/Users';
 import Login from './pages/Login';
 import { useAuth } from './contexts/AuthContext';
 import { ChefHat, Loader2 } from 'lucide-react';
@@ -81,7 +82,8 @@ const router = createBrowserRouter([
            { path: "receitas/:id/editar", element: <RecipeForm /> },
            { path: "receitas/:id", element: <RecipeDetails /> },
            { path: "vendas", element: <Sales /> },
-           { path: "configuracoes", element: <Settings /> }
+           { path: "configuracoes", element: <Settings /> },
+           { path: "usuarios", element: <Users /> }
         ]
       }
     ]

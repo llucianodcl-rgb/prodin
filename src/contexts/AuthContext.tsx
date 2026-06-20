@@ -14,8 +14,13 @@ import { auth, db, googleProvider, initializeFirebase } from '../firebase';
 export interface AppUser {
   uid: string;
   email: string;
-  status: 'pendente' | 'ativo';
+  status: 'pendente' | 'ativo' | 'cancelado';
   role: 'admin' | 'user';
+  name?: string;
+  photoURL?: string;
+  approvedAt?: any;
+  canceledAt?: any;
+  createdAt: any;
 }
 
 interface AuthContextType {
@@ -82,11 +87,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const isAdmin = currentUser.email === 'llucianodcl@gmail.com';
 
             if (!userDoc.exists()) {
-                const newUser: Omit<AppUser, 'uid'> & { createdAt: any } = {
+                const newUser: Omit<AppUser, 'uid'> = {
                     email: currentUser.email,
                     status: isAdmin ? 'ativo' : 'pendente',
                     role: isAdmin ? 'admin' : 'user',
-                    createdAt: serverTimestamp()
+                    createdAt: serverTimestamp(),
+                    name: currentUser.displayName || undefined,
+                    photoURL: currentUser.photoURL || undefined
                 };
                 await setDoc(userRef, newUser);
                 setAppUser({ uid: currentUser.uid, ...newUser } as AppUser);

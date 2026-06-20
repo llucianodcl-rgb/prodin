@@ -1,6 +1,7 @@
 import { useStore } from "../store/useStore";
-import { Moon, Sun, ArrowRight, Save, Upload, Download, LogOut, User as UserIcon, Trash2, AlertTriangle, RefreshCcw, X } from "lucide-react";
+import { Moon, Sun, ArrowRight, Save, Upload, Download, LogOut, User as UserIcon, Trash2, AlertTriangle, RefreshCcw, X, Users as UsersIcon } from "lucide-react";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { doc, deleteDoc, writeBatch, collection, getDocs, query, where, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
