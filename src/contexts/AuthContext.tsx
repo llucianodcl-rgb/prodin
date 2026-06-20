@@ -1,5 +1,13 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
+import { 
+  User, 
+  signInWithPopup, 
+  signOut, 
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail as firebaseSendPasswordResetEmail
+} from 'firebase/auth';
 import { doc, getDoc, setDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
 import { auth, db, googleProvider, initializeFirebase } from '../firebase';
 
@@ -15,6 +23,9 @@ interface AuthContextType {
   appUser: AppUser | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
+  signInWithEmail: (email: string, pass: string) => Promise<void>;
+  signUpWithEmail: (email: string, pass: string) => Promise<void>;
+  sendPasswordResetEmail: (email: string) => Promise<void>;
   logout: () => Promise<void>;
   deleteAccount: () => Promise<void>;
 }
@@ -24,6 +35,9 @@ const AuthContext = createContext<AuthContextType>({
   appUser: null,
   loading: true,
   signInWithGoogle: async () => {},
+  signInWithEmail: async () => {},
+  signUpWithEmail: async () => {},
+  sendPasswordResetEmail: async () => {},
   logout: async () => {},
   deleteAccount: async () => {},
 });
@@ -115,6 +129,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await signInWithPopup(auth, googleProvider);
     } catch (error) {
       console.error("Error signing in with Google", error);
+      throw error;
+    }
+  };
+
+  const signInWithEmail = async (email: string, pass: string) => {
+    if (!firebaseInitialized) return;
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+    } catch (error) {
+      console.error("Error signing in with Email", error);
+      throw error;
+    }
+  };
+
+  const signUpWithEmail = async (email: string, pass: string) => {
+    if (!firebaseInitialized) return;
+    try {
+      await createUserWithEmailAndPassword(auth, email, pass);
+    } catch (error) {
+      console.error("Error signing up with Email", error);
+      throw error;
+    }
+  };
+
+  const sendPasswordResetEmail = async (email: string) => {
+    if (!firebaseInitialized) return;
+    try {
+      await firebaseSendPasswordResetEmail(auth, email);
+    } catch (error) {
+      console.error("Error sending reset email", error);
+      throw error;
     }
   };
 
@@ -139,7 +184,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, appUser, loading, signInWithGoogle, logout, deleteAccount }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      appUser, 
+      loading, 
+      signInWithGoogle, 
+      signInWithEmail, 
+      signUpWithEmail, 
+      sendPasswordResetEmail,
+      logout, 
+      deleteAccount 
+    }}>
       {children}
     </AuthContext.Provider>
   );

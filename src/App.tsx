@@ -14,13 +14,14 @@ import RecipeForm from './pages/RecipeForm';
 import RecipeDetails from './pages/RecipeDetails';
 import Settings from './pages/Settings';
 import Sales from './pages/Sales';
+import Login from './pages/Login';
 import { useAuth } from './contexts/AuthContext';
-import { ChefHat, Loader2, LogIn } from 'lucide-react';
+import { ChefHat, Loader2 } from 'lucide-react';
 import FirestoreSync from './components/layout/FirestoreSync';
 import { UpdateManager } from './components/UpdateManager';
 
 function ProtectedRoute() {
-  const { user, appUser, loading, signInWithGoogle, logout } = useAuth();
+  const { user, appUser, loading, logout } = useAuth();
 
   if (loading) {
     return (
@@ -31,26 +32,7 @@ function ProtectedRoute() {
   }
 
   if (!user) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900 p-4">
-        <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-soft max-w-sm w-full text-center">
-          <div className="flex justify-center mb-6">
-            <div className="bg-pink-soft dark:bg-pink-500/10 p-4 rounded-full">
-              <ChefHat size={48} className="text-pink font-light" />
-            </div>
-          </div>
-          <h1 className="text-2xl font-black text-brown dark:text-white mb-2">ProDin</h1>
-          <p className="text-slate-500 dark:text-slate-400 mb-8 font-medium">Faça login para continuar.</p>
-          <button
-            onClick={signInWithGoogle}
-            className="w-full flex items-center justify-center space-x-2 bg-pink hover:bg-pink/90 text-white p-3 rounded-xl font-bold shadow-sm transition-all"
-          >
-            <LogIn size={20} />
-            <span>Entrar com Google</span>
-          </button>
-        </div>
-      </div>
-    );
+    return <Login />;
   }
 
   if (appUser && appUser.status === 'pendente') {
