@@ -13,11 +13,35 @@ export function formatCurrency(value: number): string {
   }).format(value);
 }
 
-export function formatNumber(value: number, decimals: number = 2): string {
+export function formatNumber(value: number): string {
+    if (Number.isInteger(value)) {
+        return value.toString();
+    }
     return new Intl.NumberFormat('pt-BR', {
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
     }).format(value);
+}
+
+export function formatIngredientQuantity(quantity: number, unit: Unit): string {
+  let displayQty = quantity;
+  let displayUnit = unit;
+
+  if (unit === 'kg' && quantity < 1) {
+    displayQty = quantity * 1000;
+    displayUnit = 'g';
+  } else if (unit === 'l' && quantity < 1) {
+    displayQty = quantity * 1000;
+    displayUnit = 'ml';
+  } else if (unit === 'g' && quantity >= 1000) {
+    displayQty = quantity / 1000;
+    displayUnit = 'kg';
+  } else if (unit === 'ml' && quantity >= 1000) {
+    displayQty = quantity / 1000;
+    displayUnit = 'l';
+  }
+
+  return `${formatNumber(displayQty)} ${displayUnit}`;
 }
 
 // Convert units to base units for calculation (g, ml, un)
@@ -131,4 +155,12 @@ export function getActualMetrics(recipe: Recipe, allIngredients: Ingredient[]) {
     meetsTarget: actualMultiplier >= recipe.profitMultiplier,
     isLoss: costPerUnit > recipe.targetPricePerUnit
   };
+}
+
+export function normalizeString(str: string): string {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/ç/g, 'c');
 }

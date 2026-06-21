@@ -8,7 +8,9 @@ import {
   getRecipeIngredientsCost,
   getRecipeIngredientCost,
   getRecipeExtraCosts,
-  getIngredientUnitCost
+  getIngredientUnitCost,
+  formatNumber,
+  formatIngredientQuantity
 } from "../lib/utils";
 import { ArrowLeft, Edit2, Download, AlertTriangle, TrendingUp, DollarSign, Package, CheckCircle } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
@@ -182,7 +184,7 @@ export default function RecipeDetails() {
               <h3 className="font-medium text-amber-800 dark:text-amber-400">Atenção ao Lucro</h3>
               <p className="text-amber-700 dark:text-amber-300/80 text-sm mt-1">
                 O preço de venda simulado ({formatCurrency(simulatedPrice)}) não atinge seu multiplicador desejado de {recipe.profitMultiplier}x. 
-                O multiplicador atual é de {metrics.actualMultiplier.toFixed(2)}x.
+                O multiplicador atual é de {formatNumber(metrics.actualMultiplier)}x.
               </p>
             </div>
          </div>
@@ -215,10 +217,10 @@ export default function RecipeDetails() {
                         <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">{ing.name}</td>
                           <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
                             <div className="flex items-center gap-1">
-                              {ri.quantityUsed} {ri.unit || ing.unit}
+                              {formatIngredientQuantity(ri.quantityUsed, ri.unit || ing.unit)}
                               {ri.unit === 'un' && ing.unit === 'un' && ing.weightPerUn && ing.weightPerUn > 0 && (
                                 <span className="text-xs text-indigo-500 font-medium">
-                                  ({(ri.quantityUsed * ing.weightPerUn).toFixed(2)}{ing.weightPerUnUnit})
+                                  ({formatIngredientQuantity(ri.quantityUsed * ing.weightPerUn, ing.weightPerUnUnit || 'g')})
                                 </span>
                               )}
                             </div>
@@ -274,15 +276,15 @@ export default function RecipeDetails() {
              <div className="space-y-4">
                <div className="flex justify-between items-center pb-4 border-b border-slate-100 dark:border-slate-700">
                  <span className="text-slate-500 dark:text-slate-400">Peso Total</span>
-                 <span className="font-medium text-slate-900 dark:text-white">{recipe.finalWeight}g / ml</span>
+                 <span className="font-medium text-slate-900 dark:text-white">{formatNumber(recipe.finalWeight)} g/ml</span>
                </div>
                <div className="flex justify-between items-center pb-4 border-b border-slate-100 dark:border-slate-700">
                  <span className="text-slate-500 dark:text-slate-400">Peso por Unidade</span>
-                 <span className="font-medium text-slate-900 dark:text-white">{recipe.weightPerUnit}g / ml</span>
+                 <span className="font-medium text-slate-900 dark:text-white">{formatNumber(recipe.weightPerUnit)} g/ml</span>
                </div>
                <div className="flex justify-between items-center pb-4 border-b border-slate-100 dark:border-slate-700 bg-indigo-50/50 dark:bg-indigo-500/5 p-3 rounded-lg">
                  <span className="font-medium text-indigo-900 dark:text-indigo-300">Rendimento</span>
-                 <span className="font-bold text-lg text-indigo-600 dark:text-indigo-400">{qtyProduced} unidades</span>
+                 <span className="font-bold text-lg text-indigo-600 dark:text-indigo-400">{formatNumber(qtyProduced)} unidades</span>
                </div>
                <div className="flex justify-between items-center pt-2">
                  <span className="text-slate-500 dark:text-slate-400">Custo Total da Receita</span>
@@ -329,11 +331,11 @@ export default function RecipeDetails() {
                   </div>
                   <div className="bg-black/20 rounded-xl p-4">
                     <p className="text-xs text-indigo-200">Margem</p>
-                    <p className="text-xl font-bold mt-1">{metrics.profitMargin.toFixed(1)}%</p>
+                    <p className="text-xl font-bold mt-1">{formatNumber(metrics.profitMargin)}%</p>
                   </div>
                   <div className="bg-black/20 rounded-xl p-4">
                     <p className="text-xs text-indigo-200">Multiplicador</p>
-                    <p className="text-xl font-bold mt-1">{metrics.actualMultiplier.toFixed(2)}x</p>
+                    <p className="text-xl font-bold mt-1">{formatNumber(metrics.actualMultiplier)}x</p>
                   </div>
                 </div>
 
@@ -373,7 +375,7 @@ export default function RecipeDetails() {
                     <div>
                       <h3 className="font-bold text-amber-900 dark:text-amber-300">Atenção ao Lucro</h3>
                       <p className="text-sm text-amber-800 dark:text-amber-200 mt-1">
-                        Este preço não atinge o multiplicador desejado de {recipe.profitMultiplier}x. Atual é de {metrics.actualMultiplier.toFixed(2)}x.
+                        Este preço não atinge o multiplicador desejado de {recipe.profitMultiplier}x. Atual é de {formatNumber(metrics.actualMultiplier)}x.
                       </p>
                     </div>
                   </div>
@@ -413,11 +415,11 @@ export default function RecipeDetails() {
               </div>
               <div className="flex justify-between items-center py-1">
                 <span className="text-slate-600 dark:text-slate-400">Margem de Lucro:</span> 
-                <span className="text-slate-900 dark:text-white">{metrics.profitMargin.toFixed(1)}%</span>
+                <span className="text-slate-900 dark:text-white">{formatNumber(metrics.profitMargin)}%</span>
               </div>
               <div className="flex justify-between items-center py-1">
                 <span className="text-slate-600 dark:text-slate-400">Multiplicador:</span> 
-                <span className="text-slate-900 dark:text-white">{metrics.actualMultiplier.toFixed(2)}x</span>
+                <span className="text-slate-900 dark:text-white">{formatNumber(metrics.actualMultiplier)}x</span>
               </div>
            </div>
         </div>

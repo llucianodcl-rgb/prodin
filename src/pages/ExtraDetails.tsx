@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useStore } from "../store/useStore";
-import { formatCurrency } from "../lib/utils";
+import { formatCurrency, formatNumber } from "../lib/utils";
 import { ArrowLeft, Edit2, Download, AlertTriangle, TrendingUp, DollarSign, Package, CheckCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { CurrencyInput } from "../components/ui/CurrencyInput";
@@ -97,7 +97,7 @@ export default function ExtraDetails() {
               <h3 className="font-medium text-amber-800 dark:text-amber-400">Atenção ao Lucro</h3>
               <p className="text-amber-700 dark:text-amber-300/80 text-sm mt-1">
                 O preço de venda simulado ({formatCurrency(simulatedPrice)}) não atinge seu multiplicador desejado de {targetMult}x. 
-                O multiplicador atual é de {actualMultiplier.toFixed(2)}x.
+                O multiplicador atual é de {formatNumber(actualMultiplier)}x.
               </p>
             </div>
          </div>
@@ -131,11 +131,11 @@ export default function ExtraDetails() {
                  </div>
                  <div>
                    <p className="text-xs text-slate-500 dark:text-slate-500 uppercase font-black mb-1">Quantidade Adquirida</p>
-                   <p className="font-bold text-slate-900 dark:text-white">{extra.quantityBought} {extra.unit}</p>
+                   <p className="font-bold text-slate-900 dark:text-white">{formatNumber(extra.quantityBought)} {extra.unit}</p>
                  </div>
                  <div>
                    <p className="text-xs text-slate-500 dark:text-slate-500 uppercase font-black mb-1">Conteúdo por Unidade</p>
-                   <p className="font-bold text-slate-900 dark:text-white">{extra.weightPerUn || '-'}{extra.weightPerUnUnit}</p>
+                   <p className="font-bold text-slate-900 dark:text-white">{extra.weightPerUn ? formatNumber(extra.weightPerUn) : '-'}{extra.weightPerUnUnit}</p>
                  </div>
                  <div>
                    <p className="text-xs text-slate-500 dark:text-slate-500 uppercase font-black mb-1">Preço Total Pago</p>
@@ -210,11 +210,11 @@ export default function ExtraDetails() {
                   </div>
                   <div className="bg-black/10 rounded-xl p-4">
                     <p className="text-[10px] text-pink-100 uppercase font-bold">Margem</p>
-                    <p className="text-xl font-bold mt-1">{profitMargin.toFixed(1)}%</p>
+                    <p className="text-xl font-bold mt-1">{formatNumber(profitMargin)}%</p>
                   </div>
                   <div className="bg-black/10 rounded-xl p-4">
                     <p className="text-[10px] text-pink-100 uppercase font-bold">Multiplicador</p>
-                    <p className="text-xl font-bold mt-1">{actualMultiplier.toFixed(2)}x</p>
+                    <p className="text-xl font-bold mt-1">{formatNumber(actualMultiplier)}x</p>
                   </div>
                 </div>
 

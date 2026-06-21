@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useStore } from "../store/useStore";
 import { Ingredient, Unit } from "../types";
-import { formatCurrency } from "../lib/utils";
+import { formatCurrency, normalizeString } from "../lib/utils";
 import { Plus, Search, Edit2, Trash2, X, Copy, AlertTriangle, CheckCircle, Calculator, ChevronRight } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { CurrencyInput } from "../components/ui/CurrencyInput";
@@ -110,11 +110,22 @@ export default function Extra() {
     };
   }, [isModalOpen, editingId, formData, setIngredientDraft, draftId]);
 
-  const filteredExtras = extras.filter(i => 
-    i.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    (i.brand?.toLowerCase() || "").includes(searchTerm.toLowerCase()) || 
-    i.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredExtras = extras
+    .filter(i => {
+      const search = normalizeString(searchTerm);
+      const name = normalizeString(i.name);
+      const brand = normalizeString(i.brand || "");
+      const category = normalizeString(i.category);
+      const price = i.pricePaid.toString();
+      const qty = i.quantityBought.toString();
+
+      return name.includes(search) || 
+             brand.includes(search) || 
+             category.includes(search) ||
+             price.includes(search) ||
+             qty.includes(search);
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const handleOpenModal = (extra?: Ingredient) => {
     if (extra) {

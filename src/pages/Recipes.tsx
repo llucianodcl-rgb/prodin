@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useStore } from "../store/useStore";
 import { Link, useNavigate } from "react-router-dom";
-import { formatCurrency, getActualMetrics } from "../lib/utils";
+import { formatCurrency, getActualMetrics, normalizeString, formatNumber } from "../lib/utils";
 import { Plus, Search, Edit2, Trash2, ChevronRight, Copy } from "lucide-react";
 
 export default function Recipes() {
@@ -9,10 +9,18 @@ export default function Recipes() {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
-  const filteredRecipes = recipes.filter(r => 
-    r.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    r.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredRecipes = recipes
+    .filter(r => {
+      const search = normalizeString(searchTerm);
+      const name = normalizeString(r.name);
+      const category = normalizeString(r.category);
+      const targetPrice = r.targetPricePerUnit.toString();
+      
+      return name.includes(search) || 
+             category.includes(search) ||
+             targetPrice.includes(search);
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <div className="space-y-6">
@@ -86,7 +94,7 @@ export default function Recipes() {
                       </td>
                       <td className="px-6 py-4">
                         <span className={metrics.meetsTarget ? "text-mint font-black" : "text-pink font-black"}>
-                          {metrics.profitMargin.toFixed(1)}%
+                          {formatNumber(metrics.profitMargin)}%
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right space-x-2" onClick={e => e.stopPropagation()}>
@@ -186,7 +194,7 @@ export default function Recipes() {
                     <div className="flex flex-col">
                       <span className="font-bold text-pink dark:text-pink-400 text-[10px] uppercase">Margem:</span>
                       <span className={metrics.meetsTarget ? "text-mint font-black" : "text-pink font-black"}>
-                        {metrics.profitMargin.toFixed(1)}%
+                        {formatNumber(metrics.profitMargin)}%
                       </span>
                     </div>
                   </div>

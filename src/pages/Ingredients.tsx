@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useStore } from "../store/useStore";
 import { Ingredient, Unit } from "../types";
-import { formatCurrency, getIngredientUnitCost } from "../lib/utils";
+import { formatCurrency, getIngredientUnitCost, normalizeString, formatNumber } from "../lib/utils";
 import { Plus, Search, Edit2, Trash2, X, Copy } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { cn } from "../lib/utils";
@@ -107,11 +107,22 @@ export default function Ingredients() {
     };
   }, [isModalOpen, editingId, formData, setIngredientDraft]);
 
-  const filteredIngredients = ingredients.filter(i => 
-    i.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    (i.brand?.toLowerCase() || "").includes(searchTerm.toLowerCase()) || 
-    i.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredIngredients = ingredients
+    .filter(i => {
+      const search = normalizeString(searchTerm);
+      const name = normalizeString(i.name);
+      const brand = normalizeString(i.brand || "");
+      const category = normalizeString(i.category);
+      const price = i.pricePaid.toString();
+      const qty = i.quantityBought.toString();
+      
+      return name.includes(search) || 
+             brand.includes(search) || 
+             category.includes(search) ||
+             price.includes(search) ||
+             qty.includes(search);
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const handleOpenModal = (ingredient?: Ingredient) => {
     if (ingredient) {
@@ -273,10 +284,10 @@ export default function Ingredients() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
-                      <div>{ing.quantityBought} {ing.unit}</div>
+                      <div>{formatNumber(ing.quantityBought)} {ing.unit}</div>
                       {ing.weightPerUn && ing.weightPerUn > 0 && (
                         <div className="text-xs text-slate-400 font-medium">
-                          ({ing.weightPerUn}{ing.weightPerUnUnit} cada)
+                          ({formatNumber(ing.weightPerUn)} {ing.weightPerUnUnit} cada)
                         </div>
                       )}
                     </td>
@@ -360,8 +371,8 @@ export default function Ingredients() {
                   <div className="flex flex-col">
                     <span className="font-bold text-pink dark:text-pink-400 text-[10px] uppercase">QTD:</span>
                     <span className="text-slate-600 dark:text-slate-400">
-                      {ing.quantityBought} {ing.unit}
-                      {ing.weightPerUn && ing.weightPerUn > 0 && ` (${ing.weightPerUn}${ing.weightPerUnUnit} cada)`}
+                      {formatNumber(ing.quantityBought)} {ing.unit}
+                      {ing.weightPerUn && ing.weightPerUn > 0 && ` (${formatNumber(ing.weightPerUn)} ${ing.weightPerUnUnit} cada)`}
                     </span>
                   </div>
                   <div className="flex flex-col">
