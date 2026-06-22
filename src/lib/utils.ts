@@ -95,7 +95,7 @@ export function getRecipeIngredientCost(
 
 // Calculate total ingredients cost
 export function getRecipeIngredientsCost(recipe: Recipe, allIngredients: Ingredient[]): number {
-  return recipe.ingredients.reduce((total, ri) => {
+  return (recipe.ingredients || []).reduce((total, ri) => {
     const ing = allIngredients.find(i => i.id === ri.ingredientId);
     return total + (ing ? getRecipeIngredientCost(ri, ing) : 0);
   }, 0);
@@ -103,7 +103,7 @@ export function getRecipeIngredientsCost(recipe: Recipe, allIngredients: Ingredi
 
 // Calculate total extra costs
 export function getRecipeExtraCosts(recipe: Recipe): number {
-  return recipe.extraCosts.reduce((total, ec) => total + ec.value, 0);
+  return (recipe.extraCosts || []).reduce((total, ec) => total + ec.value, 0);
 }
 
 // Calculate total recipe cost

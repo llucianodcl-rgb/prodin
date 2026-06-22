@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useStore } from "../store/useStore";
 import { Ingredient, Unit } from "../types";
 import { formatCurrency, getIngredientUnitCost, normalizeString, formatNumber } from "../lib/utils";
-import { Plus, Search, Edit2, Trash2, X, Copy } from "lucide-react";
+import { Plus, Search, Edit2, Trash2, X, Copy, ChevronRight, ChevronDown } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { cn } from "../lib/utils";
 import { CurrencyInput } from "../components/ui/CurrencyInput";
@@ -20,6 +20,8 @@ export default function Ingredients() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(draft?.isModalOpen || false);
   const [editingId, setEditingId] = useState<string | null>(draft?.editingId || null);
+  const [showCategories, setShowCategories] = useState(false);
+  const [isViewMode, setIsViewMode] = useState(false);
 
   const [formData, setFormData] = useState<Partial<Ingredient> & { totalWeight?: number }>(draft?.formData || {
     name: "",
@@ -131,6 +133,7 @@ export default function Ingredients() {
         ...ingredient,
         totalWeight: (ingredient.weightPerUn || 0) * (ingredient.quantityBought || 1)
       });
+      setIsViewMode(true);
     } else {
       setEditingId(null);
       setFormData({
@@ -145,6 +148,7 @@ export default function Ingredients() {
         notes: "",
         totalWeight: 0
       });
+      setIsViewMode(false);
     }
     setIsModalOpen(true);
   };
@@ -194,49 +198,61 @@ export default function Ingredients() {
     clearIngredientDraft('modal');
   };
 
+  useEffect(() => {
+    const handleOpenNew = () => handleOpenModal();
+    window.addEventListener('openNewIngredientModal', handleOpenNew);
+    return () => window.removeEventListener('openNewIngredientModal', handleOpenNew);
+  }, []);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-brown dark:text-white">Ingredientes</h1>
           <p className="text-slate-500 dark:text-slate-400">Gerencie seu estoque interno.</p>
         </div>
-        <button 
-          onClick={() => handleOpenModal()}
-          className="inline-flex items-center justify-center space-x-2 bg-pink hover:bg-pink/90 text-white px-5 py-2.5 rounded-xl font-bold shadow-soft transition-all hover:scale-[1.02] active:scale-[0.98]"
-        >
-          <Plus size={20} />
-          <span>Novo Produto</span>
-        </button>
       </header>
 
       {categories.length > 0 && (
-        <section className="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-pink/10 dark:border-slate-700 shadow-sm space-y-3">
-          <h2 className="text-sm font-bold text-pink dark:text-pink-400 uppercase tracking-wide">Categorias Salvas</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 italic">Toque para organizar seus doces e massas.</p>
-          <div className="flex flex-wrap gap-2 pt-1">
-            {categories.map(cat => (
-              <span key={cat} className="inline-flex items-center gap-1.5 pl-3 pr-2 py-1 bg-mint-soft dark:bg-slate-900 border border-mint/10 dark:border-slate-700 rounded-xl transition-colors">
-                <span className="text-sm font-medium text-mint dark:text-mint-400">{cat}</span>
-                <button
-                  type="button"
-                  onClick={() => handleEditCategory(cat)}
-                  className="p-1 text-slate-400 hover:text-pink transition-colors cursor-pointer"
-                  title="Editar Categoria"
-                >
-                  <Edit2 size={13} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDeleteCategory(cat)}
-                  className="p-1 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
-                  title="Excluir Categoria"
-                >
-                  <Trash2 size={13} />
-                </button>
-              </span>
-            ))}
-          </div>
+        <section className="bg-white dark:bg-slate-800 rounded-3xl border border-pink/10 dark:border-slate-700 shadow-sm overflow-hidden transition-all duration-300">
+          <button 
+            onClick={() => setShowCategories(!showCategories)}
+            className="w-full p-5 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group"
+          >
+            <div className="flex flex-col items-start">
+              <h2 className="text-sm font-bold text-pink dark:text-pink-400 uppercase tracking-wide">Categorias Salvas</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 italic">Toque para ver e editar suas categorias.</p>
+            </div>
+            {showCategories ? <ChevronDown size={20} className="text-pink" /> : <ChevronRight size={20} className="text-slate-300 group-hover:text-pink" />}
+          </button>
+          
+          {showCategories && (
+            <div className="p-5 pt-0 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="flex flex-wrap gap-2 pt-1 border-t border-pink/5 dark:border-slate-700 mt-2">
+                {categories.map(cat => (
+                  <span key={cat} className="inline-flex items-center gap-1.5 pl-3 pr-2 py-1 bg-mint-soft dark:bg-slate-900 border border-mint/10 dark:border-slate-700 rounded-xl transition-colors">
+                    <span className="text-sm font-medium text-mint dark:text-mint-400">{cat}</span>
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); handleEditCategory(cat); }}
+                      className="p-1 text-slate-400 hover:text-pink transition-colors cursor-pointer"
+                      title="Editar Categoria"
+                    >
+                      <Edit2 size={13} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); handleDeleteCategory(cat); }}
+                      className="p-1 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
+                      title="Excluir Categoria"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </section>
       )}
 
@@ -254,170 +270,75 @@ export default function Ingredients() {
           </div>
         </div>
 
-        <div className="hidden sm:block overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-mint-soft/30 dark:bg-slate-900/50 text-brown font-bold">
-              <tr>
-                <th className="px-6 py-4 font-bold uppercase tracking-wider text-[10px]">Produto</th>
-                <th className="px-6 py-4 font-bold uppercase tracking-wider text-[10px]">Marca</th>
-                <th className="px-6 py-4 font-bold uppercase tracking-wider text-[10px]">Categoria</th>
-                <th className="px-6 py-4 font-bold uppercase tracking-wider text-[10px]">Qtd</th>
-                <th className="px-6 py-4 font-bold uppercase tracking-wider text-[10px]">Valor Pago</th>
-                <th className="px-6 py-4 font-bold uppercase tracking-wider text-[10px] text-right">Ações</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-pink/5 dark:divide-slate-700">
-              {filteredIngredients.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
-                    Nenhum ingrediente encontrado.
-                  </td>
-                </tr>
-              ) : (
-                filteredIngredients.map(ing => (
-                  <tr key={ing.id} className="hover:bg-pink-soft/20 dark:hover:bg-slate-800/50 transition-colors group">
-                    <td className="px-6 py-4 font-bold text-slate-900 dark:text-white uppercase tracking-wide text-xs">{ing.name}</td>
-                    <td className="px-6 py-4 text-slate-500 dark:text-slate-400 font-medium italic text-xs">{ing.brand || '-'}</td>
-                    <td className="px-6 py-4 text-slate-500 dark:text-slate-400">
-                      <span className="inline-flex px-2 py-1 rounded-md bg-yellow-soft dark:bg-slate-800 text-yellow text-xs font-bold border border-yellow/20">
-                        {ing.category || 'Geral'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
-                      <div>{formatNumber(ing.quantityBought)} {ing.unit}</div>
-                      {ing.weightPerUn && ing.weightPerUn > 0 && (
-                        <div className="text-xs text-slate-400 font-medium">
-                          ({formatNumber(ing.weightPerUn)} {ing.weightPerUnUnit} cada)
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
-                      {formatCurrency(ing.pricePaid)}
-                    </td>
-                    <td className="px-6 py-4 text-right space-x-2">
-                       <button 
-                         type="button"
-                         onClick={(e) => {
-                           e.stopPropagation();
-                           duplicateIngredient(ing.id);
-                           addToast({
-                             message: `Ingrediente "${ing.name}" duplicado com sucesso!`,
-                             type: 'success'
-                           });
-                         }}
-                         className="p-2 text-slate-400 hover:text-pink hover:bg-pink-soft dark:hover:bg-pink-500/10 rounded-lg transition-colors"
-                         title="Duplicar Ingrediente"
-                       >
-                         <Copy size={18} />
-                       </button>
-                       <button 
-                         type="button"
-                         onClick={(e) => {
-                           e.stopPropagation();
-                           handleOpenModal(ing);
-                         }}
-                         className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-lg transition-colors"
-                         title="Editar Ingrediente"
-                       >
-                         <Edit2 size={18} />
-                       </button>
-                       <button 
-                         type="button"
-                         onClick={(e) => {
-                           e.stopPropagation();
-                           if(window.confirm('Tem certeza que deseja excluir o ingrediente "' + ing.name + '"?')) {
-                             deleteIngredient(ing.id);
-                             addToast({
-                               message: `Ingrediente "${ing.name}" excluído.`,
-                               type: "warning",
-                               onUndo: () => addIngredient(ing)
-                             });
-                           }
-                         }}
-                         className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
-                       >
-                         <Trash2 size={18} />
-                       </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Mobile View */}
-        <div className="sm:hidden divide-y divide-pink/5 dark:divide-slate-700">
+        {/* Responsive Ingredients Grid */}
+        <div className="p-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
           {filteredIngredients.length === 0 ? (
-            <div className="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
+            <div className="col-span-full py-12 text-center text-slate-500 dark:text-slate-400">
               Nenhum ingrediente encontrado.
             </div>
           ) : (
             filteredIngredients.map(ing => (
-              <div key={ing.id} className="p-4 flex justify-between items-start hover:bg-pink-soft/10 dark:hover:bg-slate-800/50 transition-colors">
-                <div className="space-y-1.5 text-xs flex-1 pr-2">
-                  <div className="flex flex-col">
-                    <span className="font-bold text-pink dark:text-pink-400 text-[10px] uppercase">Produto:</span>
-                    <span className="font-bold text-slate-900 dark:text-white uppercase truncate">{ing.name}</span>
+              <div 
+                key={ing.id} 
+                onClick={() => handleOpenModal(ing)}
+                className="group relative bg-white dark:bg-slate-900 p-3 rounded-2xl border border-pink/10 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-pink/30 transition-all cursor-pointer"
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-slate-900 dark:text-white uppercase truncate group-hover:text-pink transition-colors text-[17px] tracking-tight leading-tight">
+                      {ing.name}
+                    </h3>
+                    {ing.brand && (
+                      <p className="text-[11px] text-slate-400 font-medium italic mt-1 truncate uppercase tracking-wider">
+                        {ing.brand}
+                      </p>
+                    )}
                   </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-pink dark:text-pink-400 text-[10px] uppercase">Marca:</span>
-                    <span className="text-slate-600 dark:text-slate-400 italic">{ing.brand || '-'}</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-pink dark:text-pink-400 text-[10px] uppercase">Categoria:</span>
-                    <span className="text-slate-600 dark:text-slate-400">{ing.category || 'Geral'}</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-pink dark:text-pink-400 text-[10px] uppercase">QTD:</span>
-                    <span className="text-slate-600 dark:text-slate-400">
-                      {formatNumber(ing.quantityBought)} {ing.unit}
-                      {ing.weightPerUn && ing.weightPerUn > 0 && ` (${formatNumber(ing.weightPerUn)} ${ing.weightPerUnUnit} cada)`}
-                    </span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-pink dark:text-pink-400 text-[10px] uppercase">Valor pago:</span>
-                    <span className="text-slate-600 dark:text-slate-400 font-bold">{formatCurrency(ing.pricePaid)}</span>
-                  </div>
+                  <ChevronRight size={18} className="text-slate-300 group-hover:text-pink transition-colors shrink-0 ml-2" />
                 </div>
-                
-                <div className="flex flex-col gap-2 shrink-0 border-l border-pink/5 dark:border-slate-700 pl-3">
-                  <button 
-                    type="button"
-                    onClick={() => {
-                      duplicateIngredient(ing.id);
-                      addToast({
-                        message: `Ingrediente "${ing.name}" duplicado com sucesso!`,
-                        type: 'success'
-                      });
-                    }}
-                    className="p-2.5 text-slate-400 hover:text-pink hover:bg-pink-soft dark:hover:bg-pink-500/10 rounded-xl transition-colors bg-slate-50 dark:bg-slate-900"
-                  >
-                    <Copy size={18} />
-                  </button>
-                  <button 
-                    type="button"
-                    onClick={() => handleOpenModal(ing)}
-                    className="p-2.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-colors bg-slate-50 dark:bg-slate-900"
-                  >
-                    <Edit2 size={18} />
-                  </button>
-                  <button 
-                    type="button"
-                    onClick={() => {
-                      if(window.confirm('Tem certeza que deseja excluir o ingrediente "' + ing.name + '"?')) {
-                        deleteIngredient(ing.id);
+
+                <div className="flex items-center justify-end pt-2 mt-1 border-t border-slate-50 dark:border-slate-800">
+                  <div className="flex items-center gap-0.5" onClick={e => e.stopPropagation()}>
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        duplicateIngredient(ing.id);
                         addToast({
-                          message: `Ingrediente "${ing.name}" excluído.`,
-                          type: "warning",
-                          onUndo: () => addIngredient(ing)
+                          message: `Ingrediente "${ing.name}" duplicado!`,
+                          type: 'success'
                         });
-                      }
-                    }}
-                    className="p-2.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl transition-colors bg-slate-50 dark:bg-slate-900"
-                  >
-                    <Trash2 size={18} />
-                  </button>
+                      }}
+                      className="p-1.5 text-slate-400 hover:text-pink hover:bg-pink-soft dark:hover:bg-pink-500/10 rounded-lg transition-colors"
+                      title="Duplicar"
+                    >
+                      <Copy size={15} />
+                    </button>
+                    <button 
+                      type="button"
+                      onClick={() => handleOpenModal(ing)}
+                      className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-lg transition-colors"
+                      title="Editar"
+                    >
+                      <Edit2 size={15} />
+                    </button>
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        if(window.confirm('Tem certeza que deseja excluir o ingrediente "' + ing.name + '"?')) {
+                          deleteIngredient(ing.id);
+                          addToast({
+                            message: `Ingrediente "${ing.name}" excluído.`,
+                            type: "warning",
+                            onUndo: () => addIngredient(ing)
+                          });
+                        }
+                      }}
+                      className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
+                      title="Excluir"
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))
@@ -441,10 +362,11 @@ export default function Ingredients() {
                  <label className="block text-sm font-bold text-brown mb-1 capitalize">Produto</label>
                  <input 
                    required
+                   disabled={isViewMode}
                    type="text" 
                    value={formData.name || ''} 
                    onChange={e => setFormData({...formData, name: capitalize(e.target.value)})}
-                   className="w-full px-4 py-2 bg-pink-soft/30 border border-pink/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink dark:text-white"
+                   className="w-full px-4 py-2 bg-pink-soft/30 border border-pink/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink dark:text-white disabled:opacity-75 disabled:cursor-not-allowed"
                  />
                </div>
                <div className="grid grid-cols-2 gap-4">
@@ -452,9 +374,10 @@ export default function Ingredients() {
                    <label className="block text-sm font-bold text-brown mb-1 capitalize">Marca</label>
                    <input 
                      type="text" 
+                     disabled={isViewMode}
                      value={formData.brand || ''} 
                      onChange={e => setFormData({...formData, brand: capitalize(e.target.value)})}
-                     className="w-full px-4 py-2 bg-yellow-soft/30 border border-yellow/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow dark:text-white"
+                     className="w-full px-4 py-2 bg-yellow-soft/30 border border-yellow/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow dark:text-white disabled:opacity-75 disabled:cursor-not-allowed"
                      placeholder="Ex: Moça"
                    />
                  </div>
@@ -462,10 +385,11 @@ export default function Ingredients() {
                    <label className="block text-sm font-bold text-brown mb-1 capitalize">Categoria</label>
                    <input 
                      type="text" 
+                     disabled={isViewMode}
                      list="categories-list"
                      value={formData.category || ''} 
                      onChange={e => setFormData({...formData, category: capitalize(e.target.value)})}
-                     className="w-full px-4 py-2 bg-mint-soft/30 border border-mint/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint dark:text-white"
+                     className="w-full px-4 py-2 bg-mint-soft/30 border border-mint/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint dark:text-white disabled:opacity-75 disabled:cursor-not-allowed"
                      placeholder="Ex: Laticínios"
                    />
                    <datalist id="categories-list">
@@ -480,20 +404,22 @@ export default function Ingredients() {
                    <label className="block text-sm font-bold text-brown mb-1 capitalize">Quantidade</label>
                    <input 
                      required
+                     disabled={isViewMode}
                      type="number" 
                      step="any"
                      min="0.01"
                      value={formData.quantityBought || ''} 
                      onChange={e => setFormData({...formData, quantityBought: Number(e.target.value)})}
-                     className="w-full px-4 py-2 bg-brown-soft border border-brown/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-brown dark:text-white"
+                     className="w-full px-4 py-2 bg-brown-soft border border-brown/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-brown dark:text-white disabled:opacity-75 disabled:cursor-not-allowed"
                    />
                  </div>
                  <div>
                    <label className="block text-sm font-bold text-brown mb-1 capitalize">Unidade</label>
                    <select 
+                     disabled={isViewMode}
                      value={formData.unit} 
                      onChange={e => setFormData({...formData, unit: e.target.value as Unit})}
-                     className="w-full px-4 py-2 bg-brown-soft border border-brown/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-brown dark:text-white"
+                     className="w-full px-4 py-2 bg-brown-soft border border-brown/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-brown dark:text-white disabled:opacity-75 disabled:cursor-not-allowed"
                    >
                      <option value="un">Unidades (un)</option>
                    </select>
@@ -506,21 +432,23 @@ export default function Ingredients() {
                      <label className="block text-sm font-bold text-brown mb-1 capitalize">Peso Total</label>
                      <input 
                        required
+                       disabled={isViewMode}
                        type="number" 
                        step="any"
                        min="0.01"
                        value={formData.totalWeight || ''} 
                        onChange={e => setFormData({...formData, totalWeight: Number(e.target.value)})}
-                       className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint dark:text-white"
+                       className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint dark:text-white disabled:opacity-75 disabled:cursor-not-allowed"
                        placeholder="Ex: 1000"
                      />
                    </div>
                    <div>
                      <label className="block text-sm font-bold text-brown mb-1 capitalize">Unidade Conteúdo</label>
                      <select 
+                       disabled={isViewMode}
                        value={formData.weightPerUnUnit || 'g'} 
                        onChange={e => setFormData({...formData, weightPerUnUnit: e.target.value as Unit})}
-                       className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint dark:text-white"
+                       className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint dark:text-white disabled:opacity-75 disabled:cursor-not-allowed"
                      >
                        <option value="g">Gramas (g)</option>
                        <option value="kg">Quilos (kg)</option>
@@ -542,9 +470,10 @@ export default function Ingredients() {
                  <label className="block text-sm font-bold text-brown mb-1 capitalize">Valor Pago (R$)</label>
                  <CurrencyInput 
                    required
+                   disabled={isViewMode}
                    value={formData.pricePaid || 0} 
                    onChangeValue={value => setFormData({...formData, pricePaid: value})}
-                   className="w-full px-4 py-2 bg-mint-soft/30 border border-mint/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint dark:text-white"
+                   className="w-full px-4 py-2 bg-mint-soft/30 border border-mint/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint dark:text-white disabled:opacity-75 disabled:cursor-not-allowed"
                  />
                </div>
                <div>
@@ -555,6 +484,19 @@ export default function Ingredients() {
                </div>
                <div className="pt-4 flex items-center justify-end space-x-3">
                  {saveStatus && <span className="text-xs text-slate-500 animate-pulse mr-auto">{saveStatus}</span>}
+                 {editingId && (
+                    <button 
+                      type="button" 
+                      onClick={() => setIsViewMode(!isViewMode)}
+                      className={cn(
+                        "p-3 rounded-xl transition-colors",
+                        isViewMode ? "text-indigo-500 hover:bg-indigo-50" : "text-pink bg-pink-soft"
+                      )}
+                      title={isViewMode ? "Editar" : "Parar Edição"}
+                    >
+                      <Edit2 size={24} />
+                    </button>
+                  )}
                  <button 
                    type="button" 
                    onClick={handleCloseModal}

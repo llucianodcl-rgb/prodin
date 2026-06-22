@@ -55,13 +55,11 @@ export default function Login() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900 p-4">
       <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-soft max-w-sm w-full text-center">
-        <div className="flex justify-center mb-6">
-          <div className="bg-white dark:bg-slate-800 p-1 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700">
-            <img src="/icon-192.png" alt="Prodin Logo" className="w-20 h-20 rounded-2xl" referrerPolicy="no-referrer" />
-          </div>
+        <div className="flex justify-center mb-4">
+          <img src="/icon-192.png" alt="Prodin Logo" className="w-32 h-32" referrerPolicy="no-referrer" />
         </div>
-        <h1 className="text-3xl font-black text-brown dark:text-white mb-1">Prodin</h1>
-        <p className="text-pink font-bold text-sm tracking-wide uppercase mb-4">Produção inteligente</p>
+        <h1 className="text-4xl font-black text-[#1F5F7A] dark:text-[#38b2d1] mb-1 italic tracking-normal">PRODIN</h1>
+        <p className="text-[#1F5F7A] dark:text-[#38b2d1] font-bold text-[11px] tracking-widest uppercase mb-8 italic">A Produção Inteligente</p>
         <p className="text-slate-500 dark:text-slate-400 mb-8 font-medium">
           {isReset ? 'Recuperar senha' : isSignUp ? 'Criar nova conta' : 'Faça login para continuar'}
         </p>

@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useStore } from "../store/useStore";
 import { Ingredient, Unit } from "../types";
 import { formatCurrency, normalizeString } from "../lib/utils";
-import { Plus, Search, Edit2, Trash2, X, Copy, AlertTriangle, CheckCircle, Calculator, ChevronRight } from "lucide-react";
+import { Plus, Search, Edit2, Trash2, X, Copy, AlertTriangle, CheckCircle, Calculator, ChevronRight, ChevronDown } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
+import { cn } from "../lib/utils";
 import { CurrencyInput } from "../components/ui/CurrencyInput";
 import { useNavigate } from "react-router-dom";
 
@@ -23,6 +24,8 @@ export default function Extra() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(draft?.isModalOpen || false);
   const [editingId, setEditingId] = useState<string | null>(draft?.editingId || null);
+  const [showCategories, setShowCategories] = useState(false);
+  const [isViewMode, setIsViewMode] = useState(false);
 
   const [formData, setFormData] = useState<Partial<Ingredient> & { totalWeight?: number }>(draft?.formData || {
     name: "",
@@ -134,6 +137,7 @@ export default function Extra() {
         ...extra,
         totalWeight: (extra.weightPerUn || 0) * (extra.quantityBought || 1)
       });
+      setIsViewMode(true);
     } else {
       setEditingId(null);
       setFormData({
@@ -148,6 +152,7 @@ export default function Extra() {
         notes: "",
         totalWeight: 0
       });
+      setIsViewMode(false);
     }
     setIsModalOpen(true);
   };
@@ -195,48 +200,61 @@ export default function Extra() {
     clearIngredientDraft(draftId);
   };
 
+  useEffect(() => {
+    const handleOpenNew = () => handleOpenModal();
+    window.addEventListener('openNewExtraModal', handleOpenNew);
+    return () => window.removeEventListener('openNewExtraModal', handleOpenNew);
+  }, []);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-brown dark:text-white">Extras</h1>
           <p className="text-slate-500 dark:text-slate-400">Embalagens, adornos e outros custos fixos.</p>
         </div>
-        <button 
-          onClick={() => handleOpenModal()}
-          className="inline-flex items-center justify-center space-x-2 bg-pink hover:bg-pink/90 text-white px-5 py-2.5 rounded-xl font-bold shadow-soft transition-all hover:scale-[1.02] active:scale-[0.98]"
-        >
-          <Plus size={20} />
-          <span>Novo Extra</span>
-        </button>
       </header>
 
       {categories.length > 0 && (
-        <section className="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-pink/10 dark:border-slate-700 shadow-sm space-y-3">
-          <h2 className="text-sm font-bold text-pink dark:text-pink-400 uppercase tracking-wide">Categorias de Extras</h2>
-          <div className="flex flex-wrap gap-2 pt-1">
-            {categories.map(cat => (
-              <span key={cat} className="inline-flex items-center gap-1.5 pl-3 pr-2 py-1 bg-mint-soft dark:bg-slate-900 border border-mint/10 dark:border-slate-700 rounded-xl transition-colors">
-                <span className="text-sm font-medium text-mint dark:text-mint-400">{cat}</span>
-                <button
-                  type="button"
-                  onClick={() => handleEditCategory(cat)}
-                  className="p-1 text-slate-400 hover:text-pink transition-colors cursor-pointer"
-                  title="Editar Categoria"
-                >
-                  <Edit2 size={13} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDeleteCategory(cat)}
-                  className="p-1 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
-                  title="Excluir Categoria"
-                >
-                  <Trash2 size={13} />
-                </button>
-              </span>
-            ))}
-          </div>
+        <section className="bg-white dark:bg-slate-800 rounded-3xl border border-pink/10 dark:border-slate-700 shadow-sm overflow-hidden transition-all duration-300">
+          <button 
+            onClick={() => setShowCategories(!showCategories)}
+            className="w-full p-5 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group"
+          >
+            <div className="flex flex-col items-start">
+              <h2 className="text-sm font-bold text-pink dark:text-pink-400 uppercase tracking-wide">Categorias de Extras</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 italic">Toque para ver e editar suas categorias.</p>
+            </div>
+            {showCategories ? <ChevronDown size={20} className="text-pink" /> : <ChevronRight size={20} className="text-slate-300 group-hover:text-pink" />}
+          </button>
+
+          {showCategories && (
+            <div className="p-5 pt-0 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="flex flex-wrap gap-2 pt-1 border-t border-pink/5 dark:border-slate-700 mt-2">
+                {categories.map(cat => (
+                  <span key={cat} className="inline-flex items-center gap-1.5 pl-3 pr-2 py-1 bg-mint-soft dark:bg-slate-900 border border-mint/10 dark:border-slate-700 rounded-xl transition-colors">
+                    <span className="text-sm font-medium text-mint dark:text-mint-400">{cat}</span>
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); handleEditCategory(cat); }}
+                      className="p-1 text-slate-400 hover:text-pink transition-colors cursor-pointer"
+                      title="Editar Categoria"
+                    >
+                      <Edit2 size={13} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); handleDeleteCategory(cat); }}
+                      className="p-1 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
+                      title="Excluir Categoria"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </section>
       )}
 
@@ -254,203 +272,75 @@ export default function Extra() {
           </div>
         </div>
 
-        <div className="hidden sm:block overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-mint-soft/30 dark:bg-slate-900/50 text-brown font-bold">
-              <tr>
-                <th className="px-6 py-4 font-bold uppercase tracking-wider text-[10px]">Item</th>
-                <th className="px-6 py-4 font-bold uppercase tracking-wider text-[10px]">Marca</th>
-                <th className="px-6 py-4 font-bold uppercase tracking-wider text-[10px]">Categoria</th>
-                <th className="px-6 py-4 font-bold uppercase tracking-wider text-[10px]">Qtd</th>
-                <th className="px-6 py-4 font-bold uppercase tracking-wider text-[10px]">Valor Pago</th>
-                <th className="px-6 py-4 font-bold uppercase tracking-wider text-[10px] text-right">Ações</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-pink/5 dark:divide-slate-700">
-              {filteredExtras.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
-                    Nenhum item extra encontrado.
-                  </td>
-                </tr>
-              ) : (
-                 filteredExtras.map(ex => (
-                  <tr 
-                    key={ex.id} 
-                    className="hover:bg-pink-soft/20 dark:hover:bg-slate-800/50 transition-colors group cursor-pointer"
-                    onClick={() => navigate(`/extra/${ex.id}`)}
-                  >
-                    <td className="px-6 py-4 font-bold text-slate-900 dark:text-white uppercase tracking-wide text-xs">{ex.name}</td>
-                    <td className="px-6 py-4 text-slate-500 dark:text-slate-400 font-medium italic text-xs">{ex.brand || '-'}</td>
-                    <td className="px-6 py-4 text-slate-500 dark:text-slate-400">
-                      <span className="inline-flex px-2 py-1 rounded-md bg-yellow-soft dark:bg-slate-800 text-yellow text-xs font-bold border border-yellow/20">
-                        {ex.category || 'Geral'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
-                      <div>{ex.quantityBought} {ex.unit}</div>
-                      {ex.weightPerUn && ex.weightPerUn > 0 && (
-                        <div className="text-xs text-slate-400 font-medium">
-                          ({ex.weightPerUn}{ex.weightPerUnUnit} cada)
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
-                      {formatCurrency(ex.pricePaid)}
-                    </td>
-                    <td className="px-6 py-4 text-right space-x-2" onClick={e => e.stopPropagation()}>
-                       <button 
-                         type="button"
-                         onClick={(e) => {
-                           e.stopPropagation();
-                           duplicateExtra(ex.id);
-                           addToast({
-                             message: `Item "${ex.name}" duplicado com sucesso!`,
-                             type: 'success'
-                           });
-                         }}
-                         className="p-2 text-slate-400 hover:text-pink hover:bg-pink-soft dark:hover:bg-pink-500/10 rounded-lg transition-colors"
-                         title="Duplicar"
-                       >
-                         <Copy size={18} />
-                       </button>
-                       <button 
-                         type="button"
-                         onClick={(e) => {
-                           e.stopPropagation();
-                           handleOpenModal(ex);
-                         }}
-                         className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-lg transition-colors"
-                         title="Editar"
-                       >
-                         <Edit2 size={18} />
-                       </button>
-                       <button 
-                         type="button"
-                         onClick={(e) => {
-                           e.stopPropagation();
-                           if(window.confirm('Tem certeza que deseja excluir o item "' + ex.name + '"?')) {
-                             deleteExtra(ex.id);
-                             addToast({
-                               message: `Item "${ex.name}" excluído.`,
-                               type: "warning",
-                               onUndo: () => addExtra(ex)
-                             });
-                           }
-                         }}
-                         className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
-                       >
-                         <Trash2 size={18} />
-                       </button>
-                       <button 
-                         type="button"
-                         onClick={(e) => {
-                           e.stopPropagation();
-                           navigate(`/extra/${ex.id}`);
-                         }}
-                         className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-lg transition-colors"
-                       >
-                         <ChevronRight size={18} />
-                       </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Mobile View */}
-        <div className="sm:hidden divide-y divide-pink/5 dark:divide-slate-700">
+        {/* Responsive Extras Grid */}
+        <div className="p-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
           {filteredExtras.length === 0 ? (
-            <div className="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
+            <div className="col-span-full py-12 text-center text-slate-500 dark:text-slate-400">
               Nenhum item extra encontrado.
             </div>
           ) : (
             filteredExtras.map(ex => (
               <div 
                 key={ex.id} 
-                className="p-4 flex justify-between items-start hover:bg-pink-soft/10 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
-                onClick={() => navigate(`/extra/${ex.id}`)}
+                onClick={() => handleOpenModal(ex)}
+                className="group relative bg-white dark:bg-slate-900 p-3 rounded-2xl border border-pink/10 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-pink/30 transition-all cursor-pointer"
               >
-                <div className="space-y-1.5 text-xs flex-1 pr-2">
-                  <div className="flex flex-col">
-                    <span className="font-bold text-pink dark:text-pink-400 text-[10px] uppercase">Item:</span>
-                    <span className="font-bold text-slate-900 dark:text-white uppercase truncate">{ex.name}</span>
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-slate-900 dark:text-white uppercase truncate group-hover:text-pink transition-colors text-[17px] tracking-tight leading-tight">
+                      {ex.name}
+                    </h3>
+                    {ex.brand && (
+                      <p className="text-[11px] text-slate-400 font-medium italic mt-1 truncate uppercase tracking-wider">
+                        {ex.brand}
+                      </p>
+                    )}
                   </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-pink dark:text-pink-400 text-[10px] uppercase">Marca:</span>
-                    <span className="text-slate-600 dark:text-slate-400 italic">{ex.brand || '-'}</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-pink dark:text-pink-400 text-[10px] uppercase">Categoria:</span>
-                    <span className="text-slate-600 dark:text-slate-400">{ex.category || 'Geral'}</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-pink dark:text-pink-400 text-[10px] uppercase">QTD:</span>
-                    <span className="text-slate-600 dark:text-slate-400">
-                      {ex.quantityBought} {ex.unit}
-                      {ex.weightPerUn && ex.weightPerUn > 0 && ` (${ex.weightPerUn}${ex.weightPerUnUnit} cada)`}
-                    </span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-pink dark:text-pink-400 text-[10px] uppercase">Valor pago:</span>
-                    <span className="text-slate-600 dark:text-slate-400 font-bold">{formatCurrency(ex.pricePaid)}</span>
-                  </div>
+                  <ChevronRight size={18} className="text-slate-300 group-hover:text-pink transition-colors shrink-0 ml-2" />
                 </div>
-                
-                <div className="flex flex-col gap-2 shrink-0 border-l border-pink/5 dark:border-slate-700 pl-3">
-                  <button 
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      duplicateExtra(ex.id);
-                      addToast({
-                        message: `Item "${ex.name}" duplicado com sucesso!`,
-                        type: 'success'
-                      });
-                    }}
-                    className="p-2.5 text-slate-400 hover:text-pink hover:bg-pink-soft dark:hover:bg-pink-500/10 rounded-xl transition-colors bg-slate-50 dark:bg-slate-900"
-                  >
-                    <Copy size={18} />
-                  </button>
-                  <button 
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleOpenModal(ex);
-                    }}
-                    className="p-2.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-colors bg-slate-50 dark:bg-slate-900"
-                  >
-                    <Edit2 size={18} />
-                  </button>
-                  <button 
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if(window.confirm('Tem certeza que deseja excluir o item "' + ex.name + '"?')) {
-                        deleteExtra(ex.id);
+
+                <div className="flex items-center justify-end pt-2 mt-1 border-t border-slate-50 dark:border-slate-800">
+                  <div className="flex items-center gap-0.5" onClick={e => e.stopPropagation()}>
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        duplicateExtra(ex.id);
                         addToast({
-                          message: `Item "${ex.name}" excluído.`,
-                          type: "warning",
-                          onUndo: () => addExtra(ex)
+                          message: `Item "${ex.name}" duplicado!`,
+                          type: 'success'
                         });
-                      }
-                    }}
-                    className="p-2.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl transition-colors bg-slate-50 dark:bg-slate-900"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                  <button 
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/extra/${ex.id}`);
-                    }}
-                    className="p-2.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-colors bg-slate-50 dark:bg-slate-900"
-                  >
-                    <ChevronRight size={18} />
-                  </button>
+                      }}
+                      className="p-1.5 text-slate-400 hover:text-pink hover:bg-pink-soft dark:hover:bg-pink-500/10 rounded-lg transition-colors"
+                      title="Duplicar"
+                    >
+                      <Copy size={15} />
+                    </button>
+                    <button 
+                      type="button"
+                      onClick={() => handleOpenModal(ex)}
+                      className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-lg transition-colors"
+                      title="Editar"
+                    >
+                      <Edit2 size={15} />
+                    </button>
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        if(window.confirm('Tem certeza que deseja excluir o item "' + ex.name + '"?')) {
+                          deleteExtra(ex.id);
+                          addToast({
+                            message: `Item "${ex.name}" excluído.`,
+                            type: "warning",
+                            onUndo: () => addExtra(ex)
+                          });
+                        }
+                      }}
+                      className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
+                      title="Excluir"
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))
@@ -474,10 +364,11 @@ export default function Extra() {
                  <label className="block text-sm font-bold text-brown mb-1 capitalize">Item</label>
                  <input 
                    required
+                   disabled={isViewMode}
                    type="text" 
                    value={formData.name || ''} 
                    onChange={e => setFormData({...formData, name: capitalize(e.target.value)})}
-                   className="w-full px-4 py-2 bg-pink-soft/30 border border-pink/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink dark:text-white"
+                   className="w-full px-4 py-2 bg-pink-soft/30 border border-pink/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink dark:text-white disabled:opacity-75 disabled:cursor-not-allowed"
                  />
                </div>
                <div className="grid grid-cols-2 gap-4">
@@ -487,7 +378,7 @@ export default function Extra() {
                      type="text" 
                      value={formData.brand || ''} 
                      onChange={e => setFormData({...formData, brand: capitalize(e.target.value)})}
-                     className="w-full px-4 py-2 bg-yellow-soft/30 border border-yellow/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow dark:text-white"
+                     className="w-full px-4 py-2 bg-yellow-soft/30 border border-yellow/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow dark:text-white disabled:opacity-75 disabled:cursor-not-allowed"
                    />
                  </div>
                  <div>
@@ -497,7 +388,7 @@ export default function Extra() {
                      list="categories-list-extra"
                      value={formData.category || ''} 
                      onChange={e => setFormData({...formData, category: capitalize(e.target.value)})}
-                     className="w-full px-4 py-2 bg-mint-soft/30 border border-mint/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint dark:text-white"
+                     className="w-full px-4 py-2 bg-mint-soft/30 border border-mint/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint dark:text-white disabled:opacity-75 disabled:cursor-not-allowed"
                    />
                    <datalist id="categories-list-extra">
                      {categories.map(cat => (
@@ -511,20 +402,22 @@ export default function Extra() {
                    <label className="block text-sm font-bold text-brown mb-1 capitalize">Quantidade</label>
                    <input 
                      required
+                     disabled={isViewMode}
                      type="number" 
                      step="any"
                      min="0.01"
                      value={formData.quantityBought || ''} 
                      onChange={e => setFormData({...formData, quantityBought: Number(e.target.value)})}
-                     className="w-full px-4 py-2 bg-brown-soft border border-brown/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-brown dark:text-white"
+                     className="w-full px-4 py-2 bg-brown-soft border border-brown/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-brown dark:text-white disabled:opacity-75 disabled:cursor-not-allowed"
                    />
                  </div>
                  <div>
                    <label className="block text-sm font-bold text-brown mb-1 capitalize">Unidade</label>
                    <select 
+                     disabled={isViewMode}
                      value={formData.unit} 
                      onChange={e => setFormData({...formData, unit: e.target.value as Unit})}
-                     className="w-full px-4 py-2 bg-brown-soft border border-brown/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-brown dark:text-white"
+                     className="w-full px-4 py-2 bg-brown-soft border border-brown/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-brown dark:text-white disabled:opacity-75 disabled:cursor-not-allowed"
                    >
                      <option value="un">Unidades (un)</option>
                    </select>
@@ -537,20 +430,22 @@ export default function Extra() {
                      <label className="block text-sm font-bold text-brown mb-1 capitalize">Peso Total</label>
                      <input 
                        required
+                       disabled={isViewMode}
                        type="number" 
                        step="any"
                        min="0.01"
                        value={formData.totalWeight || ''} 
                        onChange={e => setFormData({...formData, totalWeight: Number(e.target.value)})}
-                       className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint dark:text-white"
+                       className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint dark:text-white disabled:opacity-75 disabled:cursor-not-allowed"
                      />
                    </div>
                    <div>
                      <label className="block text-sm font-bold text-brown mb-1 capitalize">Unidade Conteúdo</label>
                      <select 
+                       disabled={isViewMode}
                        value={formData.weightPerUnUnit || 'g'} 
                        onChange={e => setFormData({...formData, weightPerUnUnit: e.target.value as Unit})}
-                       className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint dark:text-white"
+                       className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint dark:text-white disabled:opacity-75 disabled:cursor-not-allowed"
                      >
                        <option value="g">Gramas (g)</option>
                        <option value="kg">Quilos (kg)</option>
@@ -594,24 +489,26 @@ export default function Extra() {
                         <button
                           key={mult}
                           type="button"
+                          disabled={isViewMode}
                           onClick={() => setFormData(prev => ({ ...prev, profitMultiplier: mult }))}
                           className={`flex-1 py-1 rounded-lg font-medium transition-colors text-sm ${
                             formData.profitMultiplier === mult 
                               ? "bg-indigo-600 text-white" 
                               : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-                          }`}
+                          } disabled:opacity-50`}
                         >
                           {mult}x
                         </button>
                       ))}
                       <input
                         type="number"
+                        disabled={isViewMode}
                         step="0.5"
                         min="1.1"
                         value={formData.profitMultiplier !== 2 && formData.profitMultiplier !== 3 && formData.profitMultiplier !== 4 && formData.profitMultiplier !== 5 ? (formData.profitMultiplier || '') : ''}
                         onChange={e => setFormData(prev => ({ ...prev, profitMultiplier: Number(e.target.value) || 2 }))}
                         placeholder="Outro"
-                        className="w-16 px-2 py-1 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-center text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
+                        className="w-16 px-2 py-1 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-center text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white disabled:opacity-50"
                       />
                     </div>
                   </div>
@@ -621,19 +518,21 @@ export default function Extra() {
                     <div className="flex gap-2">
                       <div className="relative flex-1">
                         <CurrencyInput 
+                          disabled={isViewMode}
                           value={formData.targetPricePerUnit || 0} 
                           onChangeValue={value => setFormData({...formData, targetPricePerUnit: value})}
-                          className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white font-bold text-lg"
+                          className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white font-bold text-lg disabled:opacity-50"
                         />
                       </div>
                       <button 
                         type="button"
+                        disabled={isViewMode}
                         onClick={() => {
                           const cost = (formData.pricePaid || 0) / (formData.quantityBought || 1);
                           const mult = formData.profitMultiplier || 2;
                           setFormData(prev => ({ ...prev, targetPricePerUnit: cost * mult }));
                         }}
-                        className="px-3 py-2 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 rounded-xl hover:bg-amber-200 dark:hover:bg-amber-500/30 transition-colors flex flex-col items-center justify-center text-xs font-medium"
+                        className="px-3 py-2 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 rounded-xl hover:bg-amber-200 dark:hover:bg-amber-500/30 transition-colors flex flex-col items-center justify-center text-xs font-medium disabled:opacity-50"
                         title="Calcular preço usando o multiplicador"
                       >
                         <Calculator size={16} className="mb-0.5" />
@@ -707,19 +606,34 @@ export default function Extra() {
 
                <div className="pt-4 flex items-center justify-end space-x-3">
                  {saveStatus && <span className="text-xs text-slate-500 animate-pulse mr-auto">{saveStatus}</span>}
+                 {editingId && (
+                    <button 
+                      type="button" 
+                      onClick={() => setIsViewMode(!isViewMode)}
+                      className={cn(
+                        "p-3 rounded-xl transition-colors",
+                        isViewMode ? "text-indigo-500 hover:bg-indigo-50" : "text-pink bg-pink-soft"
+                      )}
+                      title={isViewMode ? "Editar" : "Parar Edição"}
+                    >
+                      <Edit2 size={24} />
+                    </button>
+                  )}
                  <button 
                    type="button" 
                    onClick={handleCloseModal}
                    className="px-4 py-3 text-slate-500 font-bold hover:bg-slate-50 rounded-xl transition-colors"
                  >
-                   Cancelar
+                   {isViewMode ? 'Fechar' : 'Cancelar'}
                  </button>
-                 <button 
-                   type="submit" 
-                   className="px-6 py-3 bg-mint text-white rounded-xl transition-all transform hover:scale-105 active:scale-95 font-bold shadow-soft"
-                 >
-                   Salvar
-                 </button>
+                 {!isViewMode && (
+                  <button 
+                    type="submit" 
+                    className="px-6 py-3 bg-mint text-white rounded-xl transition-all transform hover:scale-105 active:scale-95 font-bold shadow-soft"
+                  >
+                    Salvar
+                  </button>
+                 )}
                </div>
              </form>
           </div>

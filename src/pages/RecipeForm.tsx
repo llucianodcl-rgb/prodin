@@ -35,6 +35,7 @@ export default function RecipeForm() {
       category: "",
       description: "",
       ingredients: [],
+      extraCosts: [],
       finalWeight: 0,
       weightPerUnit: 0,
       profitMultiplier: 3,
@@ -116,20 +117,36 @@ export default function RecipeForm() {
   };
 
   const handleRemoveIngredient = (riId: string) => {
-    setFormData(prev => ({
-      ...prev,
-      ingredients: (prev.ingredients || []).filter(ri => ri.id !== riId)
-    }));
+    if (window.confirm("Deseja remover este ingrediente da receita?")) {
+      setFormData(prev => ({
+        ...prev,
+        ingredients: (prev.ingredients || []).filter(ri => ri.id !== riId)
+      }));
+    }
   };
 
   const handleEditIngredient = (riId: string) => {
-    const ri = formData.ingredients.find(i => i.id === riId);
-    if (ri) {
-      setSelectIngId(ri.ingredientId);
-      setSelectIngQty(ri.quantityUsed.toString());
-      setSelectIngUnit(ri.unit || "un");
-      handleRemoveIngredient(riId);
-    }
+    const ingredientToRestore = (selectIngId && selectIngQty) ? {
+      id: uuidv4(),
+      ingredientId: selectIngId,
+      quantityUsed: Number(selectIngQty),
+      unit: selectIngUnit
+    } : null;
+
+    const ri = formData.ingredients?.find(i => i.id === riId);
+    if (!ri) return;
+
+    setSelectIngId(ri.ingredientId);
+    setSelectIngQty(ri.quantityUsed.toString());
+    setSelectIngUnit(ri.unit || "un");
+
+    setFormData(prev => {
+      const newList = (prev.ingredients || []).filter(i => i.id !== riId);
+      if (ingredientToRestore) {
+        newList.push(ingredientToRestore);
+      }
+      return { ...prev, ingredients: newList };
+    });
   };
 
   const handleDuplicateIngredient = (riId: string) => {
@@ -179,7 +196,7 @@ export default function RecipeForm() {
   };
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto pb-20">
+    <div className="space-y-3 max-w-4xl mx-auto pb-20">
        <header className="flex items-center space-x-4">
           <button onClick={() => navigate('/receitas')} className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
             <ArrowLeft size={24} />
@@ -193,10 +210,10 @@ export default function RecipeForm() {
           {saveStatus && <span className="text-sm font-medium text-slate-500 animate-pulse">{saveStatus}</span>}
        </header>
 
-       <form onSubmit={handleSubmit} className="space-y-8">
+       <form onSubmit={handleSubmit} className="space-y-4">
           
           {/* Section 1: Basic Info */}
-          <section className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-4">
+          <section className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-3">
              <h2 className="text-xl font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">Informações Básicas</h2>
              <div className="grid sm:grid-cols-2 gap-4">
                <div className="sm:col-span-2">
@@ -240,7 +257,7 @@ export default function RecipeForm() {
           </section>
 
           {/* Section 2: Ingredients */}
-          <section className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-4">
+          <section className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-3">
              <h2 className="text-xl font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">Ingredientes Utilizados</h2>
              
              <div className="flex flex-col sm:flex-row gap-2 items-end bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-dashed border-slate-300 dark:border-slate-600">
@@ -351,7 +368,7 @@ export default function RecipeForm() {
           </section>
 
           {/* Section 3: Yield */}
-          <section className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-4">
+          <section className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-3">
              <h2 className="text-xl font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">Rendimento e Porções</h2>
              <div className="grid sm:grid-cols-2 gap-4">
                <div>
@@ -402,7 +419,7 @@ export default function RecipeForm() {
           </section>
 
           {/* Section 4: Pricing */}
-          <section className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-4">
+          <section className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-3">
              <h2 className="text-xl font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">Precificação Final</h2>
              
              <div className="grid sm:grid-cols-2 gap-6">

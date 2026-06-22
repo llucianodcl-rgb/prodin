@@ -21,13 +21,19 @@ import { ChefHat, Loader2 } from 'lucide-react';
 import FirestoreSync from './components/layout/FirestoreSync';
 import { UpdateManager } from './components/UpdateManager';
 
+import Conversions from './pages/Conversions';
+
 function ProtectedRoute() {
   const { user, appUser, loading, logout } = useAuth();
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
-        <Loader2 className="w-8 h-8 animate-spin text-pink" />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900 p-4">
+        <div className="flex flex-col items-center animate-in fade-in duration-500">
+          <img src="/icon-192.png" alt="Prodin Logo" className="w-32 h-32 mb-6" referrerPolicy="no-referrer" />
+          <h1 className="text-5xl font-black text-[#1F5F7A] dark:text-[#38b2d1] mb-2 italic tracking-normal">PRODIN</h1>
+          <p className="text-[#1F5F7A] dark:text-[#38b2d1] font-bold text-xs tracking-widest uppercase italic">A Produção Inteligente</p>
+        </div>
       </div>
     );
   }
@@ -82,6 +88,7 @@ const router = createBrowserRouter([
            { path: "receitas/:id/editar", element: <RecipeForm /> },
            { path: "receitas/:id", element: <RecipeDetails /> },
            { path: "vendas", element: <Sales /> },
+           { path: "conversoes", element: <Conversions /> },
            { path: "configuracoes", element: <Settings /> },
            { path: "usuarios", element: <Users /> }
         ]

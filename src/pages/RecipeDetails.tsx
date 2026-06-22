@@ -12,20 +12,22 @@ import {
   formatNumber,
   formatIngredientQuantity
 } from "../lib/utils";
-import { ArrowLeft, Edit2, Download, AlertTriangle, TrendingUp, DollarSign, Package, CheckCircle } from "lucide-react";
+import { ArrowLeft, Edit2, Download, AlertTriangle, TrendingUp, DollarSign, Package, CheckCircle, Trash2, Share2 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { CurrencyInput } from "../components/ui/CurrencyInput";
 import { toPng } from 'html-to-image';
 import { jsPDF } from 'jspdf';
+import ShareRecipeModal from "../components/shares/ShareRecipeModal";
 
 export default function RecipeDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { recipes, ingredients, updateRecipe, addToast } = useStore();
+  const { recipes, ingredients, updateRecipe, deleteRecipe, addRecipe, addToast } = useStore();
   
   const recipe = recipes.find(r => r.id === id);
 
   const [simulatedPrice, setSimulatedPrice] = useState(0);
+  const [sharingRecipe, setSharingRecipe] = useState(false);
 
   useEffect(() => {
     if (recipe) {
@@ -139,38 +141,65 @@ export default function RecipeDetails() {
     window.print();
   };
 
+  const handleDelete = () => {
+    if (window.confirm(`Tem certeza que deseja excluir a receita "${recipe.name}"?`)) {
+      deleteRecipe(recipe.id);
+      addToast({
+        message: "Receita excluída.",
+        type: "warning",
+        onUndo: () => addRecipe(recipe)
+      });
+      navigate('/receitas');
+    }
+  };
+
   return (
-    <div className="max-w-5xl mx-auto space-y-6 pb-20 px-4 sm:px-6 lg:px-8 mt-4">
-      <header className="flex items-center justify-between no-print mb-6">
+    <div className="max-w-5xl mx-auto space-y-3 pb-20 px-4 sm:px-6 lg:px-8 mt-4">
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 no-print mb-6">
         <div className="flex items-center space-x-4">
-          <button onClick={() => navigate('/receitas')} className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+          <button onClick={() => navigate('/receitas')} className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors shrink-0">
             <ArrowLeft size={24} />
           </button>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">{recipe.name}</h1>
-            <p className="text-slate-500 dark:text-slate-400">{recipe.category || 'Sem categoria'}</p>
+          <div className="min-w-0">
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white truncate">{recipe.name}</h1>
+            <p className="text-slate-500 dark:text-slate-400 truncate">{recipe.category || 'Sem categoria'}</p>
           </div>
         </div>
-        <div className="flex space-x-2">
+        <div className="flex flex-wrap gap-2">
+          <button 
+             onClick={() => setSharingRecipe(true)}
+             className="inline-flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 px-4 py-2 rounded-xl transition-colors font-medium border border-slate-200 dark:border-slate-700 shadow-sm grow sm:grow-0"
+             title="Compartilhar"
+          >
+            <Share2 size={20} />
+            <span className="hidden sm:inline">Compartilhar</span>
+          </button>
           <button 
              onClick={handleExportPDF}
-             className="inline-flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 px-4 py-2 rounded-xl transition-colors font-medium border border-slate-200 dark:border-slate-700 shadow-sm"
+             className="inline-flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 px-4 py-2 rounded-xl transition-colors font-medium border border-slate-200 dark:border-slate-700 shadow-sm grow sm:grow-0"
           >
             <Download size={20} />
-            <span className="hidden sm:inline">Exportar PDF</span>
+            <span className="hidden sm:inline">PDF</span>
           </button>
           <button 
              onClick={() => navigate(`/receitas/${recipe.id}/editar`)}
-             className="inline-flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl font-medium transition-colors shadow-sm shadow-indigo-600/20"
+             className="inline-flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl font-medium transition-colors shadow-sm shadow-indigo-600/20 grow sm:grow-0"
           >
             <Edit2 size={20} />
-            <span className="hidden sm:inline">Editar Receita</span>
+            <span className="hidden sm:inline">Editar</span>
+          </button>
+          <button 
+             onClick={handleDelete}
+             className="inline-flex items-center justify-center p-2 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 border border-transparent rounded-xl transition-colors"
+             title="Excluir"
+          >
+            <Trash2 size={20} />
           </button>
         </div>
       </header>
 
       {/* Recipe Capture Area */}
-      <div ref={pdfRef} className="space-y-6 sm:p-8 bg-white dark:bg-transparent rounded-3xl">
+      <div ref={pdfRef} className="space-y-3 sm:p-8 bg-white dark:bg-transparent rounded-3xl">
         <div className="hidden print:block sm:block mb-8">
           <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">{recipe.name}</h1>
           <p className="text-lg text-slate-600 dark:text-slate-400 mt-2">Ficha Técnica e Precificação</p>
@@ -190,10 +219,10 @@ export default function RecipeDetails() {
          </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         
         {/* Left Col - Data */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4">
           <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
             <div className="p-6 border-b border-slate-200 dark:border-slate-700">
                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Ingredientes Utilizados</h3>
@@ -425,6 +454,12 @@ export default function RecipeDetails() {
         </div>
       </div>
     </div>
+    {sharingRecipe && (
+      <ShareRecipeModal 
+        recipe={recipe} 
+        onClose={() => setSharingRecipe(false)} 
+      />
+    )}
   </div>
   )
 }

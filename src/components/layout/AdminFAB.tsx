@@ -25,7 +25,7 @@ export default function AdminFAB() {
   if (appUser?.role !== 'admin' || location.pathname === '/usuarios') return null;
 
   return (
-    <div className="fixed bottom-28 right-6 z-50">
+    <div className="fixed bottom-44 right-4 sm:bottom-28 sm:right-8 z-50">
       <Link
         to="/usuarios"
         className="relative bg-brown dark:bg-slate-700 hover:bg-brown/90 text-white p-4 rounded-full shadow-lg transition-all hover:scale-110 active:scale-95 flex items-center justify-center group"

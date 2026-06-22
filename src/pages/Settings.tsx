@@ -169,7 +169,7 @@ export default function Settings() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
+    <div className="max-w-3xl mx-auto space-y-4">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Configurações</h1>
         <p className="text-slate-500 dark:text-slate-400">Ajustes do aplicativo e dados.</p>
@@ -239,7 +239,7 @@ export default function Settings() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 space-y-6">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 space-y-3">
         <div>
           <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Download size={20} /> Exportar Dados

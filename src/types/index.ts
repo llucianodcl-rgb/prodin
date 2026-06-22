@@ -43,4 +43,22 @@ export interface Recipe {
   profitMultiplier: number; // 2, 3, 4, 5, etc.
   targetPricePerUnit: number;
   createdAt: string;
+  sharedBy?: string; // Optional: name of the user who shared it
+  importedAt?: string; // Optional: when it was imported
+}
+
+export type ShareStatus = 'pending' | 'accepted' | 'rejected' | 'canceled';
+
+export interface RecipeShare {
+  id: string;
+  senderId: string;
+  senderName: string;
+  senderEmail: string;
+  receiverEmail: string;
+  recipeName: string;
+  recipeData: Recipe;
+  originalIngredients: Ingredient[]; // Added to allow receiver to recreate missing ingredients
+  status: ShareStatus;
+  createdAt: string;
+  updatedAt: string;
 }

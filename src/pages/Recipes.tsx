@@ -2,11 +2,13 @@ import { useState } from "react";
 import { useStore } from "../store/useStore";
 import { Link, useNavigate } from "react-router-dom";
 import { formatCurrency, getActualMetrics, normalizeString, formatNumber } from "../lib/utils";
-import { Plus, Search, Edit2, Trash2, ChevronRight, Copy } from "lucide-react";
+import { Plus, Search, Edit2, Trash2, ChevronRight, Copy, Share2 } from "lucide-react";
+import ShareRecipeModal from "../components/shares/ShareRecipeModal";
 
 export default function Recipes() {
   const { recipes, ingredients, deleteRecipe, duplicateRecipe, addRecipe, addToast } = useStore();
   const [searchTerm, setSearchTerm] = useState("");
+  const [sharingRecipe, setSharingRecipe] = useState<any>(null);
   const navigate = useNavigate();
 
   const filteredRecipes = recipes
@@ -23,19 +25,12 @@ export default function Recipes() {
     .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-brown dark:text-white">Suas Receitas</h1>
           <p className="text-slate-500 dark:text-slate-400">Cartão de ponto das suas delícias.</p>
         </div>
-        <Link 
-          to="/receitas/nova"
-          className="inline-flex items-center justify-center space-x-2 bg-pink hover:bg-pink/90 text-white px-5 py-2.5 rounded-xl font-bold shadow-soft transition-all hover:scale-[1.02] active:scale-[0.98]"
-        >
-          <Plus size={20} />
-          <span>Nova Receita</span>
-        </Link>
       </header>
 
       <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-pink/10 dark:border-slate-700 overflow-hidden">
@@ -52,117 +47,10 @@ export default function Recipes() {
           </div>
         </div>
 
-        <div className="hidden sm:block overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-mint-soft/30 dark:bg-slate-900/50 text-brown font-bold uppercase tracking-wider text-[10px]">
-              <tr>
-                <th className="px-6 py-4">Nome</th>
-                <th className="px-6 py-4">Categoria</th>
-                <th className="px-6 py-4">Custo Unit.</th>
-                <th className="px-6 py-4">Preço Venda</th>
-                <th className="px-6 py-4">Margem</th>
-                <th className="px-6 py-4 text-right">Ações</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-pink/5 dark:divide-slate-700">
-              {filteredRecipes.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
-                    Nenhuma receita encontrada.
-                  </td>
-                </tr>
-              ) : (
-                filteredRecipes.map(recipe => {
-                  const metrics = getActualMetrics(recipe, ingredients);
-                  return (
-                    <tr 
-                      key={recipe.id} 
-                      className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group cursor-pointer"
-                      onClick={() => navigate(`/receitas/${recipe.id}`)}
-                    >
-                      <td className="px-6 py-4 font-bold text-brown dark:text-white uppercase tracking-wide text-xs">{recipe.name}</td>
-                      <td className="px-6 py-4 text-slate-500 dark:text-slate-400">
-                        <span className="inline-flex px-2 py-1 rounded-md bg-yellow-soft dark:bg-slate-800 text-yellow text-[10px] font-black border border-yellow/20">
-                          {recipe.category || 'Geral'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
-                        {formatCurrency(metrics.costPerUnit)}
-                      </td>
-                      <td className="px-6 py-4 text-brown dark:text-slate-300 font-bold">
-                        {formatCurrency(recipe.targetPricePerUnit)}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={metrics.meetsTarget ? "text-mint font-black" : "text-pink font-black"}>
-                          {formatNumber(metrics.profitMargin)}%
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right space-x-2" onClick={e => e.stopPropagation()}>
-                         <button 
-                           type="button"
-                           onClick={(e) => {
-                             e.stopPropagation();
-                             duplicateRecipe(recipe.id);
-                             addToast({
-                               message: `Receita "${recipe.name}" duplicada com sucesso!`,
-                               type: 'success'
-                             });
-                           }}
-                           className="p-2 text-slate-400 hover:text-pink hover:bg-pink-soft dark:hover:bg-pink-500/10 rounded-lg transition-colors"
-                           title="Duplicar Receita"
-                         >
-                           <Copy size={18} />
-                         </button>
-                         <button 
-                           type="button"
-                           onClick={(e) => {
-                             e.stopPropagation();
-                             navigate(`/receitas/${recipe.id}/editar`);
-                           }}
-                           className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-lg transition-colors"
-                         >
-                           <Edit2 size={18} />
-                         </button>
-                         <button 
-                           type="button"
-                           onClick={(e) => {
-                             e.stopPropagation();
-                             if(window.confirm('Tem certeza que deseja excluir a receita "' + recipe.name + '"?')) {
-                               deleteRecipe(recipe.id);
-                               addToast({
-                                 message: `Receita "${recipe.name}" excluída.`,
-                                 type: "warning",
-                                 onUndo: () => addRecipe(recipe)
-                               });
-                             }
-                           }}
-                           className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
-                         >
-                           <Trash2 size={18} />
-                         </button>
-                         <button 
-                           type="button"
-                           onClick={(e) => {
-                             e.stopPropagation();
-                             navigate(`/receitas/${recipe.id}`);
-                           }}
-                           className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-lg transition-colors"
-                         >
-                           <ChevronRight size={18} />
-                         </button>
-                      </td>
-                    </tr>
-                  )
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Mobile View */}
-        <div className="sm:hidden divide-y divide-pink/5 dark:divide-slate-700">
+        {/* Responsive Recipes Grid */}
+        <div className="p-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
           {filteredRecipes.length === 0 ? (
-            <div className="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
+            <div className="col-span-full py-12 text-center text-slate-500 dark:text-slate-400">
               Nenhuma receita encontrada.
             </div>
           ) : (
@@ -171,86 +59,73 @@ export default function Recipes() {
               return (
                 <div 
                   key={recipe.id} 
-                  className="p-4 flex justify-between items-start hover:bg-pink-soft/10 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
                   onClick={() => navigate(`/receitas/${recipe.id}`)}
+                  className="group relative bg-white dark:bg-slate-900 p-3 rounded-2xl border border-pink/10 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-pink/30 transition-all cursor-pointer"
                 >
-                  <div className="space-y-1.5 text-xs flex-1 pr-2">
-                    <div className="flex flex-col">
-                      <span className="font-bold text-pink dark:text-pink-400 text-[10px] uppercase">Nome:</span>
-                      <span className="font-bold text-slate-900 dark:text-white uppercase truncate">{recipe.name}</span>
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-slate-900 dark:text-white uppercase truncate group-hover:text-pink transition-colors text-[17px] tracking-tight leading-tight">
+                        {recipe.name}
+                      </h3>
+                      {recipe.category && (
+                        <p className="text-[11px] text-slate-400 font-medium italic mt-1 truncate uppercase tracking-wider">
+                          {recipe.category}
+                        </p>
+                      )}
                     </div>
-                    <div className="flex flex-col">
-                      <span className="font-bold text-pink dark:text-pink-400 text-[10px] uppercase">Categoria:</span>
-                      <span className="text-slate-600 dark:text-slate-400">{recipe.category || 'Geral'}</span>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="font-bold text-pink dark:text-pink-400 text-[10px] uppercase">Custo Unit:</span>
-                      <span className="text-slate-600 dark:text-slate-400">{formatCurrency(metrics.costPerUnit)}</span>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="font-bold text-pink dark:text-pink-400 text-[10px] uppercase">Preço Venda:</span>
-                      <span className="text-slate-900 dark:text-white font-bold">{formatCurrency(recipe.targetPricePerUnit)}</span>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="font-bold text-pink dark:text-pink-400 text-[10px] uppercase">Margem:</span>
-                      <span className={metrics.meetsTarget ? "text-mint font-black" : "text-pink font-black"}>
-                        {formatNumber(metrics.profitMargin)}%
-                      </span>
-                    </div>
+                    <ChevronRight size={18} className="text-slate-300 group-hover:text-pink transition-colors shrink-0 ml-2" />
                   </div>
-                  
-                  <div className="flex flex-col gap-2 shrink-0 border-l border-pink/5 dark:border-slate-700 pl-3">
-                    <button 
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        duplicateRecipe(recipe.id);
-                        addToast({
-                          message: `Receita "${recipe.name}" duplicada com sucesso!`,
-                          type: 'success'
-                        });
-                      }}
-                      className="p-2.5 text-slate-400 hover:text-pink hover:bg-pink-soft dark:hover:bg-pink-500/10 rounded-xl transition-colors bg-slate-50 dark:bg-slate-900"
-                    >
-                      <Copy size={18} />
-                    </button>
-                    <button 
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/receitas/${recipe.id}/editar`);
-                      }}
-                      className="p-2.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-colors bg-slate-50 dark:bg-slate-900"
-                    >
-                      <Edit2 size={18} />
-                    </button>
-                    <button 
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if(window.confirm('Tem certeza que deseja excluir a receita "' + recipe.name + '"?')) {
-                          deleteRecipe(recipe.id);
+
+                  <div className="flex items-center justify-end pt-2 mt-1 border-t border-slate-50 dark:border-slate-800">
+                    <div className="flex items-center gap-0.5" onClick={e => e.stopPropagation()}>
+                      <button 
+                        type="button"
+                        onClick={() => setSharingRecipe(recipe)}
+                        className="p-1.5 text-slate-400 hover:text-pink hover:bg-pink-soft dark:hover:bg-pink-500/10 rounded-lg transition-colors"
+                        title="Compartilhar"
+                      >
+                        <Share2 size={15} />
+                      </button>
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          duplicateRecipe(recipe.id);
                           addToast({
-                            message: `Receita "${recipe.name}" excluída.`,
-                            type: "warning",
-                            onUndo: () => addRecipe(recipe)
+                            message: `Receita "${recipe.name}" duplicada!`,
+                            type: 'success'
                           });
-                        }
-                      }}
-                      className="p-2.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl transition-colors bg-slate-50 dark:bg-slate-900"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                    <button 
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/receitas/${recipe.id}`);
-                      }}
-                      className="p-2.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-colors bg-slate-50 dark:bg-slate-900"
-                    >
-                      <ChevronRight size={18} />
-                    </button>
+                        }}
+                        className="p-1.5 text-slate-400 hover:text-pink hover:bg-pink-soft dark:hover:bg-pink-500/10 rounded-lg transition-colors"
+                        title="Duplicar"
+                      >
+                        <Copy size={15} />
+                      </button>
+                      <button 
+                        type="button"
+                        onClick={() => navigate(`/receitas/${recipe.id}/editar`)}
+                        className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-lg transition-colors"
+                        title="Editar"
+                      >
+                        <Edit2 size={15} />
+                      </button>
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          if(window.confirm('Tem certeza que deseja excluir a receita "' + recipe.name + '"?')) {
+                            deleteRecipe(recipe.id);
+                            addToast({
+                              message: `Receita "${recipe.name}" excluída.`,
+                              type: "warning",
+                              onUndo: () => addRecipe(recipe)
+                            });
+                          }
+                        }}
+                        className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
+                        title="Excluir"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               )
@@ -258,6 +133,13 @@ export default function Recipes() {
           )}
         </div>
       </div>
+      
+      {sharingRecipe && (
+        <ShareRecipeModal 
+          recipe={sharingRecipe} 
+          onClose={() => setSharingRecipe(null)} 
+        />
+      )}
     </div>
   );
 }

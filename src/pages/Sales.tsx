@@ -313,7 +313,7 @@ export default function Sales() {
       );
 
       return (
-        <div className="space-y-6">
+        <div className="space-y-3">
           <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold tracking-tight text-brown dark:text-white">Vendas</h1>
@@ -321,10 +321,10 @@ export default function Sales() {
             </div>
           </header>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
             {/* CONFIGURAÇÃO DO KIT */}
-            <div className="lg:col-span-5 space-y-6">
-              <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-pink/10 dark:border-slate-700 space-y-6">
+            <div className="lg:col-span-5 space-y-4">
+              <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-pink/10 dark:border-slate-700 space-y-4">
                 <div className="flex items-center gap-3 border-b border-slate-100 dark:border-slate-700 pb-4">
                   <div className="p-2 bg-pink-soft dark:bg-pink-500/10 rounded-xl text-pink">
                     <Calculator size={20} />
@@ -399,7 +399,7 @@ export default function Sales() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-brown dark:text-white">Vendas</h1>
@@ -407,9 +407,9 @@ export default function Sales() {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         <div className="lg:col-span-5">
-          <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-sm border border-pink/10 dark:border-slate-700 space-y-6 text-center">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-sm border border-pink/10 dark:border-slate-700 space-y-4 text-center">
             <div className="w-16 h-16 bg-pink-soft dark:bg-pink-500/10 rounded-full flex items-center justify-center mx-auto text-pink mb-4">
               <Calculator size={32} />
             </div>

@@ -55,7 +55,7 @@ export default function ExtraDetails() {
   };
 
   return (
-    <div className="space-y-6 pb-20">
+    <div className="space-y-3 pb-20">
       <header className="flex items-center justify-between no-print">
         <div className="flex items-center space-x-4">
           <button onClick={() => navigate('/extra')} className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
@@ -115,10 +115,10 @@ export default function ExtraDetails() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         
         {/* Left Col - Data */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4">
           <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
             <div className="p-6 border-b border-slate-200 dark:border-slate-700">
                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Dados da Compra</h3>

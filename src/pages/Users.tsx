@@ -45,6 +45,7 @@ export default function Users() {
   };
 
   const handleCancel = async (uid: string) => {
+    if (!window.confirm("Deseja realmente cancelar/revogar o acesso deste usuário?")) return;
     try {
       await updateDoc(doc(db, 'users', uid), {
         status: 'cancelado',

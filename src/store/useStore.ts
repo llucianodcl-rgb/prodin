@@ -39,6 +39,7 @@ interface AppState {
   clearIngredientDraft: (id: string) => void;
 
   recipeDrafts: Record<string, any>;
+  lastActiveRecipeDraftId: string | null;
   setRecipeDraft: (id: string, draft: any) => void;
   clearRecipeDraft: (id: string) => void;
 
@@ -49,6 +50,10 @@ interface AppState {
   salesDraft: any;
   setSalesDraft: (draft: any) => void;
   clearSalesDraft: () => void;
+  
+  conversionDraft: any;
+  setConversionDraft: (draft: any) => void;
+  clearConversionDraft: () => void;
   resetData: () => void;
 }
 
@@ -156,27 +161,41 @@ export const useStore = create<AppState>()(
       }),
 
       recipeDrafts: {},
-      setRecipeDraft: (id, draft) => set((state) => ({ recipeDrafts: { ...state.recipeDrafts, [id]: draft } })),
+      lastActiveRecipeDraftId: null,
+      setRecipeDraft: (id, draft) => set((state) => ({ 
+        recipeDrafts: { ...state.recipeDrafts, [id]: draft },
+        lastActiveRecipeDraftId: id 
+      })),
       clearRecipeDraft: (id) => set((state) => {
         const { [id]: _, ...rest } = state.recipeDrafts;
-        return { recipeDrafts: rest };
+        return { 
+          recipeDrafts: rest,
+          lastActiveRecipeDraftId: state.lastActiveRecipeDraftId === id ? null : state.lastActiveRecipeDraftId
+        };
       }),
 
       settingsDraft: null,
       setSettingsDraft: (draft) => set({ settingsDraft: draft }),
       clearSettingsDraft: () => set({ settingsDraft: null }),
-
+      
       salesDraft: null,
       setSalesDraft: (draft) => set({ salesDraft: draft }),
       clearSalesDraft: () => set({ salesDraft: null }),
+
+      conversionDraft: null,
+      setConversionDraft: (draft) => set({ conversionDraft: draft }),
+      clearConversionDraft: () => set({ conversionDraft: null }),
+      
       resetData: () => set({
         ingredients: [],
         extras: [],
         recipes: [],
         ingredientDrafts: {},
         recipeDrafts: {},
+        lastActiveRecipeDraftId: null,
         settingsDraft: null,
-        salesDraft: null
+        salesDraft: null,
+        conversionDraft: null
       }),
     }),
     {
@@ -189,8 +208,10 @@ export const useStore = create<AppState>()(
         theme: state.theme,
         ingredientDrafts: state.ingredientDrafts,
         recipeDrafts: state.recipeDrafts,
+        lastActiveRecipeDraftId: state.lastActiveRecipeDraftId,
         settingsDraft: state.settingsDraft,
-        salesDraft: state.salesDraft
+        salesDraft: state.salesDraft,
+        conversionDraft: state.conversionDraft
       }),
     }
   )
