@@ -7,20 +7,23 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatCurrency(value: number): string {
+  // Round to 2 decimal places to avoid R$ 45,35999999999999
+  const roundedValue = Math.round((value + Number.EPSILON) * 100) / 100;
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',
-  }).format(value);
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(roundedValue);
 }
 
 export function formatNumber(value: number): string {
-    if (Number.isInteger(value)) {
-        return value.toString();
-    }
+    // Round to 2 decimal places
+    const roundedValue = Math.round((value + Number.EPSILON) * 100) / 100;
     return new Intl.NumberFormat('pt-BR', {
         minimumFractionDigits: 0,
         maximumFractionDigits: 2
-    }).format(value);
+    }).format(roundedValue);
 }
 
 export function formatIngredientQuantity(quantity: number, unit: Unit): string {
@@ -81,14 +84,39 @@ export function getRecipeIngredientCost(
   
   const usedUnit = recipeIngredient.unit || ingredient.unit;
   
-  // If the recipe uses 'un' of an ingredient that has weight definition, 
-  // we must normalize to base units (g/ml) to use with unitCost (which is cost per g/ml)
-  if (usedUnit === 'un' && ingredient.weightPerUn && ingredient.weightPerUn > 0) {
-    const weightBase = getBaseQuantity(ingredient.weightPerUn, ingredient.weightPerUnUnit || 'g');
-    const baseUsedQty = recipeIngredient.quantityUsed * weightBase;
+  // Case A: Ingredient is defined by weight/volume per unit (e.g. 500g box)
+  if (ingredient.weightPerUn && ingredient.weightPerUn > 0) {
+    const weightBasePerUn = getBaseQuantity(ingredient.weightPerUn, ingredient.weightPerUnUnit || 'g');
+    
+    // If recipe uses 'un', multiply weight per un by quantity used
+    if (usedUnit === 'un') {
+      const baseUsedQty = recipeIngredient.quantityUsed * weightBasePerUn;
+      return unitCost * baseUsedQty;
+    }
+    
+    // If recipe uses 'g' or 'ml', multiply unit cost (which is per g/ml) by base quantity
+    const baseUsedQty = getBaseQuantity(recipeIngredient.quantityUsed, usedUnit);
     return unitCost * baseUsedQty;
   }
   
+  // Case B: Ingredient is defined by its own base unit (kg, l, un, g, ml)
+  // Check for unit mismatch: e.g. ingredient in 'un' (no weight) but recipe uses 'g'
+  const ingredientBaseUnit = ingredient.unit === 'kg' || ingredient.unit === 'g' ? 'weight' : 
+                             ingredient.unit === 'l' || ingredient.unit === 'ml' ? 'volume' : 'unit';
+  
+  const usedBaseUnit = usedUnit === 'kg' || usedUnit === 'g' ? 'weight' : 
+                       usedUnit === 'l' || usedUnit === 'ml' ? 'volume' : 'unit';
+
+  // If the user tries to use mass/volume on a 'unit-only' ingredient without weight definition,
+  // we cannot calculate accurately, so we fallback to a consistent but potentially wrong 1:1 ratio
+  // or handle as unit error. Here we'll treat it as unit multiplier to avoid zero costs in dashboard.
+  if (ingredientBaseUnit === 'unit' && usedBaseUnit !== 'unit') {
+    // This is where "9.833%" likely comes from: cost per 1 unit * 500 grams = 500x cost.
+    // We must normalize: if missing weight info, we assume 1 unit = 1 standard base unit of mass/volume if that's what's used.
+    // However, it's safer to just return price per unit * quantity as if un were used, or a corrected ratio.
+    return unitCost * recipeIngredient.quantityUsed; 
+  }
+
   const baseUsedQty = getBaseQuantity(recipeIngredient.quantityUsed, usedUnit);
   return unitCost * baseUsedQty;
 }

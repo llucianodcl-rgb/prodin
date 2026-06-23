@@ -4,8 +4,9 @@ import { useStore } from "../store/useStore";
 import { Recipe, RecipeIngredient, Unit } from "../types";
 import { formatCurrency, getIngredientUnitCost, getSuggestedUnitPrice, getActualMetrics, getBaseQuantity } from "../lib/utils";
 import { v4 as uuidv4 } from "uuid";
-import { ArrowLeft, Plus, Trash2, Save, Calculator, AlertTriangle, CheckCircle, Edit2, Copy } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Save, Calculator, AlertTriangle, CheckCircle, Edit2, Copy, Package, ChevronDown, ChevronUp } from "lucide-react";
 import { CurrencyInput } from "../components/ui/CurrencyInput";
+import { formatNumber, formatIngredientQuantity } from "../lib/utils";
 
 export default function RecipeForm() {
   const { id } = useParams();
@@ -48,6 +49,40 @@ export default function RecipeForm() {
   const [selectIngUnit, setSelectIngUnit] = useState<Unit>(draft?.selectIngUnit || "un");
 
   const [saveStatus, setSaveStatus] = useState('');
+  const [calcMode, setCalcMode] = useState<'produced' | 'unitWeight'>('produced');
+  const [targetQty, setTargetQty] = useState<number>(0);
+  const [showComplementary, setShowComplementary] = useState(false);
+
+  const calcularReforcoProducao = (
+    finalWeight: number,
+    recipeIngredients: RecipeIngredient[],
+    weightDeficit: number
+  ) => {
+    if (finalWeight <= 0 || weightDeficit <= 0) return [];
+    const fatorDeEscala = weightDeficit / finalWeight;
+
+    return recipeIngredients.map(item => {
+      const ing = ingredients.find((i) => i.id === item.ingredientId);
+      const name = ing ? ing.name : "Ingrediente Desconhecido";
+      const baseUnit = item.unit || ing?.unit || "g";
+      const quantity = item.quantityUsed * fatorDeEscala;
+      
+      if (baseUnit === 'un') {
+        const display = `${formatNumber(quantity)} un`;
+        let weightStr = "";
+        if (ing?.weightPerUn && ing.weightPerUn > 0) {
+          const totalWeight = quantity * ing.weightPerUn;
+          weightStr = ` (${formatIngredientQuantity(totalWeight, ing.weightPerUnUnit || 'g')})`;
+        }
+        return { name, display: `${display}${weightStr}` };
+      }
+
+      return { 
+        name, 
+        display: formatIngredientQuantity(quantity, baseUnit)
+      };
+    }).filter(i => i.display !== "");
+  };
 
   // Auto-save effect
   useEffect(() => {
@@ -368,9 +403,37 @@ export default function RecipeForm() {
           </section>
 
           {/* Section 3: Yield */}
-          <section className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-3">
-             <h2 className="text-xl font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">Rendimento e Porções</h2>
-             <div className="grid sm:grid-cols-2 gap-4">
+          <section className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-4">
+             <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-2 gap-4">
+               <h2 className="text-xl font-bold text-slate-900 dark:text-white">Rendimento e Porções</h2>
+               
+               <div className="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-xl w-fit">
+                 <button
+                   type="button"
+                   onClick={() => setCalcMode('produced')}
+                   className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                     calcMode === 'produced' 
+                       ? "bg-white dark:bg-slate-800 text-indigo-600 shadow-sm" 
+                       : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                   }`}
+                 >
+                   Qtd. Produzida
+                 </button>
+                 <button
+                   type="button"
+                   onClick={() => setCalcMode('unitWeight')}
+                   className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                     calcMode === 'unitWeight' 
+                       ? "bg-white dark:bg-slate-800 text-indigo-600 shadow-sm" 
+                       : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                   }`}
+                 >
+                   Peso Unitário
+                 </button>
+               </div>
+             </div>
+
+             <div className="grid sm:grid-cols-2 gap-4 pt-2">
                <div>
                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Peso Final da Produção (g/ml)*</label>
                  <div className="relative">
@@ -379,14 +442,26 @@ export default function RecipeForm() {
                      type="number" 
                      min="1"
                      value={formData.finalWeight || ''} 
-                     onChange={e => setFormData({...formData, finalWeight: Number(e.target.value), isManualWeight: true})}
+                     onChange={e => {
+                       const val = Number(e.target.value);
+                       setFormData({...formData, finalWeight: val, isManualWeight: true});
+                       if (calcMode === 'unitWeight' && targetQty > 0) {
+                         setFormData(prev => ({...prev, finalWeight: val, weightPerUnit: Math.round(val / targetQty)}));
+                       }
+                     }}
                      className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
                      placeholder="Ex: 500 para 500g"
                    />
                    {formData.isManualWeight && (
                      <button
                        type="button"
-                       onClick={() => setFormData(prev => ({...prev, isManualWeight: false, finalWeight: calculateAutoWeight()}))}
+                       onClick={() => {
+                         const autoW = calculateAutoWeight();
+                         setFormData(prev => ({...prev, isManualWeight: false, finalWeight: autoW}));
+                         if (calcMode === 'unitWeight' && targetQty > 0) {
+                           setFormData(prev => ({...prev, weightPerUnit: Math.round(autoW / targetQty)}));
+                         }
+                       }}
                        className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 px-2 py-1 rounded-md hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
                      >
                        Restaurar calc. automático
@@ -395,25 +470,155 @@ export default function RecipeForm() {
                  </div>
                  <p className="text-xs text-slate-500 mt-1">Soma total da massa rendida{formData.isManualWeight ? " (Ajuste manual)" : " (Automático)"}.</p>
                </div>
-               <div>
-                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Peso por Unidade (g/ml)*</label>
-                 <input 
-                   required
-                   type="number" 
-                   min="1"
-                   value={formData.weightPerUnit || ''} 
-                   onChange={e => setFormData({...formData, weightPerUnit: Number(e.target.value)})}
-                   className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
-                   placeholder="Ex: 20 para brigadeiros de 20g"
-                 />
-               </div>
+
+               {calcMode === 'produced' ? (
+                 <div>
+                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Peso por Unidade (g/ml)*</label>
+                   <input 
+                     required
+                     type="number" 
+                     min="1"
+                     value={formData.weightPerUnit || ''} 
+                     onChange={e => setFormData({...formData, weightPerUnit: Number(e.target.value)})}
+                     className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
+                     placeholder="Ex: 20 para brigadeiros de 20g"
+                   />
+                 </div>
+               ) : (
+                 <div>
+                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Quantidade Desejada (unidades)*</label>
+                   <input 
+                     required
+                     type="number" 
+                     min="1"
+                     value={targetQty || ''} 
+                     onChange={e => {
+                       const qty = Number(e.target.value);
+                       setTargetQty(qty);
+                       if (formData.finalWeight && qty > 0) {
+                         setFormData({...formData, weightPerUnit: Math.round(formData.finalWeight / qty)});
+                       }
+                     }}
+                     className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white font-bold"
+                     placeholder="Ex: 50 unidades"
+                   />
+                 </div>
+               )}
              </div>
+
+             {calcMode === 'unitWeight' && targetQty > 0 && formData.finalWeight && (
+               <div className="mt-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-2 bg-indigo-50 dark:bg-indigo-500/10 p-3 rounded-xl">
+                 <Calculator size={14} />
+                 <span>Peso estimado por unidade: <span className="text-sm font-black">{formData.weightPerUnit}g/ml</span></span>
+               </div>
+             )}
+
+             {/* RESULTADO E VALIDAÇÕES */}
              {(formData.finalWeight && formData.weightPerUnit) ? (
-               <div className="bg-indigo-50 dark:bg-indigo-500/10 text-indigo-800 dark:text-indigo-300 p-4 rounded-xl text-center">
-                 Esta receita produzirá aproximadamente <strong className="text-xl">{Math.floor(formData.finalWeight / formData.weightPerUnit)}</strong> unidades.
-                 <p className="text-sm mt-1 opacity-80">
-                   Custo base estimado: {formatCurrency(getActualMetrics({...formData, profitMultiplier: formData.profitMultiplier || 1, targetPricePerUnit: formData.targetPricePerUnit || 0} as Recipe, ingredients).costPerUnit)} / unidade
-                 </p>
+               <div className="space-y-4">
+                 <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl text-center border border-slate-200 dark:border-slate-800">
+                   <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">
+                     {calcMode === 'produced' ? "Capacidade da Receita" : "Rendimento Estimado"}
+                   </p>
+                   <div className="flex items-center justify-center gap-2">
+                     <strong className="text-2xl font-black text-slate-800 dark:text-white">
+                        {Math.floor(formData.finalWeight / formData.weightPerUnit)}
+                     </strong>
+                     <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">unidades</span>
+                   </div>
+                   <p className="text-xs mt-2 text-slate-400">
+                     Custo base estimado: {formatCurrency(getActualMetrics({...formData, profitMultiplier: formData.profitMultiplier || 1, targetPricePerUnit: formData.targetPricePerUnit || 0} as Recipe, ingredients).costPerUnit)} / unidade
+                   </p>
+                 </div>
+
+                 {/* PRODUÇÃO COMPLEMENTAR CARD */}
+                 {((calcMode === 'produced' && (targetQty > 0 || formData.weightPerUnit > formData.finalWeight)) || (calcMode === 'unitWeight' && targetQty > 0)) && 
+                  (Math.max(1, targetQty) * formData.weightPerUnit > formData.finalWeight) && (
+                   <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-amber-200 dark:border-amber-900/50 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
+                     <div className="flex items-start gap-4">
+                       <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-xl text-amber-600 shrink-0">
+                         <Package size={18} />
+                       </div>
+                       <div className="flex-1">
+                         <h3 className="font-bold text-amber-800 dark:text-amber-200 text-[10px] uppercase tracking-widest mb-2">Produção Complementar</h3>
+                         
+                         <div className="space-y-2 text-xs text-slate-600 dark:text-slate-400">
+                           <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-1.5">
+                             <span>Quantidade excedente:</span>
+                             <span className="font-bold text-amber-600">
+                               {Math.max(1, targetQty) - Math.floor(formData.finalWeight / formData.weightPerUnit)} unidades
+                             </span>
+                           </div>
+                           <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-1.5">
+                             <span>Peso adicional necessário:</span>
+                             <span className="font-bold text-amber-600">
+                               {(Math.max(1, targetQty) * formData.weightPerUnit - formData.finalWeight).toLocaleString()} g/ml
+                             </span>
+                           </div>
+                           <div className="flex justify-between items-center pt-1 mt-1 font-bold text-slate-800 dark:text-slate-200">
+                             <span>Produção total necessária:</span>
+                             <span className="bg-amber-100 dark:bg-amber-900/50 px-2 py-0.5 rounded text-amber-800 dark:text-amber-200">
+                               {(Math.max(1, targetQty) * formData.weightPerUnit).toLocaleString()} g/ml
+                             </span>
+                           </div>
+                         </div>
+
+                         {/* Ingredients Section - same as Sales.tsx style */}
+                         <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                            {!showComplementary ? (
+                              <button 
+                                type="button"
+                                onClick={() => setShowComplementary(true)}
+                                className="flex items-center gap-1.5 text-[10px] font-bold text-indigo-600 hover:text-indigo-700 uppercase tracking-wider transition-colors"
+                              >
+                                [ Mostrar Ingredientes Complementares ]
+                              </button>
+                            ) : (
+                              <div className="animate-in fade-in slide-in-from-top-1 duration-200">
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+                                  <ChevronDown size={14} /> Ingredientes para o adicional:
+                                </p>
+                                <ul className="space-y-1.5 mb-4">
+                                  {calcularReforcoProducao(
+                                    formData.finalWeight, 
+                                    formData.ingredients as RecipeIngredient[], 
+                                    Math.max(0, (Math.max(1, targetQty) * formData.weightPerUnit) - formData.finalWeight)
+                                  ).map((item, idx) => (
+                                    <li key={idx} className="flex justify-between items-center bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-lg border border-slate-100 dark:border-slate-700/50">
+                                      <span className="text-slate-700 dark:text-slate-300 font-medium">{item.name}</span>
+                                      <span className="font-bold text-slate-900 dark:text-white px-2 py-0.5 bg-white dark:bg-slate-800 rounded shadow-sm text-[11px]">{item.display}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                                <button 
+                                  type="button"
+                                  onClick={() => setShowComplementary(false)}
+                                  className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 uppercase tracking-wider transition-colors"
+                                >
+                                  <ChevronUp size={14} /> [ Ocultar Ingredientes ]
+                                </button>
+                              </div>
+                            )}
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+                 )}
+
+                 {/* IF Mode is produced, show an optional target quantity field if not already in unitWeight mode */}
+                 {calcMode === 'produced' && (
+                    <div className="pt-2">
+                       <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Validar para Demanda Específica (Opcional)</label>
+                       <input 
+                         type="number" 
+                         min="0"
+                         value={targetQty || ''} 
+                         onChange={e => setTargetQty(Number(e.target.value))}
+                         className="w-full px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
+                         placeholder="Ex: Você precisa de 100 unidades?"
+                       />
+                    </div>
+                 )}
                </div>
              ) : null}
           </section>

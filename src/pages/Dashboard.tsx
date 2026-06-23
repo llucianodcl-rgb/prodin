@@ -1,444 +1,604 @@
-import React from "react";
+import React, { useState } from "react";
 import { useStore } from "../store/useStore";
 import { 
   getRecipeTotalCost, 
+  getRecipeIngredientsCost,
+  getRecipeIngredientCost,
   getActualMetrics,
   formatCurrency,
   formatNumber,
+  getSuggestedUnitPrice,
   cn
 } from "../lib/utils";
 import { Link } from "react-router-dom";
-import { PlusCircle, TrendingUp, DollarSign, Package, PieChart, Lightbulb, CheckCircle, HeartPulse, Rocket, Info, Crown, Trophy, AlertTriangle } from "lucide-react";
+import { 
+  PlusCircle, TrendingUp, DollarSign, Package, PieChart, Lightbulb, 
+  CheckCircle, HeartPulse, Rocket, Info, Crown, Trophy, AlertTriangle,
+  ArrowRight, Sparkles, BarChart3, Target, Zap, TrendingDown, Eye, X
+} from "lucide-react";
+import { 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell 
+} from 'recharts';
 
 export default function Dashboard() {
   const { recipes, ingredients, extras } = useStore();
+  const [isSimulatorOpen, setIsSimulatorOpen] = useState(false);
+  const [simulatingRecipe, setSimulatingRecipe] = useState<any>(null);
+  const [simulatedMarkup, setSimulatedMarkup] = useState<number>(3);
 
   const totalRecipes = recipes.length;
   
   let totalEstimatedRevenue = 0;
   let totalEstimatedProfit = 0;
   let totalCostSum = 0;
-  let highMarginCount = 0;
   let profitableRecipesCount = 0;
 
   const recipeStats = recipes.map(recipe => {
     const metrics = getActualMetrics(recipe, ingredients);
+    const suggestedPrice = getSuggestedUnitPrice(recipe, ingredients);
     
     totalEstimatedRevenue += metrics.targetTotalRevenue;
     totalEstimatedProfit += metrics.netProfitTotal;
     totalCostSum += getRecipeTotalCost(recipe, ingredients);
 
     if (metrics.profitMargin > 0) profitableRecipesCount++;
-    if (metrics.profitMargin >= 60) highMarginCount++;
 
     return {
       recipe,
-      metrics
+      metrics,
+      suggestedPrice
     };
   });
 
   const sortedByMargin = [...recipeStats].sort((a, b) => b.metrics.profitMargin - a.metrics.profitMargin);
-  const sortedByProfit = [...recipeStats].sort((a, b) => b.metrics.netProfitUnit - a.metrics.netProfitUnit);
+  const sortedByNetProfitUnit = [...recipeStats].sort((a, b) => b.metrics.netProfitUnit - a.metrics.netProfitUnit);
+  const sortedByTotalProfit = [...recipeStats].sort((a, b) => b.metrics.netProfitTotal - a.metrics.netProfitTotal);
 
-  const mostProfitableRecipe = sortedByMargin.length > 0 ? sortedByMargin[0].recipe : null;
-
-  const averageCost = totalRecipes > 0 ? totalCostSum / totalRecipes : 0;
+  const averageProfit = totalRecipes > 0 ? totalEstimatedProfit / totalRecipes : 0;
   const averageMargin = totalEstimatedRevenue > 0 ? (totalEstimatedProfit / totalEstimatedRevenue) * 100 : 0;
 
-  const needsAttention: { recipe: any; reason: string }[] = [];
-  if (totalRecipes > 1) {
-    sortedByMargin.forEach(item => {
-      if (item.metrics.profitMargin < 20) {
-        needsAttention.push({ recipe: item.recipe, reason: `Margem muito baixa (${formatNumber(item.metrics.profitMargin)}%). Revisar o preço de venda.`});
-      } else if (item.metrics.netProfitUnit <= 0) {
-         needsAttention.push({ recipe: item.recipe, reason: `Gerando prejuízo de ${formatCurrency(Math.abs(item.metrics.netProfitUnit))} por unidade.`});
-      } else if (item.metrics.profitMargin < averageMargin - 15) {
-        needsAttention.push({ recipe: item.recipe, reason: `Margem (${formatNumber(item.metrics.profitMargin)}%) está bem abaixo da sua média.`});
-      }
-    });
+  // 1. Receita Campeã (Maior Lucro Total)
+  const championRecipe = sortedByTotalProfit[0];
+
+  // 2. Melhor Oportunidade de Reajuste
+  // Receitas com margem boa mas preço abaixo do sugerido
+  const readjustmentOpportunity = recipeStats
+    .filter(item => item.metrics.profitMargin >= 30 && item.recipe.targetPricePerUnit < item.suggestedPrice)
+    .sort((a, b) => (b.suggestedPrice - b.recipe.targetPricePerUnit) - (a.suggestedPrice - a.recipe.targetPricePerUnit))[0];
+
+  // 3. Receita em Alerta
+  const alertRecipe = recipeStats
+    .filter(item => item.metrics.profitMargin < 35)
+    .sort((a, b) => a.metrics.profitMargin - b.metrics.profitMargin)[0];
+
+  // 6. Receita Subestimada (Alta margem, preço baixo)
+  const medianPrice = totalRecipes > 0 ? recipeStats.map(r => r.recipe.targetPricePerUnit).sort((a, b) => a - b)[Math.floor(totalRecipes / 2)] : 0;
+  const underestimatedRecipe = recipeStats
+    .filter(item => item.metrics.profitMargin > 50 && item.recipe.targetPricePerUnit < medianPrice)
+    .sort((a, b) => b.metrics.profitMargin - a.metrics.profitMargin)[0];
+
+  // Insights Dinâmicos
+  const insights = [];
+  if (championRecipe) {
+    const marginDiff = championRecipe.metrics.profitMargin - averageMargin;
+    if (marginDiff > 0) {
+      insights.push(`Sua receita de ${championRecipe.recipe.name} possui lucro ${formatNumber(marginDiff)}% superior à média do catálogo.`);
+    }
   }
 
-  const getWelcomeMessage = () => {
-    if (totalRecipes === 0) {
-      return "Bem-vindo ao Prodin! Cadastre sua primeira receita para começar a acompanhar seus resultados.";
-    }
-    return `Bom trabalho! Você possui ${totalRecipes} ${totalRecipes === 1 ? 'receita cadastrada' : 'receitas cadastradas'} e uma margem média de ${formatNumber(averageMargin)}%. Continue acompanhando seus resultados para aumentar a lucratividade.`;
-  };
+  const alertCount = recipeStats.filter(r => r.metrics.profitMargin < 40).length;
+  if (alertCount > 0) {
+    insights.push(`Você possui ${alertCount} ${alertCount === 1 ? 'receita' : 'receitas'} abaixo da margem de segurança desejada (40%).`);
+  }
 
-  let healthStatus = "Sem Dados";
-  let healthClassification = "Cadastre receitas";
-  let healthColor = "text-slate-500 bg-slate-100 dark:bg-slate-800 dark:text-slate-400";
+  // Find high cost ingredient contribution
+  if (recipes.length > 0) {
+    const firstRecipe = recipes[0];
+    const totalIngredientsCost = getRecipeIngredientsCost(firstRecipe, ingredients);
+
+    if (totalIngredientsCost > 0 && firstRecipe.ingredients.length > 0) {
+      const ingredientCosts = firstRecipe.ingredients.map(ri => {
+        const ing = ingredients.find(i => i.id === ri.ingredientId);
+        const cost = ing ? getRecipeIngredientCost(ri, ing) : 0;
+        return { name: ing?.name, cost };
+      }).sort((a, b) => b.cost - a.cost);
+      
+      const topIngredient = ingredientCosts[0];
+      if (topIngredient && topIngredient.name && topIngredient.cost > 0) {
+        // Calculate percentage relative to total ingredients cost of the recipe
+        // Since topIngredient is part of totalIngredientsCost, the ratio is always <= 1
+        const percent = (topIngredient.cost / totalIngredientsCost) * 100;
+        insights.push(`O custo do ${topIngredient.name} representa ${formatNumber(percent)}% do custo dos ingredientes da receita ${firstRecipe.name}.`);
+      }
+    }
+  }
 
   if (totalRecipes > 0) {
-    if (averageMargin >= 60) {
-      healthStatus = "Excelente";
-      healthClassification = "Negócio Saudável";
-      healthColor = "text-mint-700 bg-mint/20 dark:text-mint-300 dark:bg-mint-500/20";
-    } else if (averageMargin >= 40) {
-      healthStatus = "Boa";
-      healthClassification = "Bem Alinhado";
-      healthColor = "text-blue-700 bg-blue-100 dark:text-blue-300 dark:bg-blue-500/20";
-    } else if (averageMargin >= 20) {
-      healthStatus = "Atenção";
-      healthClassification = "Margem Apertada";
-      healthColor = "text-yellow-700 bg-yellow-100 dark:text-yellow-300 dark:bg-yellow-500/20";
-    } else {
-      healthStatus = "Alerta";
-      healthClassification = "Revisar Preços";
-      healthColor = "text-pink-700 bg-pink-100 dark:text-pink-300 dark:bg-pink-500/20";
-    }
+    insights.push(`Um reajuste médio de 5% nos preços aumentaria seu lucro total estimado em aproximadamente ${formatCurrency(totalEstimatedRevenue * 0.05)}.`);
   }
 
-  const nextActions = [];
-  if (totalRecipes === 0) {
-    nextActions.push("Cadastre sua primeira receita para visualizar indicadores e análises de saúde do negócio.");
-  } else if (totalRecipes === 1) {
-    nextActions.push("Cadastre mais receitas para desbloquear comparativos e evoluir suas análises.");
-  } else if (totalRecipes < 3) {
-    nextActions.push("Amplie seu catálogo de receitas para obter insights mais precisos e globais do negócio.");
-  }
+  // Gráfico de Lucro
+  const chartData = sortedByTotalProfit.slice(0, 8).map(item => ({
+    name: item.recipe.name.length > 15 ? item.recipe.name.substring(0, 12) + '...' : item.recipe.name,
+    fullName: item.recipe.name,
+    lucro: item.metrics.netProfitTotal,
+    faturamento: item.metrics.targetTotalRevenue
+  }));
 
-  if (totalRecipes > 0 && extras.length === 0) {
-    nextActions.push("Cadastre embalagens ou extras para projetar o custo final e precificar seus kits com precisão.");
-  }
+  const healthScore = averageMargin >= 60 ? "Saudável" : averageMargin >= 40 ? "Em Observação" : "Crítico";
+  const healthColor = averageMargin >= 60 ? "bg-mint text-white" : averageMargin >= 40 ? "bg-amber-500 text-white" : "bg-pink text-white";
 
-  if (totalRecipes > 0 && nextActions.length < 3) {
-    nextActions.push("Utilize o Simulador de Kits para organizar sua produção de forma estratégica e descobrir novas oportunidades de venda.");
-  }
+  const handleOpenSimulator = (recipe: any) => {
+    setSimulatingRecipe(recipe);
+    setSimulatedMarkup(recipe.profitMultiplier || 3);
+    setIsSimulatorOpen(true);
+  };
+
+  const getSimulatedMetrics = () => {
+    if (!simulatingRecipe) return null;
+    
+    const totalCost = getRecipeTotalCost(simulatingRecipe, ingredients);
+    const qtyProduced = Math.max(1, (simulatingRecipe.weightPerUnit > 0 ? Math.floor(simulatingRecipe.finalWeight / simulatingRecipe.weightPerUnit) : 1));
+    const costPerUnit = totalCost / qtyProduced;
+    
+    const currentPrice = simulatingRecipe.targetPricePerUnit;
+    const newPrice = costPerUnit * simulatedMarkup;
+    
+    const currentProfit = currentPrice - costPerUnit;
+    const newProfit = newPrice - costPerUnit;
+    
+    return {
+      currentPrice,
+      newPrice,
+      currentProfit,
+      newProfit,
+      impact: currentProfit !== 0 ? ((newProfit / currentProfit) - 1) * 100 : 0
+    };
+  };
+
+  const simulatedMetrics = getSimulatedMetrics();
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6 pb-10">
       <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-brown dark:text-white mb-2">Visão Estratégica</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed">
-            {getWelcomeMessage()}
+          <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Análise Inteligente</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            {totalRecipes === 0 
+              ? "Bem-vindo! Cadastre receitas para gerar insights automáticos." 
+              : `Consolidado de ${totalRecipes} receitas com margem média de ${formatNumber(averageMargin)}%.`}
           </p>
         </div>
-        <Link 
-          to="/receitas/nova"
-          className="inline-flex items-center justify-center space-x-2 bg-pink hover:bg-pink-600 text-white px-5 py-3 rounded-xl font-bold shadow-soft transition-all hover:scale-[1.02] active:scale-[0.98] shrink-0"
-        >
-          <PlusCircle size={20} />
-          <span>Nova Receita</span>
-        </Link>
+        <div className="flex items-center gap-3">
+           <button 
+             onClick={() => handleOpenSimulator(recipes[0])}
+             disabled={totalRecipes === 0}
+             className="hidden sm:inline-flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-bold shadow-sm transition-all disabled:opacity-50"
+           >
+             <Zap size={18} />
+             <span>Simulador de Preço</span>
+           </button>
+           <Link 
+             to="/receitas/nova"
+             className="inline-flex items-center justify-center space-x-2 bg-pink hover:bg-pink-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-soft transition-all"
+           >
+             <PlusCircle size={18} />
+             <span>Nova Receita</span>
+           </Link>
+        </div>
       </header>
 
       {/* 1. INDICADORES PRINCIPAIS */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <MetricCard 
-          title="Lucro Total Estimado" 
-          value={formatCurrency(totalEstimatedProfit)} 
-          icon={<TrendingUp size={22} className="text-white" />} 
-          subtitle="Projetado"
-          color="mint-solid"
-        />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard 
           title="Faturamento Total" 
           value={formatCurrency(totalEstimatedRevenue)} 
-          icon={<DollarSign size={22} className="text-pink dark:text-pink-400" />} 
-          subtitle="Potencial Estimado"
+          icon={<DollarSign size={20} />} 
+          subtitle="Projeção Mensal"
           color="pink"
         />
-         <MetricCard 
-          title="Receitas Cadastradas" 
-          value={`${totalRecipes} ${totalRecipes === 1 ? 'receita' : 'receitas'}`} 
-          icon={<Package size={22} className="text-yellow-600 dark:text-yellow-500" />} 
-          subtitle="Ativas no sistema"
-          color="yellow"
+        <MetricCard 
+          title="Lucro Líquido" 
+          value={formatCurrency(totalEstimatedProfit)} 
+          icon={<TrendingUp size={20} />} 
+          subtitle="Soma do Catálogo"
+          color="mint"
         />
         <MetricCard 
-          title="Custo Médio" 
-          value={formatCurrency(averageCost)} 
-          icon={<PieChart size={22} className="text-brown dark:text-brown-300" />} 
-          subtitle="Das receitas"
-          color="brown"
+          title="Margem Média" 
+          value={`${formatNumber(averageMargin)}%`} 
+          icon={<PieChart size={20} />} 
+          subtitle="Rentabilidade"
+          color="indigo"
         />
+        <div className="bg-slate-900 text-white p-6 rounded-3xl border border-slate-800 shadow-sm flex flex-col justify-between">
+           <div className="flex justify-between items-start">
+             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Saúde do Catálogo</p>
+             <HeartPulse size={20} className="text-pink" />
+           </div>
+           <div className="mt-4">
+             <div className="flex items-center gap-2 mb-1">
+               <div className={cn("w-3 h-3 rounded-full animate-pulse", 
+                 averageMargin >= 50 ? "bg-mint" : averageMargin >= 35 ? "bg-amber-400" : "bg-pink"
+               )} />
+               <span className="text-lg font-black">{healthScore}</span>
+             </div>
+             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Baseado na margem média</p>
+           </div>
+        </div>
       </div>
 
+      {/* 2. DASHBOARD INTELIGENTE DE CARDS */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* CHAMPION */}
+        {championRecipe ? (
+          <DashboardCard
+            type="champion"
+            title="Receita Campeã"
+            recipeName={championRecipe.recipe.name}
+            dataLabel="Lucro Total Estimado"
+            dataValue={formatCurrency(championRecipe.metrics.netProfitTotal)}
+            footerLabel="Lucro por unid."
+            footerValue={formatCurrency(championRecipe.metrics.netProfitUnit)}
+            insight="Maior geração de lucro atual."
+            icon={<Trophy className="text-yellow-500" />}
+            link={`/receitas/${championRecipe.recipe.id}`}
+          />
+        ) : <EmptyCard title="Receita Campeã" />}
+
+        {/* READJUSTMENT */}
+        {readjustmentOpportunity ? (
+          <DashboardCard
+            type="opportunity"
+            title="Oportunidade de Reajuste"
+            recipeName={readjustmentOpportunity.recipe.name}
+            dataLabel="Preço Sugerido"
+            dataValue={formatCurrency(readjustmentOpportunity.suggestedPrice)}
+            footerLabel="Preço Atual"
+            footerValue={formatCurrency(readjustmentOpportunity.recipe.targetPricePerUnit)}
+            insight="Potencial para aumento de preço."
+            icon={<Target className="text-blue-500" />}
+            link={`/receitas/${readjustmentOpportunity.recipe.id}`}
+            onSimulate={() => handleOpenSimulator(readjustmentOpportunity.recipe)}
+          />
+        ) : <EmptyCard title="Oportunidades" />}
+
+        {/* ALERT */}
+        {alertRecipe ? (
+          <DashboardCard
+            type="alert"
+            title="Atenção: Margem Baixa"
+            recipeName={alertRecipe.recipe.name}
+            dataLabel="Margem Atual"
+            dataValue={`${formatNumber(alertRecipe.metrics.profitMargin)}%`}
+            footerLabel="Meta Mínima"
+            footerValue="40%"
+            insight="Revisar custos e ingredientes."
+            icon={<AlertTriangle className="text-pink" />}
+            link={`/receitas/${alertRecipe.recipe.id}`}
+            isCritical
+          />
+        ) : <EmptyCard title="Alertas" />}
+
+        {/* UNDERESTIMATED */}
+        {underestimatedRecipe ? (
+          <DashboardCard
+            type="gem"
+            title="Receita Subestimada"
+            recipeName={underestimatedRecipe.recipe.name}
+            dataLabel="Margem Real"
+            dataValue={`${formatNumber(underestimatedRecipe.metrics.profitMargin)}%`}
+            footerLabel="Preço de Mercado"
+            footerValue={formatCurrency(underestimatedRecipe.recipe.targetPricePerUnit)}
+            insight="Alta rentabilidade com preço baixo."
+            icon={<Sparkles className="text-indigo-500" />}
+            link={`/receitas/${underestimatedRecipe.recipe.id}`}
+          />
+        ) : <EmptyCard title="Destaques" />}
+      </div>
+
+      {/* 3. GRÁFICOS E RANKINGS */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* SAÚDE DO NEGÓCIO */}
-        <div className="lg:col-span-1 bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col">
-           <h3 className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-widest mb-5 flex items-center gap-2">
-             <HeartPulse size={16} className="text-pink" /> Saúde do Negócio
-           </h3>
-           <div className="flex-1 space-y-5">
-             <div className="flex flex-col items-center justify-center py-5 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-800">
-               <div className={cn("px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider mb-2", healthColor)}>
-                 {healthStatus}
+        {/* GRÁFICO RECEITA X LUCRO */}
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+           <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xs font-black uppercase tracking-widest text-slate-800 dark:text-white flex items-center gap-2">
+                <BarChart3 size={18} className="text-indigo-500" /> Receitas x Lucro Total
+              </h3>
+              <div className="flex gap-4 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                <div className="flex items-center gap-1.5"><div className="w-2 h-2 bg-indigo-500 rounded-sm" /> Lucro</div>
+                <div className="flex items-center gap-1.5"><div className="w-2 h-2 bg-slate-200 dark:bg-slate-700 rounded-sm" /> Faturamento</div>
+              </div>
+           </div>
+           
+           <div className="h-[300px] w-full">
+             {totalRecipes > 0 ? (
+               <ResponsiveContainer width="100%" height="100%">
+                 <BarChart data={chartData} layout="vertical" margin={{ left: 5, right: 30, top: 0, bottom: 0 }}>
+                   <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#E2E8F0" />
+                   <XAxis type="number" hide />
+                   <YAxis 
+                     dataKey="name" 
+                     type="category" 
+                     axisLine={false} 
+                     tickLine={false} 
+                     width={100} 
+                     tick={{ fontSize: 10, fontWeight: 700, fill: '#64748B' }} 
+                   />
+                   <Tooltip 
+                     cursor={{ fill: 'transparent' }}
+                     formatter={(value: number, name: string) => {
+                       const label = name === 'lucro' ? 'Lucro' : 'Faturamento';
+                       return [formatCurrency(value), label];
+                     }}
+                     labelFormatter={(_, payload) => {
+                       if (payload && payload.length > 0) {
+                         return payload[0].payload.fullName;
+                       }
+                       return '';
+                     }}
+                     contentStyle={{ 
+                        borderRadius: '12px', 
+                        border: 'none', 
+                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                        fontSize: '11px',
+                        fontWeight: 'bold'
+                     }}
+                   />
+                   <Bar dataKey="lucro" fill="#4F46E5" radius={[0, 4, 4, 0]} barSize={12} />
+                   <Bar dataKey="faturamento" fill="#E2E8F0" radius={[0, 4, 4, 0]} barSize={6} />
+                 </BarChart>
+               </ResponsiveContainer>
+             ) : (
+               <div className="flex items-center justify-center h-full text-slate-400 text-xs font-bold uppercase tracking-widest">
+                 Sem dados para gerar gráfico
                </div>
-               <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{healthClassification}</span>
-             </div>
-             <div className="space-y-3 pt-1">
-               <div className="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800/50">
-                 <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Margem Média</span>
-                 <span className="text-sm font-black text-slate-800 dark:text-white">{formatNumber(averageMargin)}%</span>
-               </div>
-               <div className="flex justify-between items-center">
-                 <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Receitas Rentáveis</span>
-                 <span className="text-sm font-black text-slate-800 dark:text-white">{profitableRecipesCount} de {totalRecipes}</span>
-               </div>
-             </div>
+             )}
            </div>
         </div>
 
-        {/* PRÓXIMAS AÇÕES */}
-        <div className="lg:col-span-2 bg-slate-50 dark:bg-slate-900/50 p-6 rounded-3xl border border-slate-200 dark:border-slate-800">
-           <h3 className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-widest mb-4 flex items-center gap-2">
-             <Rocket size={16} className="text-blue-500 dark:text-blue-400" /> Próximas Ações
+        {/* RANKING DE LUCRO REAL */}
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col">
+           <h3 className="text-xs font-black uppercase tracking-widest text-slate-800 dark:text-white mb-6 flex items-center gap-2">
+             <Trophy size={18} className="text-amber-500" /> Ranking de Lucro Real
            </h3>
-           <div className="space-y-3">
-             {nextActions.map((action, idx) => (
-               <div key={idx} className="flex items-start gap-4 p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm transition-colors hover:border-slate-300 dark:hover:border-slate-700">
-                 <div className="p-1.5 bg-blue-50 dark:bg-blue-500/10 rounded-xl text-blue-500 dark:text-blue-400 shrink-0 mt-0.5">
-                   <CheckCircle size={16} />
-                 </div>
-                 <p className="text-xs font-bold text-slate-600 dark:text-slate-300 leading-relaxed pt-1">
-                   {action}
-                 </p>
-               </div>
-             ))}
-           </div>
-        </div>
-      </div>
-
-      {/* INSIGHTS DO PRODIN */}
-      <div className="bg-indigo-50/50 dark:bg-indigo-500/10 p-6 rounded-3xl border border-indigo-100 dark:border-indigo-500/20">
-         <h3 className="text-xs font-black text-indigo-900 dark:text-indigo-300 uppercase tracking-widest mb-5 flex items-center gap-2">
-           <Lightbulb size={16} className="text-indigo-500" /> Insights do Prodin
-         </h3>
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-           {totalRecipes === 0 ? (
-             <div className="md:col-span-2 lg:col-span-3 flex items-center gap-3 p-4 bg-white dark:bg-slate-900/50 rounded-xl border border-indigo-50 dark:border-indigo-500/20 shadow-sm">
-               <span className="text-indigo-500 shrink-0"><Info size={18} /></span>
-               <p className="text-xs font-medium text-indigo-900 dark:text-indigo-200">Você ainda não tem receitas cadastradas. Insights estratégicos aparecerão aqui após os primeiros cadastros.</p>
-             </div>
-           ) : (
-             <>
-               {totalRecipes > 1 && mostProfitableRecipe && (
-                 <div className="flex items-start gap-3 p-4 bg-white dark:bg-slate-900/50 rounded-xl border border-indigo-50 dark:border-indigo-500/20 shadow-sm">
-                   <span className="text-indigo-500 shrink-0 mt-0.5"><TrendingUp size={16} /></span>
-                   <p className="text-xs font-medium text-indigo-900 dark:text-indigo-200 leading-relaxed">
-                     Sua receita com maior margem é <strong>{mostProfitableRecipe.name}</strong> ({formatNumber(sortedByMargin[0].metrics.profitMargin)}%).
-                   </p>
-                 </div>
-               )}
-               {totalRecipes > 1 && sortedByMargin.length > 1 && sortedByMargin[0].metrics.profitMargin > sortedByMargin[sortedByMargin.length - 1].metrics.profitMargin && (
-                 <div className="flex items-start gap-3 p-4 bg-white dark:bg-slate-900/50 rounded-xl border border-indigo-50 dark:border-indigo-500/20 shadow-sm">
-                   <span className="text-indigo-500 shrink-0 mt-0.5"><PieChart size={16} /></span>
-                   <p className="text-xs font-medium text-indigo-900 dark:text-indigo-200 leading-relaxed">
-                     A diferença entre sua melhor e pior margem é de <strong>{formatNumber(sortedByMargin[0].metrics.profitMargin - sortedByMargin[sortedByMargin.length - 1].metrics.profitMargin)}%</strong>.
-                   </p>
-                 </div>
-               )}
-               {highMarginCount > 0 && (
-                 <div className="flex items-start gap-3 p-4 bg-white dark:bg-slate-900/50 rounded-xl border border-indigo-50 dark:border-indigo-500/20 shadow-sm">
-                   <span className="text-indigo-500 shrink-0 mt-0.5"><CheckCircle size={16} /></span>
-                   <p className="text-xs font-medium text-indigo-900 dark:text-indigo-200 leading-relaxed">
-                     Você possui <strong>{highMarginCount} {highMarginCount === 1 ? 'receita' : 'receitas'}</strong> com margem rentável acima de 60%.
-                   </p>
-                 </div>
-               )}
-               {averageMargin >= 50 && (
-                 <div className="flex items-start gap-3 p-4 bg-white dark:bg-slate-900/50 rounded-xl border border-indigo-50 dark:border-indigo-500/20 shadow-sm">
-                   <span className="text-indigo-500 shrink-0 mt-0.5"><DollarSign size={16} /></span>
-                   <p className="text-xs font-medium text-indigo-900 dark:text-indigo-200 leading-relaxed">
-                     Sua margem média está na faixa saudável e recomendada para o segmento.
-                   </p>
-                 </div>
-               )}
-               {totalRecipes === 1 && (
-                 <div className="flex items-start gap-3 p-4 bg-white dark:bg-slate-900/50 rounded-xl border border-indigo-50 dark:border-indigo-500/20 shadow-sm">
-                   <span className="text-indigo-500 shrink-0 mt-0.5"><Info size={16} /></span>
-                   <p className="text-xs font-medium text-indigo-900 dark:text-indigo-200 leading-relaxed">
-                     Seu catálogo ainda possui poucas receitas para análises comparativas aprofundadas.
-                   </p>
-                 </div>
-               )}
-               {totalRecipes > 0 && averageMargin < 30 && (
-                 <div className="flex items-start gap-3 p-4 bg-white dark:bg-slate-900/50 rounded-xl border border-pink-100 dark:border-pink-500/20 shadow-sm">
-                   <span className="text-pink shrink-0 mt-0.5"><Info size={16} /></span>
-                   <p className="text-xs font-medium text-pink-700 dark:text-pink-300 leading-relaxed">
-                     Sua margem média está abaixo do ideal. Considere revisar seus custos ou preços de venda.
-                   </p>
-                 </div>
-               )}
-             </>
-           )}
-         </div>
-      </div>
-
-      {/* RANKINGS E OPORTUNIDADES */}
-      {totalRecipes > 1 && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {/* DESTAQUE E OPORTUNIDADES (Esquerda) */}
-          <div className="lg:col-span-1 space-y-4">
-             {/* 👑 RECEITA DESTAQUE */}
-             {sortedByMargin[0] && (
-               <div className="bg-gradient-to-br from-yellow-50 to-amber-100/50 dark:from-yellow-900/20 dark:to-amber-900/10 p-6 rounded-3xl shadow-sm border border-yellow-200/50 dark:border-yellow-700/30 relative overflow-hidden">
-                 <div className="absolute top-0 right-0 p-4 opacity-10">
-                   <Trophy size={64} className="text-yellow-600 dark:text-yellow-400" />
-                 </div>
-                 <h3 className="text-[10px] font-black text-yellow-800 dark:text-yellow-500 mb-4 uppercase tracking-widest flex items-center gap-2">
-                   <Crown size={16} className="text-yellow-500" /> Receita Destaque
-                 </h3>
-                 <div className="relative z-10">
-                    <h4 className="text-xl font-black text-slate-800 dark:text-white mb-2">{sortedByMargin[0].recipe.name}</h4>
-                    <p className="text-xs text-yellow-700 dark:text-yellow-400 font-medium mb-4 pb-4 border-b border-yellow-200 dark:border-yellow-700/50">Esta é atualmente sua receita mais rentável.</p>
-                    
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center bg-white/50 dark:bg-black/20 p-2 rounded-lg">
-                        <span className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400">Margem</span>
-                        <span className="text-xs font-black text-mint-600 dark:text-mint-400">{formatNumber(sortedByMargin[0].metrics.profitMargin)}%</span>
-                      </div>
-                      <div className="flex justify-between items-center bg-white/50 dark:bg-black/20 p-2 rounded-lg">
-                        <span className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400">Lucro (Unid.)</span>
-                        <span className="text-xs font-black text-mint-600 dark:text-mint-400">{formatCurrency(sortedByMargin[0].metrics.netProfitUnit)}</span>
-                      </div>
-                      <div className="flex justify-between items-center bg-white/50 dark:bg-black/20 p-2 rounded-lg">
-                        <span className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400">Preço (Unid.)</span>
-                        <span className="text-xs font-black text-slate-700 dark:text-slate-300">{formatCurrency(sortedByMargin[0].recipe.targetPricePerUnit)}</span>
-                      </div>
-                    </div>
-                    <Link to={`/receitas/${sortedByMargin[0].recipe.id}`} className="mt-4 block text-center text-xs font-bold text-yellow-700 dark:text-yellow-400 bg-yellow-200/50 dark:bg-yellow-800/30 rounded-xl py-2 hover:bg-yellow-200 dark:hover:bg-yellow-800/50 transition-colors">
-                      Ver Detalhes
+           <div className="space-y-3 flex-1 overflow-auto max-h-[300px] pr-2">
+              {sortedByNetProfitUnit.slice(0, 10).map((item, idx) => (
+                <div key={item.recipe.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 transition-colors hover:border-slate-200 dark:hover:border-slate-700 group">
+                  <div className="flex items-center gap-3">
+                    <span className={cn(
+                      "w-6 h-6 flex items-center justify-center rounded-lg text-[10px] font-black",
+                      idx === 0 ? "bg-yellow-100 text-yellow-700" : idx === 1 ? "bg-slate-200 text-slate-600" : idx === 2 ? "bg-orange-100 text-orange-700" : "bg-white dark:bg-slate-900 text-slate-400"
+                    )}>
+                      {idx + 1}
+                    </span>
+                    <Link to={`/receitas/${item.recipe.id}`} className="text-xs font-bold text-slate-700 dark:text-slate-300 group-hover:text-indigo-600 transition-colors">
+                      {item.recipe.name}
                     </Link>
-                 </div>
-               </div>
-             )}
-
-             {/* ⚠️ OPORTUNIDADES DE MELHORIA */}
-             {needsAttention.length > 0 && (
-                <div className="bg-pink-50/50 dark:bg-pink-900/10 p-6 rounded-3xl border border-pink-100 dark:border-pink-500/20">
-                   <h3 className="text-[10px] font-black text-pink-700 dark:text-pink-400 mb-4 uppercase tracking-widest flex items-center gap-2">
-                     <AlertTriangle size={16} /> Oportunidades de Melhoria
-                   </h3>
-                   <div className="space-y-3">
-                     {needsAttention.slice(0,3).map(item => (
-                       <div key={item.recipe.id} className="bg-white dark:bg-slate-900 p-3 rounded-xl border border-pink-100 dark:border-pink-500/20 shadow-sm flex flex-col gap-1">
-                         <span className="font-bold text-slate-800 dark:text-white text-xs">{item.recipe.name}</span>
-                         <span className="text-[10px] text-pink-600 dark:text-pink-400">{item.reason}</span>
-                       </div>
-                     ))}
-                   </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[11px] font-black text-indigo-600 dark:text-indigo-400">{formatCurrency(item.metrics.netProfitUnit)}</p>
+                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Lucro Unid.</p>
+                  </div>
                 </div>
-             )}
+              ))}
+              {totalRecipes === 0 && (
+                <div className="h-full flex items-center justify-center text-slate-400 text-xs font-bold uppercase tracking-widest">
+                  Cadastre receitas
+                </div>
+              )}
+           </div>
+        </div>
+      </div>
+
+      {/* 4. INSIGHTS DINÂMICOS DO PRODIN */}
+      <div className="bg-indigo-900 text-white p-8 rounded-[40px] shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl -mr-20 -mt-20" />
+        <div className="absolute bottom-0 left-0 w-32 h-32 bg-indigo-400/10 rounded-full blur-2xl -ml-10 -mb-10" />
+        
+        <div className="relative z-10">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="p-2.5 bg-indigo-500/30 rounded-2xl">
+              <Lightbulb size={24} className="text-indigo-200" />
+            </div>
+            <div>
+              <h3 className="text-lg font-black tracking-tight">Insights do Prodin</h3>
+              <p className="text-xs text-indigo-300 font-bold uppercase tracking-widest">Inteligência Orientada a Dados</p>
+            </div>
           </div>
 
-          {/* RANKINGS (Direita) */}
-          <div className="lg:col-span-2 space-y-4">
-             {/* RANKING POR MARGEM */}
-             <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800">
-                <div className="flex justify-between items-center mb-5">
-                   <h3 className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-widest flex items-center gap-2">
-                     <PieChart size={16} className="text-indigo-500" /> Top Receitas por Margem
-                   </h3>
-                </div>
-                <div className="space-y-2">
-                   {sortedByMargin.slice(0, 5).map((item, index) => (
-                      <div key={item.recipe.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-100 dark:hover:border-slate-700">
-                        <div className="flex items-center gap-3">
-                          <span className={cn("flex items-center justify-center w-6 h-6 rounded-md text-[10px] font-black shrink-0", index === 0 ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-400" : index === 1 ? "bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-300" : index === 2 ? "bg-brown-100 text-brown dark:bg-brown-900/30 dark:text-brown-400" : "bg-slate-50 text-slate-400 dark:bg-slate-800 dark:text-slate-500")}>
-                            {index + 1}º
-                          </span>
-                          <Link to={`/receitas/${item.recipe.id}`} className="font-bold text-sm text-slate-700 dark:text-slate-200 hover:text-pink dark:hover:text-pink-400 transition-colors truncate max-w-[150px] sm:max-w-[200px]">
-                            {item.recipe.name}
-                          </Link>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <div className="w-16 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden hidden sm:block shrink-0">
-                            <div className="h-full bg-indigo-400 rounded-full" style={{ width: `${Math.min(100, Math.max(0, item.metrics.profitMargin))}%` }} />
-                          </div>
-                          <span className="font-black text-indigo-600 dark:text-indigo-400 text-sm min-w-[60px] text-right">{formatNumber(item.metrics.profitMargin)}%</span>
-                        </div>
-                      </div>
-                   ))}
-                </div>
-                {sortedByMargin.length > 5 && (
-                  <button className="w-full mt-4 py-2.5 text-xs font-bold text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
-                    [ Ver Ranking Completo ]
-                  </button>
-                )}
-             </div>
-
-             {/* RANKING POR LUCRO */}
-             <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800">
-                <div className="flex justify-between items-center mb-5">
-                   <h3 className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-widest flex items-center gap-2">
-                     <DollarSign size={16} className="text-mint" /> Top Receitas por Lucro
-                   </h3>
-                </div>
-                <div className="space-y-2">
-                   {sortedByProfit.slice(0, 5).map((item, index) => (
-                      <div key={item.recipe.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-100 dark:hover:border-slate-700">
-                        <div className="flex items-center gap-3">
-                          <span className={cn("flex items-center justify-center w-6 h-6 rounded-md text-[10px] font-black shrink-0", index === 0 ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-400" : index === 1 ? "bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-300" : index === 2 ? "bg-brown-100 text-brown dark:bg-brown-900/30 dark:text-brown-400" : "bg-slate-50 text-slate-400 dark:bg-slate-800 dark:text-slate-500")}>
-                            {index + 1}º
-                          </span>
-                          <Link to={`/receitas/${item.recipe.id}`} className="font-bold text-sm text-slate-700 dark:text-slate-200 hover:text-pink dark:hover:text-pink-400 transition-colors truncate max-w-[150px] sm:max-w-[200px]">
-                            {item.recipe.name}
-                          </Link>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase hidden sm:block">Por unidade</span>
-                          <span className="font-black text-mint-600 dark:text-mint-400 text-sm min-w-[70px] text-right">{formatCurrency(item.metrics.netProfitUnit)}</span>
-                        </div>
-                      </div>
-                   ))}
-                </div>
-                {sortedByProfit.length > 5 && (
-                  <button className="w-full mt-4 py-2.5 text-xs font-bold text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
-                    [ Ver Ranking Completo ]
-                  </button>
-                )}
-             </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {insights.length > 0 ? insights.map((insight, idx) => (
+              <div key={idx} className="flex items-start gap-4 p-4 bg-white/10 hover:bg-white/15 rounded-2xl border border-white/10 backdrop-blur-sm transition-all">
+                <Sparkles size={18} className="text-indigo-300 shrink-0 mt-0.5" />
+                <p className="text-sm font-medium text-indigo-50 leading-relaxed">{insight}</p>
+              </div>
+            )) : (
+              <div className="col-span-2 text-center py-6 text-indigo-300 font-bold uppercase tracking-widest text-xs">
+                Aguardando mais dados para gerar novos insights
+              </div>
+            )}
           </div>
         </div>
+      </div>
+
+      {/* SIMULADOR MODAL */}
+      {isSimulatorOpen && simulatingRecipe && (
+         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsSimulatorOpen(false)} />
+            <div className="relative bg-white dark:bg-slate-900 w-full max-w-md rounded-[32px] shadow-2xl border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in duration-300">
+               <div className="p-6">
+                  <header className="flex justify-between items-center mb-6">
+                    <div className="flex items-center gap-3">
+                       <div className="p-2 bg-indigo-100 dark:bg-indigo-500/10 rounded-xl text-indigo-600">
+                         <Zap size={20} />
+                       </div>
+                       <h2 className="text-lg font-black text-slate-800 dark:text-white">Simulador de Preço</h2>
+                    </div>
+                    <button onClick={() => setIsSimulatorOpen(false)} className="text-slate-400 hover:text-slate-600 p-1">
+                      <X size={24} />
+                    </button>
+                  </header>
+
+                  <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 mb-6">
+                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Simulando para:</p>
+                     <h3 className="text-md font-bold text-slate-800 dark:text-white">{simulatingRecipe.name}</h3>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div>
+                      <div className="flex justify-between mb-2">
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Multiplicador de Lucro</label>
+                        <span className="text-sm font-black text-indigo-600">{simulatedMarkup.toFixed(1)}x</span>
+                      </div>
+                      <input 
+                        type="range" 
+                        min="1.5" 
+                        max="8" 
+                        step="0.1" 
+                        value={simulatedMarkup} 
+                        onChange={(e) => setSimulatedMarkup(parseFloat(e.target.value))}
+                        className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                       <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
+                         <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Preço Atual</p>
+                         <p className="text-sm font-black text-slate-800 dark:text-white">{formatCurrency(simulatedMetrics?.currentPrice || 0)}</p>
+                       </div>
+                       <div className="p-4 bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/30 rounded-2xl">
+                         <p className="text-[9px] font-black text-indigo-400 uppercase tracking-widest mb-1">Preço Simulado</p>
+                         <p className="text-sm font-black text-indigo-600 dark:text-indigo-400">{formatCurrency(simulatedMetrics?.newPrice || 0)}</p>
+                       </div>
+                    </div>
+
+                    <div className="bg-indigo-600 p-6 rounded-2xl text-white">
+                       <div className="flex justify-between items-center mb-4">
+                         <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Impacto no Lucro</p>
+                         <div className="bg-white/20 px-2 py-0.5 rounded text-[10px] font-black">
+                           {simulatedMetrics && simulatedMetrics.impact >= 0 ? '+' : ''}{formatNumber(simulatedMetrics?.impact || 0)}%
+                         </div>
+                       </div>
+                       <div className="flex justify-between items-end">
+                         <div>
+                           <p className="text-xs opacity-70 mb-0.5">Lucro Anterior</p>
+                           <p className="text-sm font-bold opacity-80">{formatCurrency(simulatedMetrics?.currentProfit || 0)}</p>
+                         </div>
+                         <ArrowRight className="opacity-50 mb-1" />
+                         <div className="text-right">
+                           <p className="text-xs opacity-70 mb-0.5">Novo Lucro</p>
+                           <p className="text-xl font-black">{formatCurrency(simulatedMetrics?.newProfit || 0)}</p>
+                         </div>
+                       </div>
+                    </div>
+
+                    <button 
+                      onClick={() => setIsSimulatorOpen(false)}
+                      className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-4 rounded-2xl font-black transition-transform active:scale-95"
+                    >
+                      Fechar Simulador
+                    </button>
+                  </div>
+               </div>
+            </div>
+         </div>
       )}
     </div>
   );
 }
 
 function MetricCard({ title, value, icon, subtitle, color = 'mint' }: { title: string, value: string | number, icon: React.ReactNode, subtitle: string, color?: string }) {
-  const isSolid = color === 'mint-solid';
-  
-  const bgClass = isSolid ? 'bg-mint dark:bg-mint-600' : {
-    pink: 'bg-pink-soft/80 dark:bg-slate-900',
-    mint: 'bg-mint-soft/80 dark:bg-slate-900',
-    yellow: 'bg-yellow-soft/80 dark:bg-slate-900',
-    brown: 'bg-brown-soft/80 dark:bg-slate-900'
-  }[color] || 'bg-slate-50 dark:bg-slate-900';
+  const themes: Record<string, string> = {
+    pink: 'bg-pink-soft/30 dark:bg-slate-900/40 border-pink-100 dark:border-pink-900/20 text-pink-700 dark:text-pink-400 icon-pink',
+    mint: 'bg-mint-soft/30 dark:bg-slate-900/40 border-mint-100 dark:border-mint-900/20 text-mint-700 dark:text-mint-400 icon-mint',
+    indigo: 'bg-indigo-50 dark:bg-slate-900/40 border-indigo-100 dark:border-indigo-900/20 text-indigo-700 dark:text-indigo-400 icon-indigo',
+    yellow: 'bg-yellow-50 dark:bg-slate-900/40 border-yellow-100 dark:border-yellow-900/20 text-yellow-700 dark:text-yellow-400 icon-yellow'
+  };
 
-  const borderColor = isSolid ? 'border-mint' : {
-    pink: 'border-pink/20 dark:border-pink-500/20',
-    mint: 'border-mint/20 dark:border-mint-500/20',
-    yellow: 'border-yellow/20 dark:border-yellow-500/20',
-    brown: 'border-brown/20 dark:border-brown-500/20'
-  }[color] || 'border-slate-200 dark:border-slate-800';
-
-  const iconBg = isSolid ? 'bg-white/20' : {
-    pink: 'bg-white/60 dark:bg-pink-900/40',
-    mint: 'bg-white/60 dark:bg-mint-900/40',
-    yellow: 'bg-white/60 dark:bg-yellow-900/40',
-    brown: 'bg-white/60 dark:bg-brown-900/40'
-  }[color] || 'bg-slate-50';
-
-  const textColor = isSolid ? 'text-white' : 'text-slate-800 dark:text-white';
-  const subtitleColor = isSolid ? 'text-white/80' : 'text-slate-500 dark:text-slate-400';
-  const titleColor = isSolid ? 'text-white/90' : 'text-slate-500 dark:text-slate-400';
+  const themeClass = themes[color] || themes.indigo;
 
   return (
-    <div className={cn("p-4 sm:p-6 rounded-3xl shadow-sm border transition-shadow hover:shadow-md", bgClass, borderColor)}>
-       <div className="flex justify-between items-start gap-2">
-         <p className={cn("text-[9px] sm:text-[10px] font-black uppercase tracking-widest leading-tight mt-1", titleColor)}>{title}</p>
-         <div className={cn("p-2.5 rounded-xl shrink-0", iconBg)}>{icon}</div>
+    <div className={cn("p-5 rounded-[28px] border shadow-sm flex flex-col", themeClass)}>
+       <div className="flex justify-between items-start mb-4">
+         <p className="text-[10px] font-black uppercase tracking-widest opacity-80">{title}</p>
+         <div className="p-2 rounded-xl bg-white/80 dark:bg-slate-800 shadow-sm">{icon}</div>
        </div>
-       <div className="mt-2">
-         <h2 className={cn("text-xl sm:text-3xl font-black tracking-tight truncate", textColor)}>{value}</h2>
-         <p className={cn("text-[10px] sm:text-[11px] mt-1.5 font-bold", subtitleColor)}>{subtitle}</p>
+       <div>
+         <h2 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white truncate">{value}</h2>
+         <p className="text-[10px] sm:text-[11px] mt-1 font-bold opacity-60 uppercase">{subtitle}</p>
        </div>
     </div>
-  )
+  );
+}
+
+function DashboardCard({ type, title, recipeName, dataLabel, dataValue, footerLabel, footerValue, insight, icon, link, isCritical = false, onSimulate }: any) {
+  const cardThemes: Record<string, string> = {
+    champion: "border-yellow-200 dark:border-yellow-900/30 bg-yellow-50/50 dark:bg-slate-900 shadow-sm",
+    opportunity: "border-blue-200 dark:border-blue-900/30 bg-blue-50/50 dark:bg-slate-900 shadow-sm",
+    alert: "border-pink-200 dark:border-pink-900/30 bg-pink-50/50 dark:bg-slate-900 shadow-sm",
+    gem: "border-indigo-200 dark:border-indigo-900/30 bg-indigo-50/50 dark:bg-slate-900 shadow-sm"
+  };
+
+  return (
+    <div className={cn("p-6 rounded-[32px] border flex flex-col justify-between h-full group transition-all hover:shadow-lg", cardThemes[type])}>
+       <div>
+         <div className="flex justify-between items-center mb-4">
+            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 flex items-center gap-2">
+              {title}
+            </h3>
+            <div className="p-2 rounded-xl bg-white dark:bg-slate-800 shadow-sm">{icon}</div>
+         </div>
+         
+         <Link to={link} className="block group-hover:transform group-hover:translate-x-1 transition-transform">
+           <h4 className="text-lg font-black text-slate-800 dark:text-white leading-tight mb-4">{recipeName}</h4>
+         </Link>
+
+         <div className="space-y-3 mb-6">
+            <div className="flex justify-between items-end border-b border-white/50 dark:border-slate-800/50 pb-2">
+               <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase">{dataLabel}</span>
+               <span className={cn("text-md font-black", isCritical ? "text-pink" : "text-slate-800 dark:text-white")}>{dataValue}</span>
+            </div>
+            <div className="flex justify-between items-end">
+               <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase">{footerLabel}</span>
+               <span className="text-sm font-bold text-slate-600 dark:text-slate-300">{footerValue}</span>
+            </div>
+         </div>
+       </div>
+
+       <div>
+         <div className={cn("p-3 rounded-2xl flex items-center gap-2 mb-4", isCritical ? "bg-pink-100 dark:bg-pink-900/20 text-pink-700 dark:text-pink-400" : "bg-white/80 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300")}>
+            <Info size={14} className="shrink-0" />
+            <p className="text-[10px] font-bold leading-tight">{insight}</p>
+         </div>
+
+         {onSimulate ? (
+           <button 
+             onClick={onSimulate}
+             className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-black hover:bg-indigo-700 transition-colors"
+           >
+             <Zap size={14} /> Simular Preço
+           </button>
+         ) : (
+           <Link to={link} className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-black hover:opacity-90 transition-opacity">
+             Ver Detalhes <ArrowRight size={14} />
+           </Link>
+         )}
+       </div>
+    </div>
+  );
+}
+
+function EmptyCard({ title }: { title: string }) {
+  return (
+    <div className="p-6 rounded-[32px] border border-dashed border-slate-300 dark:border-slate-700 flex flex-col items-center justify-center text-center">
+       <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-3">
+         <Info size={20} />
+       </div>
+       <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">{title}</h3>
+       <p className="text-[10px] text-slate-400">Aguardando dados</p>
+    </div>
+  );
 }
 
 
