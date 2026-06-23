@@ -17,11 +17,25 @@ export default function FirestoreSync({ children }: { children: React.ReactNode 
       return;
     }
 
+    const userRef = doc(db, 'user_data', user.uid);
     let unsubSnapshot: (() => void) | undefined;
+
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible') {
+        const freshSnap = await getDoc(userRef);
+        if (freshSnap.exists() && !syncing.current) {
+          const data = freshSnap.data();
+          useStore.setState({
+            ingredients: data.ingredients || [],
+            recipes: data.recipes || [],
+            extras: data.extras || [],
+          });
+        }
+      }
+    };
 
     const syncData = async () => {
       try {
-        const userRef = doc(db, 'user_data', user.uid);
         const snapshot = await getDoc(userRef);
         
         const localState = useStore.getState();
@@ -71,6 +85,7 @@ export default function FirestoreSync({ children }: { children: React.ReactNode 
             }, 0);
           }
         });
+
       } catch (error) {
         console.error("Error setting up Firestore sync:", error);
         setIsReady(true); // Don't block the app completely on error
@@ -78,8 +93,10 @@ export default function FirestoreSync({ children }: { children: React.ReactNode 
     };
 
     syncData();
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (unsubSnapshot) unsubSnapshot();
     };
   }, [user, appUser]);

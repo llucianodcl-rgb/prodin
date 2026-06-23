@@ -41,7 +41,21 @@ export const UpdateManager: React.FC = () => {
       }
     }, 1000 * 60 * 5); // 5 minutes
 
-    return () => clearInterval(interval);
+    // Add visibility change listener to check for updates when returning
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible') {
+        const currentVersion = await fetchVersion();
+        if (initialVersion && currentVersion && currentVersion !== initialVersion && currentVersion !== dismissedVersion) {
+          setShowModal(true);
+        }
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [fetchVersion, initialVersion, dismissedVersion]);
 
   const handleUpdate = () => {
