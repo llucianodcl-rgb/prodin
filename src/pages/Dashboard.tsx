@@ -12,7 +12,7 @@ import {
 } from "../lib/utils";
 import { Link } from "react-router-dom";
 import { 
-  PlusCircle, TrendingUp, DollarSign, Package, PieChart, Lightbulb, 
+  TrendingUp, DollarSign, Package, PieChart, Lightbulb, 
   CheckCircle, HeartPulse, Rocket, Info, Crown, Trophy, AlertTriangle,
   ArrowRight, Sparkles, BarChart3, Target, Zap, TrendingDown, Eye, X
 } from "lucide-react";
@@ -178,13 +178,6 @@ export default function Dashboard() {
              <Zap size={18} />
              <span>Simulador de Preço</span>
            </button>
-           <Link 
-             to="/receitas/nova"
-             className="inline-flex items-center justify-center space-x-2 bg-pink hover:bg-pink-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-soft transition-all"
-           >
-             <PlusCircle size={18} />
-             <span>Nova Receita</span>
-           </Link>
         </div>
       </header>
 
@@ -326,7 +319,7 @@ export default function Dashboard() {
                      tick={{ fontSize: 10, fontWeight: 700, fill: '#64748B' }} 
                    />
                    <Tooltip 
-                     cursor={{ fill: 'transparent' }}
+                     cursor={false}
                      content={({ active, payload, label }) => {
                        if (active && payload && payload.length) {
                          const fullName = payload[0].payload.fullName || label;
@@ -359,8 +352,8 @@ export default function Dashboard() {
                        return null;
                      }}
                    />
-                   <Bar dataKey="lucro" fill="#4F46E5" radius={[0, 4, 4, 0]} barSize={12} />
-                   <Bar dataKey="faturamento" fill="#E2E8F0" radius={[0, 4, 4, 0]} barSize={6} />
+                   <Bar dataKey="lucro" fill="#4F46E5" radius={[0, 4, 4, 0]} barSize={12} activeBar={false} />
+                   <Bar dataKey="faturamento" fill="#E2E8F0" radius={[0, 4, 4, 0]} barSize={6} activeBar={false} />
                  </BarChart>
                </ResponsiveContainer>
              ) : (

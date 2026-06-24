@@ -35,9 +35,20 @@
   html, body {
     overscroll-behavior-y: none;
   }
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
   body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Disable focus rings/outlines on recharts elements to prevent black rectangles on tap */
+  .recharts-wrapper, 
+  .recharts-wrapper *, 
+  .recharts-surface, 
+  .recharts-layer {
+    outline: none !important;
   }
 }
 
