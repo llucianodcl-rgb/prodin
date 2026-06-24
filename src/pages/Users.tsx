@@ -6,9 +6,11 @@ import { UserCheck, UserX, Clock, CheckCircle2, XCircle, Users as UsersIcon, Sea
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
+import { useStore } from '../store/useStore';
 
 export default function Users() {
   const { appUser } = useAuth();
+  const { showModal, addToast } = useStore();
   const [users, setUsers] = useState<AppUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -45,15 +47,31 @@ export default function Users() {
   };
 
   const handleCancel = async (uid: string) => {
-    if (!window.confirm("Deseja realmente cancelar/revogar o acesso deste usuário?")) return;
-    try {
-      await updateDoc(doc(db, 'users', uid), {
-        status: 'cancelado',
-        canceledAt: serverTimestamp()
-      });
-    } catch (error) {
-      console.error("Erro ao cancelar usuário:", error);
-    }
+    const user = users.find(u => u.uid === uid);
+    showModal({
+      title: "Cancelar Acesso",
+      message: `Deseja realmente cancelar/revogar o acesso do usuário "${user?.name || user?.email}"?`,
+      confirmText: "Confirmar Cancelamento",
+      type: "danger",
+      onConfirm: async () => {
+        try {
+          await updateDoc(doc(db, 'users', uid), {
+            status: 'cancelado',
+            canceledAt: serverTimestamp()
+          });
+          addToast({
+            message: "Acesso revogado com sucesso.",
+            type: "warning"
+          });
+        } catch (error) {
+          console.error("Erro ao cancelar usuário:", error);
+          addToast({
+            message: "Erro ao revogar acesso.",
+            type: "danger"
+          });
+        }
+      }
+    });
   };
 
   const formatDate = (timestamp: any) => {

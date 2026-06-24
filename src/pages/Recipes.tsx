@@ -6,7 +6,7 @@ import { Plus, Search, Edit2, Trash2, ChevronRight, Copy, Share2 } from "lucide-
 import ShareRecipeModal from "../components/shares/ShareRecipeModal";
 
 export default function Recipes() {
-  const { recipes, ingredients, deleteRecipe, duplicateRecipe, addRecipe, addToast } = useStore();
+  const { recipes, ingredients, deleteRecipe, duplicateRecipe, addRecipe, addToast, showModal } = useStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [sharingRecipe, setSharingRecipe] = useState<any>(null);
   const navigate = useNavigate();
@@ -111,14 +111,19 @@ export default function Recipes() {
                       <button 
                         type="button"
                         onClick={() => {
-                          if(window.confirm('Tem certeza que deseja excluir a receita "' + recipe.name + '"?')) {
-                            deleteRecipe(recipe.id);
-                            addToast({
-                              message: `Receita "${recipe.name}" excluída.`,
-                              type: "warning",
-                              onUndo: () => addRecipe(recipe)
-                            });
-                          }
+                          showModal({
+                            title: "Excluir Receita",
+                            message: `Tem certeza que deseja excluir a receita "${recipe.name}"? Esta ação não poderá ser desfeita.`,
+                            confirmText: "Excluir Receita",
+                            type: "danger",
+                            onConfirm: () => {
+                              deleteRecipe(recipe.id);
+                              addToast({
+                                message: `Receita "${recipe.name}" excluída com sucesso.`,
+                                type: "success"
+                              });
+                            }
+                          });
                         }}
                         className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
                         title="Excluir"

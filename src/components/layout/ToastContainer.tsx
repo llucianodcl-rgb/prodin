@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useStore, Toast } from "../../store/useStore";
-import { X, RotateCcw, CheckCircle, AlertTriangle, Info } from "lucide-react";
+import { X, RotateCcw, CheckCircle, AlertTriangle, Info, XCircle } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "../../lib/utils";
 
@@ -42,12 +42,14 @@ const ToastItem: React.FC<{ toast: Toast; onRemove: () => void }> = ({ toast, on
     success: <CheckCircle className="text-emerald-500" size={20} />,
     warning: <AlertTriangle className="text-amber-500" size={20} />,
     info: <Info className="text-indigo-500" size={20} />,
+    danger: <XCircle className="text-rose-500" size={20} />,
   };
 
   const colors = {
     success: "border-emerald-100 bg-white dark:bg-slate-800 dark:border-emerald-500/20",
     warning: "border-amber-100 bg-white dark:bg-slate-800 dark:border-amber-500/20",
     info: "border-indigo-100 bg-white dark:bg-slate-800 dark:border-indigo-500/20",
+    danger: "border-rose-100 bg-white dark:bg-slate-800 dark:border-rose-500/20",
   };
 
   return (
@@ -95,7 +97,8 @@ const ToastItem: React.FC<{ toast: Toast; onRemove: () => void }> = ({ toast, on
           className={cn(
             "h-full",
             toast.type === 'success' ? 'bg-emerald-500' : 
-            toast.type === 'warning' ? 'bg-amber-500' : 'bg-indigo-500'
+            toast.type === 'warning' ? 'bg-amber-500' : 
+            toast.type === 'danger' ? 'bg-rose-500' : 'bg-indigo-500'
           )}
           initial={{ width: "100%" }}
           animate={{ width: `${progress}%` }}

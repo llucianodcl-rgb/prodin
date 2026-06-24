@@ -8,7 +8,7 @@ import { cn } from "../lib/utils";
 import { CurrencyInput } from "../components/ui/CurrencyInput";
 
 export default function Ingredients() {
-  const { ingredients, addIngredient, updateIngredient, deleteIngredient, duplicateIngredient, addToast, ingredientDrafts, setIngredientDraft, clearIngredientDraft } = useStore();
+  const { ingredients, addIngredient, updateIngredient, deleteIngredient, duplicateIngredient, addToast, ingredientDrafts, setIngredientDraft, clearIngredientDraft, showModal } = useStore();
   
   const draft = ingredientDrafts['modal'];
 
@@ -40,15 +40,10 @@ export default function Ingredients() {
 
   const [editingCategory, setEditingCategory] = useState<string | null>(null);
   const [newCategoryName, setNewCategoryName] = useState("");
-  const [deletingCategory, setDeletingCategory] = useState<string | null>(null);
 
   const handleEditCategory = (cat: string) => {
     setEditingCategory(cat);
     setNewCategoryName(cat);
-  };
-
-  const handleDeleteCategory = (cat: string) => {
-    setDeletingCategory(cat);
   };
 
   const handleSaveCategoryUpdate = () => {
@@ -67,23 +62,6 @@ export default function Ingredients() {
       type: "success"
     });
     setEditingCategory(null);
-  };
-
-  const handleConfirmDeleteCategory = () => {
-    if (!deletingCategory) return;
-    const oldCat = deletingCategory;
-    
-    ingredients.forEach(ing => {
-      if (ing.category === oldCat) {
-        updateIngredient(ing.id, { category: "" });
-      }
-    });
-
-    addToast({
-      message: `Categoria "${oldCat}" removida dos ingredientes.`,
-      type: "warning"
-    });
-    setDeletingCategory(null);
   };
 
   const [saveStatus, setSaveStatus] = useState('');
@@ -242,7 +220,27 @@ export default function Ingredients() {
                     </button>
                     <button
                       type="button"
-                      onClick={(e) => { e.stopPropagation(); handleDeleteCategory(cat); }}
+                      onClick={(e) => { 
+                        e.stopPropagation(); 
+                        showModal({
+                          title: "Excluir Categoria",
+                          message: `Tem certeza que deseja excluir a categoria "${cat}"? Todos os ingredientes associados a ela terão sua categoria redefinida para vazia/geral.`,
+                          confirmText: "Excluir Categoria",
+                          type: "danger",
+                          onConfirm: () => {
+                            ingredients.forEach(ing => {
+                              if (ing.category === cat) {
+                                updateIngredient(ing.id, { category: "" });
+                              }
+                            });
+                        
+                            addToast({
+                              message: `Categoria "${cat}" removida dos ingredientes.`,
+                              type: "warning"
+                            });
+                          }
+                        });
+                      }}
                       className="p-1 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
                       title="Excluir Categoria"
                     >
@@ -324,14 +322,19 @@ export default function Ingredients() {
                     <button 
                       type="button"
                       onClick={() => {
-                        if(window.confirm('Tem certeza que deseja excluir o ingrediente "' + ing.name + '"?')) {
-                          deleteIngredient(ing.id);
-                          addToast({
-                            message: `Ingrediente "${ing.name}" excluído.`,
-                            type: "warning",
-                            onUndo: () => addIngredient(ing)
-                          });
-                        }
+                        showModal({
+                          title: "Excluir Ingrediente",
+                          message: `Tem certeza que deseja excluir o ingrediente "${ing.name}"? Esta ação não poderá ser desfeita.`,
+                          confirmText: "Excluir Ingrediente",
+                          type: "danger",
+                          onConfirm: () => {
+                            deleteIngredient(ing.id);
+                            addToast({
+                              message: `Ingrediente "${ing.name}" excluído com sucesso.`,
+                              type: "success"
+                            });
+                          }
+                        });
                       }}
                       className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
                       title="Excluir"
@@ -545,34 +548,6 @@ export default function Ingredients() {
                 className="px-5 py-2 bg-pink text-white rounded-xl font-bold shadow-soft transition-all transform hover:scale-105 disabled:opacity-50 cursor-pointer"
               >
                 Atualizar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal para Confirmar Exclusão de Categoria */}
-      {deletingCategory && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 space-y-4">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Excluir Categoria</h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Tem certeza que deseja excluir a categoria <strong className="text-slate-800 dark:text-white">"{deletingCategory}"</strong>? Todos os ingredientes associados a ela terão sua categoria redefinida para vazia/geral.
-            </p>
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => setDeletingCategory(null)}
-                className="px-3 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-sm font-medium transition-colors cursor-pointer"
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                onClick={handleConfirmDeleteCategory}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-sm font-medium transition-colors cursor-pointer"
-              >
-                Confirmar Exclusão
               </button>
             </div>
           </div>

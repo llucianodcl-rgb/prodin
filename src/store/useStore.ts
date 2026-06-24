@@ -1,13 +1,24 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { Ingredient, Recipe } from '../types';
+import React from 'react';
 
 export interface Toast {
   id: string;
   message: string;
-  type: 'success' | 'warning' | 'info';
+  type: 'success' | 'warning' | 'info' | 'danger';
   duration?: number;
   onUndo?: () => void;
+}
+
+export interface ModalOptions {
+  title: string;
+  message: string | React.ReactNode;
+  confirmText?: string;
+  cancelText?: string;
+  type?: 'danger' | 'info' | 'success' | 'warning';
+  onConfirm: () => void;
+  onCancel?: () => void;
 }
 
 interface AppState {
@@ -33,6 +44,12 @@ interface AppState {
   toasts: Toast[];
   addToast: (toast: Omit<Toast, 'id'>) => void;
   removeToast: (id: string) => void;
+  
+  // Modal State
+  modal: ModalOptions | null;
+  showModal: (options: ModalOptions) => void;
+  hideModal: () => void;
+
   // Drafts
   ingredientDrafts: Record<string, any>;
   setIngredientDraft: (id: string, draft: any) => void;
@@ -151,6 +168,11 @@ export const useStore = create<AppState>()(
       removeToast: (id) => set((state) => ({
         toasts: state.toasts.filter((t) => t.id !== id)
       })),
+      
+      // Modal
+      modal: null,
+      showModal: (options) => set({ modal: options }),
+      hideModal: () => set({ modal: null }),
       
       // Drafts
       ingredientDrafts: {},

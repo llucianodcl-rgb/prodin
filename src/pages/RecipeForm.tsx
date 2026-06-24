@@ -11,7 +11,7 @@ import { formatNumber, formatIngredientQuantity } from "../lib/utils";
 export default function RecipeForm() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { recipes, ingredients, extras, addRecipe, updateRecipe, deleteRecipe, addToast, recipeDrafts, setRecipeDraft, clearRecipeDraft } = useStore();
+  const { recipes, ingredients, extras, addRecipe, updateRecipe, deleteRecipe, addToast, recipeDrafts, setRecipeDraft, clearRecipeDraft, showModal } = useStore();
   
   const allAvailableItems = [...ingredients, ...extras];
   
@@ -152,12 +152,21 @@ export default function RecipeForm() {
   };
 
   const handleRemoveIngredient = (riId: string) => {
-    if (window.confirm("Deseja remover este ingrediente da receita?")) {
-      setFormData(prev => ({
-        ...prev,
-        ingredients: (prev.ingredients || []).filter(ri => ri.id !== riId)
-      }));
-    }
+    const ri = formData.ingredients?.find(i => i.id === riId);
+    const ing = allAvailableItems.find(i => i.id === ri?.ingredientId);
+    
+    showModal({
+      title: "Remover Ingrediente",
+      message: `Deseja remover o ingrediente "${ing?.name || 'este ingrediente'}" da receita?`,
+      confirmText: "Remover",
+      type: "danger",
+      onConfirm: () => {
+        setFormData(prev => ({
+          ...prev,
+          ingredients: (prev.ingredients || []).filter(ri => ri.id !== riId)
+        }));
+      }
+    });
   };
 
   const handleEditIngredient = (riId: string) => {

@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function Extra() {
   const navigate = useNavigate();
-  const { extras, addExtra, updateExtra, deleteExtra, duplicateExtra, addToast, ingredientDrafts, setIngredientDraft, clearIngredientDraft } = useStore();
+  const { extras, addExtra, updateExtra, deleteExtra, duplicateExtra, addToast, ingredientDrafts, setIngredientDraft, clearIngredientDraft, showModal } = useStore();
   
   // Reusing ingredientDrafts for simplicity or could create extraDrafts
   const draftId = 'extra-modal';
@@ -44,15 +44,10 @@ export default function Extra() {
 
   const [editingCategory, setEditingCategory] = useState<string | null>(null);
   const [newCategoryName, setNewCategoryName] = useState("");
-  const [deletingCategory, setDeletingCategory] = useState<string | null>(null);
 
   const handleEditCategory = (cat: string) => {
     setEditingCategory(cat);
     setNewCategoryName(cat);
-  };
-
-  const handleDeleteCategory = (cat: string) => {
-    setDeletingCategory(cat);
   };
 
   const handleSaveCategoryUpdate = () => {
@@ -71,23 +66,6 @@ export default function Extra() {
       type: "success"
     });
     setEditingCategory(null);
-  };
-
-  const handleConfirmDeleteCategory = () => {
-    if (!deletingCategory) return;
-    const oldCat = deletingCategory;
-    
-    extras.forEach(ex => {
-      if (ex.category === oldCat) {
-        updateExtra(ex.id, { category: "" });
-      }
-    });
-
-    addToast({
-      message: `Categoria "${oldCat}" removida.`,
-      type: "warning"
-    });
-    setDeletingCategory(null);
   };
 
   const [saveStatus, setSaveStatus] = useState('');
@@ -244,7 +222,27 @@ export default function Extra() {
                     </button>
                     <button
                       type="button"
-                      onClick={(e) => { e.stopPropagation(); handleDeleteCategory(cat); }}
+                      onClick={(e) => { 
+                        e.stopPropagation(); 
+                        showModal({
+                          title: "Excluir Categoria",
+                          message: `Tem certeza que deseja excluir a categoria "${cat}"? Todos os extras associados a ela terão sua categoria redefinida.`,
+                          confirmText: "Excluir Categoria",
+                          type: "danger",
+                          onConfirm: () => {
+                            extras.forEach(ex => {
+                              if (ex.category === cat) {
+                                updateExtra(ex.id, { category: "" });
+                              }
+                            });
+                        
+                            addToast({
+                              message: `Categoria "${cat}" removida.`,
+                              type: "warning"
+                            });
+                          }
+                        });
+                      }}
                       className="p-1 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
                       title="Excluir Categoria"
                     >
@@ -326,14 +324,19 @@ export default function Extra() {
                     <button 
                       type="button"
                       onClick={() => {
-                        if(window.confirm('Tem certeza que deseja excluir o item "' + ex.name + '"?')) {
-                          deleteExtra(ex.id);
-                          addToast({
-                            message: `Item "${ex.name}" excluído.`,
-                            type: "warning",
-                            onUndo: () => addExtra(ex)
-                          });
-                        }
+                        showModal({
+                          title: "Excluir Item Extra",
+                          message: `Tem certeza que deseja excluir o item "${ex.name}"? Esta ação não poderá ser desfeita.`,
+                          confirmText: "Excluir Item Extra",
+                          type: "danger",
+                          onConfirm: () => {
+                            deleteExtra(ex.id);
+                            addToast({
+                              message: `Item "${ex.name}" excluído com sucesso.`,
+                              type: "success"
+                            });
+                          }
+                        });
                       }}
                       className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
                       title="Excluir"
@@ -671,34 +674,6 @@ export default function Extra() {
                 Atualizar
               </button>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Delete category modal */}
-      {deletingCategory && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 space-y-4">
-             <h3 className="text-lg font-bold text-slate-900 dark:text-white">Excluir Categoria</h3>
-             <p className="text-sm text-slate-500 dark:text-slate-400">
-               Tem certeza que deseja excluir a categoria <strong>"{deletingCategory}"</strong>? Todos os extras associados a ela terão sua categoria redefinida.
-             </p>
-             <div className="flex justify-end gap-2 pt-2">
-               <button
-                 type="button"
-                 onClick={() => setDeletingCategory(null)}
-                 className="px-3 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-sm font-medium transition-colors cursor-pointer"
-               >
-                 Cancelar
-               </button>
-               <button
-                 type="button"
-                 onClick={handleConfirmDeleteCategory}
-                 className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-sm font-medium transition-colors cursor-pointer"
-               >
-                 Confirmar Exclusão
-               </button>
-             </div>
           </div>
         </div>
       )}

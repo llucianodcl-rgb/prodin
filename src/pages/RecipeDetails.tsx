@@ -40,6 +40,7 @@ export default function RecipeDetails() {
     deleteRecipe,
     addRecipe,
     addToast,
+    showModal,
   } = useStore();
 
   const recipe = recipes.find((r) => r.id === id);
@@ -186,19 +187,20 @@ export default function RecipeDetails() {
   };
 
   const handleDelete = () => {
-    if (
-      window.confirm(
-        `Tem certeza que deseja excluir a receita "${recipe.name}"?`,
-      )
-    ) {
-      deleteRecipe(recipe.id);
-      addToast({
-        message: "Receita excluída.",
-        type: "warning",
-        onUndo: () => addRecipe(recipe),
-      });
-      navigate("/receitas");
-    }
+    showModal({
+      title: "Excluir Receita",
+      message: `Tem certeza que deseja excluir a receita "${recipe.name}"? Esta ação não poderá ser desfeita.`,
+      confirmText: "Excluir Receita",
+      type: "danger",
+      onConfirm: () => {
+        deleteRecipe(recipe.id);
+        addToast({
+          message: `Receita "${recipe.name}" excluída com sucesso.`,
+          type: "success"
+        });
+        navigate("/receitas");
+      }
+    });
   };
 
   return (

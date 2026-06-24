@@ -13,11 +13,12 @@ import { cn } from "../../lib/utils";
 import ToastContainer from "./ToastContainer";
 import AdminFAB from "./AdminFAB";
 import SharesFAB from "../shares/SharesFAB";
+import ConfirmationModal from "../ui/ConfirmationModal";
 
 import ActionFAB from "./ActionFAB";
 
 export default function Layout() {
-  const { theme } = useStore();
+  const { theme, modal, hideModal } = useStore();
   const location = useLocation();
 
   const navItems = [
@@ -63,6 +64,17 @@ export default function Layout() {
       <AdminFAB />
       <SharesFAB />
       <ActionFAB />
+
+      <ConfirmationModal 
+        isOpen={!!modal}
+        onClose={hideModal}
+        onConfirm={modal?.onConfirm || (() => {})}
+        title={modal?.title || ""}
+        message={modal?.message || ""}
+        confirmText={modal?.confirmText}
+        cancelText={modal?.cancelText}
+        type={modal?.type}
+      />
 
       {/* Fixed Bottom Navigation for All Screens */}
       <div className="fixed bottom-0 left-0 right-0 bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl border-t border-pink/10 dark:border-slate-800/40 pb-safe z-10 flex justify-center py-2 px-1 sm:px-4 shadow-[0_-4px_24px_rgba(0,0,0,0.06)]">

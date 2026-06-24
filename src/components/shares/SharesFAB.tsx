@@ -11,7 +11,7 @@ import { formatNumber } from "../../lib/utils";
 
 export default function SharesFAB() {
   const { user } = useAuth();
-  const { ingredients, recipes, addRecipe, addIngredient, addToast } = useStore();
+  const { ingredients, recipes, addRecipe, addIngredient, addToast, showModal } = useStore();
   const navigate = useNavigate();
   
   const [isOpen, setIsOpen] = useState(false);
@@ -80,11 +80,21 @@ export default function SharesFAB() {
     }
 
     if (hasMissing) {
-      if (!window.confirm("Esta receita utiliza ingredientes que ainda não existem no seu cadastro.\nDeseja importar automaticamente?")) {
-        return;
-      }
+      showModal({
+        title: "Importar Ingredientes",
+        message: "Esta receita utiliza ingredientes que ainda não existem no seu cadastro. Deseja importar automaticamente?",
+        confirmText: "Sim, Importar Tudo",
+        cancelText: "Não, Cancelar",
+        type: "info",
+        onConfirm: () => performImport(share)
+      });
+      return;
     }
 
+    performImport(share);
+  };
+
+  const performImport = async (share: RecipeShare) => {
     setImporting(share.id);
     
     try {
