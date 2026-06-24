@@ -1,78 +1,56 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { RefreshCw, X } from 'lucide-react';
+import { useRegisterSW } from 'virtual:pwa-register/react';
 
 export const UpdateManager: React.FC = () => {
-  const [showModal, setShowModal] = useState(false);
-  const [initialVersion, setInitialVersion] = useState<string | null>(null);
-  const [dismissedVersion, setDismissedVersion] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const fetchVersion = useCallback(async () => {
-    try {
-      const response = await fetch('/api/version');
-      if (response.ok) {
-        const data = await response.json();
-        return data.version as string;
+  // useRegisterSW hook from vite-plugin-pwa
+  const {
+    needRefresh: [needRefresh, setNeedRefresh],
+    updateServiceWorker,
+  } = useRegisterSW({
+    onRegistered(r) {
+      console.log('[PWA Audit] Service Worker registrado com sucesso.', r);
+      // Optional: check for updates every 5 minutes
+      if (r) {
+        setInterval(() => {
+          console.log('[PWA Audit] Verificando se há atualizações do Service Worker...');
+          r.update();
+        }, 5 * 60 * 1000);
       }
-    } catch (error) {
-      console.error('Erro ao verificar versão:', error);
+    },
+    onRegisterError(error) {
+      console.error('[PWA Audit] Erro ao registrar Service Worker:', error);
+    },
+    onNeedRefresh() {
+      console.log('[PWA Audit] Nova versão detectada! Service Worker aguardando ativação (estado "waiting").');
+      console.log('[PWA Audit] Evento de atualização disparado.');
+      console.log('[PWA Audit] Modal solicitado.');
     }
-    return null;
-  }, []);
+  });
 
   useEffect(() => {
-    // Check version on mount
-    const init = async () => {
-      const v = await fetchVersion();
-      if (v) {
-        setInitialVersion(v);
-      }
-    };
-    init();
-
-    // Poll for changes every 5 minutes
-    const interval = setInterval(async () => {
-      const currentVersion = await fetchVersion();
-      
-      // If version changed and it's not the one we just dismissed
-      if (initialVersion && currentVersion && currentVersion !== initialVersion && currentVersion !== dismissedVersion) {
-        setShowModal(true);
-      }
-    }, 1000 * 60 * 5); // 5 minutes
-
-    // Add visibility change listener to check for updates when returning
-    const handleVisibilityChange = async () => {
-      if (document.visibilityState === 'visible') {
-        const currentVersion = await fetchVersion();
-        if (initialVersion && currentVersion && currentVersion !== initialVersion && currentVersion !== dismissedVersion) {
-          setShowModal(true);
-        }
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      clearInterval(interval);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [fetchVersion, initialVersion, dismissedVersion]);
-
-  const handleUpdate = () => {
-    setIsUpdating(true);
-    window.location.reload();
-  };
-
-  const handleClose = async () => {
-    // Mark the current version as dismissed so it doesn't show up again in this session
-    const currentVersion = await fetchVersion();
-    if (currentVersion) {
-      setDismissedVersion(currentVersion);
+    if (needRefresh) {
+      console.log('[PWA Audit] O modal de atualização está sendo exibido ao usuário.');
     }
-    setShowModal(false);
+  }, [needRefresh]);
+
+  const handleUpdate = async () => {
+    console.log('[PWA Audit] Usuário confirmou a atualização. Executando skipWaiting() e atualizando...');
+    setIsUpdating(true);
+    // This calls skipWaiting on the SW, and when the controlling SW changes, it reloads the page
+    await updateServiceWorker(true);
+    console.log('[PWA Audit] Atualização concluída. Recarregando a página (se não recarregar automaticamente).');
   };
 
-  if (!showModal) return null;
+  const handleClose = () => {
+    console.log('[PWA Audit] Usuário optou por atualizar depois.');
+    setNeedRefresh(false);
+  };
+
+  if (!needRefresh) return null;
 
   return (
     <AnimatePresence>
@@ -96,10 +74,10 @@ export const UpdateManager: React.FC = () => {
           </div>
 
           <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
-            Nova atualização disponível
+            🚀 Nova versão disponível
           </h3>
           <p className="text-slate-600 dark:text-slate-400 text-sm mb-6">
-            Uma nova versão do Prodin está disponível com melhorias e correções. Deseja atualizar agora?
+            Uma nova atualização do Prodin foi encontrada. Deseja atualizar agora para acessar as melhorias mais recentes?
           </p>
 
           <div className="flex gap-3">
@@ -115,7 +93,7 @@ export const UpdateManager: React.FC = () => {
               disabled={isUpdating}
               className="px-6 py-2.5 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition-colors text-sm"
             >
-              Depois
+              Mais Tarde
             </button>
           </div>
         </motion.div>
