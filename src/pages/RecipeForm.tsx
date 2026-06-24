@@ -20,7 +20,7 @@ export default function RecipeForm() {
     return val.charAt(0).toUpperCase() + val.slice(1);
   };
   
-  const recipeCategories = Array.from(new Set(recipes.map(r => r.category).filter(Boolean)));
+  const recipeCategories = Array.from(new Set(recipes.map(r => r.category).filter(Boolean))).sort();
   
   const draftKey = id || 'nova';
   const draft = recipeDrafts[draftKey];
@@ -308,7 +308,7 @@ export default function RecipeForm() {
                    className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
                  >
                    <option value="">Selecione...</option>
-                   {ingredients.map(ing => (
+                   {ingredients.slice().sort((a, b) => a.name.localeCompare(b.name)).map(ing => (
                      <option key={ing.id} value={ing.id}>{ing.name}</option>
                    ))}
                  </select>

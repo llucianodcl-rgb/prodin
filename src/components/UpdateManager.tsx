@@ -81,7 +81,7 @@ export const UpdateManager: React.FC = () => {
           initial={{ opacity: 0, y: 100, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 100, scale: 0.95 }}
-          className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-indigo-100 dark:border-indigo-500/20 p-6 max-w-sm w-full pointer-events-auto"
+          className="bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-indigo-100 dark:border-indigo-500/20 p-6 max-w-sm w-full pointer-events-auto"
         >
           <div className="flex items-start justify-between mb-4">
             <div className="bg-indigo-50 dark:bg-indigo-500/10 p-3 rounded-xl text-indigo-600 dark:text-indigo-400">

@@ -29,6 +29,7 @@ export default function Settings() {
 
   const [showResetModal, setShowResetModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -191,7 +192,7 @@ export default function Settings() {
               </div>
             </div>
             <button 
-              onClick={logout}
+              onClick={() => setShowLogoutModal(true)}
               className="flex items-center justify-center space-x-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 px-4 py-2 rounded-xl transition-colors font-medium text-slate-700 dark:text-slate-200 w-full sm:w-auto"
             >
               <LogOut size={18} /> <span>Sair da conta</span>
@@ -293,7 +294,7 @@ export default function Settings() {
       {/* Reset Modal */}
       {showResetModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200 dark:border-slate-700 animate-in fade-in zoom-in duration-200">
+          <div className="bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200 dark:border-slate-700 animate-in fade-in zoom-in duration-200">
              <div className="p-6 text-center">
                 <div className="bg-amber-100 dark:bg-amber-500/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                   <AlertTriangle size={32} className="text-amber-600 dark:text-amber-400" />
@@ -326,7 +327,7 @@ export default function Settings() {
       {/* Delete Account Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200 dark:border-slate-700 animate-in fade-in zoom-in duration-200">
+          <div className="bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200 dark:border-slate-700 animate-in fade-in zoom-in duration-200">
              <div className="p-6">
                 <button 
                   onClick={() => setShowDeleteModal(false)}
@@ -371,6 +372,37 @@ export default function Settings() {
                       Cancelar
                     </button>
                   </div>
+                </div>
+             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Logout Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+          <div className="bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200 dark:border-slate-700 animate-in fade-in zoom-in duration-200">
+             <div className="p-6 text-center">
+                <div className="bg-slate-100 dark:bg-slate-700 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-600 dark:text-slate-300">
+                  <LogOut size={32} />
+                </div>
+                <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">Sair da Conta</h3>
+                <p className="text-slate-500 dark:text-slate-400 mb-6 font-medium leading-relaxed">
+                  Tem certeza que deseja sair da sua conta? Você precisará entrar novamente para acessar seus dados.
+                </p>
+                <div className="flex flex-col gap-2">
+                  <button 
+                    onClick={logout}
+                    className="w-full bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 p-3 rounded-xl font-bold transition-all"
+                  >
+                    Sim, sair
+                  </button>
+                  <button 
+                    onClick={() => setShowLogoutModal(false)}
+                    className="w-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 p-3 rounded-xl font-bold transition-all"
+                  >
+                    Continuar logado
+                  </button>
                 </div>
              </div>
           </div>

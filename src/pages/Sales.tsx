@@ -341,7 +341,7 @@ export default function Sales() {
                       className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink dark:text-white font-bold text-slate-700"
                     >
                       <option value="">-- Selecione a Receita --</option>
-                      {recipes.map(recipe => (
+                      {recipes.slice().sort((a, b) => a.name.localeCompare(b.name)).map(recipe => (
                         <option key={recipe.id} value={recipe.id}>
                           {recipe.name}
                         </option>
@@ -368,7 +368,7 @@ export default function Sales() {
                       className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink dark:text-white font-bold text-slate-700"
                     >
                       <option value="">-- Nenhuma Embalagem --</option>
-                      {extras.map(extra => (
+                      {extras.slice().sort((a, b) => a.name.localeCompare(b.name)).map(extra => (
                         <option key={extra.id} value={extra.id}>
                           {extra.name}
                         </option>
@@ -423,7 +423,7 @@ export default function Sales() {
                   className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink dark:text-white font-bold text-slate-700"
                 >
                   <option value="">-- Selecione --</option>
-                  {recipes.map(recipe => (
+                  {recipes.slice().sort((a, b) => a.name.localeCompare(b.name)).map(recipe => (
                     <option key={recipe.id} value={recipe.id}>
                       {recipe.name}
                     </option>

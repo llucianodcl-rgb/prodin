@@ -1,0 +1,536 @@
+src/components/shares/ShareRecipeModal.tsx:    <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[110] flex items-center justify-center p-4">
+src/components/shares/ShareRecipeModal.tsx:      <div className="bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
+src/components/shares/ShareRecipeModal.tsx:        <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
+src/components/shares/ShareRecipeModal.tsx:            className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors text-slate-500"
+src/components/shares/ShareRecipeModal.tsx:              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">E-mail do usuário Prodin</label>
+src/components/shares/ShareRecipeModal.tsx:                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint dark:text-white transition-all shadow-sm"
+src/components/shares/ShareRecipeModal.tsx:              className="flex-1 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 py-3 rounded-xl font-bold transition-all dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700"
+src/components/shares/SharesFAB.tsx:          className="relative bg-white dark:bg-slate-800 p-4 rounded-full shadow-lg border border-pink/20 dark:border-slate-700 hover:bg-slate-50 transition-colors"
+src/components/shares/SharesFAB.tsx:        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+src/components/shares/SharesFAB.tsx:          <div className="bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col h-[80vh] sm:h-auto sm:max-h-[85vh] border border-slate-200/50 dark:border-slate-800/50">
+src/components/shares/SharesFAB.tsx:            <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
+src/components/shares/SharesFAB.tsx:                className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors text-slate-500"
+src/components/shares/SharesFAB.tsx:            <div className="flex border-b border-slate-100 dark:border-slate-800">
+src/components/shares/SharesFAB.tsx:                    ? 'text-pink border-b-2 border-pink bg-pink-50 dark:bg-slate-800' 
+src/components/shares/SharesFAB.tsx:                    : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+src/components/shares/SharesFAB.tsx:                    ? 'text-pink border-b-2 border-pink bg-pink-50 dark:bg-slate-800' 
+src/components/shares/SharesFAB.tsx:                    : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+src/components/shares/SharesFAB.tsx:            <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-50/50 dark:bg-slate-900 border-t border-white dark:border-transparent">
+src/components/shares/SharesFAB.tsx:                    <div className="text-center py-12 text-slate-400">
+src/components/shares/SharesFAB.tsx:                      <div key={share.id} className="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
+src/components/shares/SharesFAB.tsx:                            <h3 className="font-bold text-lg text-slate-800 dark:text-white uppercase">{share.recipeName}</h3>
+src/components/shares/SharesFAB.tsx:                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Shared by: <span className="font-semibold text-slate-700 dark:text-slate-300">{share.senderName} ({share.senderEmail})</span></p>
+src/components/shares/SharesFAB.tsx:                            <p className="text-[11px] text-slate-400 mt-1">
+src/components/shares/SharesFAB.tsx:                          {share.status === 'rejected' && <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide flex items-center gap-1.5"><X size={12} /> Recusada</span>}
+src/components/shares/SharesFAB.tsx:                          <div className="flex gap-3 mt-6 pt-4 border-t border-slate-100 dark:border-slate-700">
+src/components/shares/SharesFAB.tsx:                              className="flex-1 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all dark:bg-slate-800 dark:text-slate-300 dark:border-slate-600 dark:hover:bg-slate-700"
+src/components/shares/SharesFAB.tsx:                    <div className="text-center py-12 text-slate-400">
+src/components/shares/SharesFAB.tsx:                      <div key={share.id} className="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex justify-between items-center">
+src/components/shares/SharesFAB.tsx:                          <h3 className="font-bold text-slate-800 dark:text-white uppercase text-sm">{share.recipeName}</h3>
+src/components/shares/SharesFAB.tsx:                          <p className="text-xs text-slate-500 mt-1">Para: {share.receiverEmail}</p>
+src/components/shares/SharesFAB.tsx:                          <p className="text-[10px] text-slate-400 mt-1">
+src/components/shares/SharesFAB.tsx:                          {share.status === 'rejected' && <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide">✖ Recusada</span>}
+src/components/UpdateManager.tsx:          className="bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-indigo-100 dark:border-indigo-500/20 p-6 max-w-sm w-full pointer-events-auto"
+src/components/UpdateManager.tsx:              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+src/components/UpdateManager.tsx:          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
+src/components/UpdateManager.tsx:          <p className="text-slate-600 dark:text-slate-400 text-sm mb-6">
+src/components/UpdateManager.tsx:              className="px-6 py-2.5 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-xl transition-colors text-sm"
+src/components/layout/FirestoreSync.tsx:      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+src/components/layout/FirestoreSync.tsx:        <div className="flex flex-col items-center gap-4 text-slate-500">
+src/components/layout/ActionFAB.tsx:        className="relative bg-pink dark:bg-pink-500 p-4 rounded-full shadow-lg border border-pink/20 dark:border-slate-700 hover:bg-pink-hover hover:scale-105 text-white transition-all"
+src/components/layout/Layout.tsx:    <div className="min-h-screen bg-pink-soft dark:bg-slate-900 text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-200">
+src/components/layout/Layout.tsx:      <header className="sticky top-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-pink/20 dark:border-slate-800/60 p-4 z-20 flex items-center justify-between">
+src/components/layout/Layout.tsx:      <div className="fixed bottom-0 left-0 right-0 bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl border-t border-pink/10 dark:border-slate-800/40 pb-safe z-10 flex justify-center py-2 px-1 sm:px-4 shadow-[0_-4px_24px_rgba(0,0,0,0.06)]">
+src/components/layout/Layout.tsx:                    : "text-slate-400 dark:text-slate-500 hover:text-pink transition-colors"
+src/components/layout/SessionDebug.tsx:      <div className="mb-1"><span className="text-slate-400">Email:</span> {user.email}</div>
+src/components/layout/SessionDebug.tsx:      <div className="mb-1"><span className="text-slate-400">UID:</span> {user.uid}</div>
+src/components/layout/SessionDebug.tsx:      <div className="mb-1"><span className="text-slate-400">App Role:</span> {appUser?.role || 'null'}</div>
+src/components/layout/SessionDebug.tsx:      <div className="mb-1"><span className="text-slate-400">App Status:</span> {appUser?.status || 'null'}</div>
+src/components/layout/SessionDebug.tsx:        <span className="text-slate-400">Master Admin?</span>{' '}
+src/components/layout/ToastContainer.tsx:    success: "border-emerald-100 bg-white dark:bg-slate-800 dark:border-emerald-500/20",
+src/components/layout/ToastContainer.tsx:    warning: "border-amber-100 bg-white dark:bg-slate-800 dark:border-amber-500/20",
+src/components/layout/ToastContainer.tsx:    info: "border-indigo-100 bg-white dark:bg-slate-800 dark:border-indigo-500/20",
+src/components/layout/ToastContainer.tsx:          <p className="text-sm font-medium text-slate-900 dark:text-white">
+src/components/layout/ToastContainer.tsx:            className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+src/components/layout/ToastContainer.tsx:      <div className="h-1 bg-slate-100 dark:bg-slate-700 w-full overflow-hidden">
+src/components/layout/AdminFAB.tsx:        className="relative bg-brown dark:bg-slate-700 hover:bg-brown/90 text-white p-4 rounded-full shadow-lg transition-all hover:scale-110 active:scale-95 flex items-center justify-center group"
+src/components/layout/AdminFAB.tsx:          <span className="absolute -top-1 -right-1 bg-pink text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-brown dark:border-slate-700 animate-bounce">
+src/components/layout/AdminFAB.tsx:        <span className="absolute right-full mr-3 px-3 py-1.5 bg-slate-800 text-white text-xs font-bold rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl">
+src/pages/Ingredients.tsx:          <p className="text-slate-500 dark:text-slate-400">Gerencie seu estoque interno.</p>
+src/pages/Ingredients.tsx:        <section className="bg-white dark:bg-slate-800 rounded-3xl border border-pink/10 dark:border-slate-700 shadow-sm overflow-hidden transition-all duration-300">
+src/pages/Ingredients.tsx:            className="w-full p-5 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group"
+src/pages/Ingredients.tsx:              <p className="text-xs text-slate-500 dark:text-slate-400 italic">Toque para ver e editar suas categorias.</p>
+src/pages/Ingredients.tsx:            {showCategories ? <ChevronDown size={20} className="text-pink" /> : <ChevronRight size={20} className="text-slate-300 group-hover:text-pink" />}
+src/pages/Ingredients.tsx:              <div className="flex flex-wrap gap-2 pt-1 border-t border-pink/5 dark:border-slate-700 mt-2">
+src/pages/Ingredients.tsx:                  <span key={cat} className="inline-flex items-center gap-1.5 pl-3 pr-2 py-1 bg-mint-soft dark:bg-slate-900 border border-mint/10 dark:border-slate-700 rounded-xl transition-colors">
+src/pages/Ingredients.tsx:                      className="p-1 text-slate-400 hover:text-pink transition-colors cursor-pointer"
+src/pages/Ingredients.tsx:                      className="p-1 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
+src/pages/Ingredients.tsx:      <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-pink/10 dark:border-slate-700 overflow-hidden">
+src/pages/Ingredients.tsx:        <div className="p-4 border-b border-pink/10 bg-pink-soft/20 dark:bg-slate-800/50">
+src/pages/Ingredients.tsx:            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+src/pages/Ingredients.tsx:              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-mint/20 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint dark:text-white transition-shadow"
+src/pages/Ingredients.tsx:            <div className="col-span-full py-12 text-center text-slate-500 dark:text-slate-400">
+src/pages/Ingredients.tsx:                className="group relative bg-white dark:bg-slate-900 p-3 rounded-2xl border border-pink/10 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-pink/30 transition-all cursor-pointer"
+src/pages/Ingredients.tsx:                    <h3 className="font-bold text-slate-900 dark:text-white uppercase truncate group-hover:text-pink transition-colors text-[17px] tracking-tight leading-tight">
+src/pages/Ingredients.tsx:                      <p className="text-[11px] text-slate-400 font-medium italic mt-1 truncate uppercase tracking-wider">
+src/pages/Ingredients.tsx:                  <ChevronRight size={18} className="text-slate-300 group-hover:text-pink transition-colors shrink-0 ml-2" />
+src/pages/Ingredients.tsx:                <div className="flex items-center justify-end pt-2 mt-1 border-t border-slate-50 dark:border-slate-800">
+src/pages/Ingredients.tsx:                      className="p-1.5 text-slate-400 hover:text-pink hover:bg-pink-soft dark:hover:bg-pink-500/10 rounded-lg transition-colors"
+src/pages/Ingredients.tsx:                      className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-lg transition-colors"
+src/pages/Ingredients.tsx:                      className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
+src/pages/Ingredients.tsx:          <div className="bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-pink/10">
+src/pages/Ingredients.tsx:                       className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint dark:text-white disabled:opacity-75 disabled:cursor-not-allowed"
+src/pages/Ingredients.tsx:                       className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint dark:text-white disabled:opacity-75 disabled:cursor-not-allowed"
+src/pages/Ingredients.tsx:                   <div className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 rounded-xl text-slate-500 font-medium">
+src/pages/Ingredients.tsx:                 <div className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 rounded-xl text-slate-500 font-medium">
+src/pages/Ingredients.tsx:                 {saveStatus && <span className="text-xs text-slate-500 animate-pulse mr-auto">{saveStatus}</span>}
+src/pages/Ingredients.tsx:                   className="px-4 py-3 text-slate-500 font-bold hover:bg-slate-50 rounded-xl transition-colors"
+src/pages/Ingredients.tsx:          <div className="bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden p-6 space-y-4 border border-pink/10">
+src/pages/Ingredients.tsx:                className="px-4 py-2 text-slate-500 font-bold hover:bg-slate-50 rounded-xl transition-colors cursor-pointer"
+src/pages/Ingredients.tsx:        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
+src/pages/Ingredients.tsx:          <div className="bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 space-y-4">
+src/pages/Ingredients.tsx:            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Excluir Categoria</h3>
+src/pages/Ingredients.tsx:            <p className="text-sm text-slate-500 dark:text-slate-400">
+src/pages/Ingredients.tsx:              Tem certeza que deseja excluir a categoria <strong className="text-slate-800 dark:text-white">"{deletingCategory}"</strong>? Todos os ingredientes associados a ela terão sua categoria redefinida para vazia/geral.
+src/pages/Ingredients.tsx:                className="px-3 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-sm font-medium transition-colors cursor-pointer"
+src/pages/Users.tsx:          <p className="text-slate-500 dark:text-slate-400 font-medium">Controle o acesso ao sistema</p>
+src/pages/Users.tsx:          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+src/pages/Users.tsx:            className="pl-10 pr-4 py-2 bg-white dark:bg-slate-800 border border-pink/20 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink transition-all w-full md:w-64 text-sm"
+src/pages/Users.tsx:      <div className="flex p-1 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl mb-6 shadow-sm border border-pink/10">
+src/pages/Users.tsx:              : 'text-slate-500 hover:text-pink'
+src/pages/Users.tsx:          <span className={`px-1.5 py-0.5 rounded-md text-[10px] ${activeTab === 'pendentes' ? 'bg-white/20' : 'bg-slate-200 dark:bg-slate-700'}`}>
+src/pages/Users.tsx:              : 'text-slate-500 hover:text-pink'
+src/pages/Users.tsx:          <span className={`px-1.5 py-0.5 rounded-md text-[10px] ${activeTab === 'aprovados' ? 'bg-white/20' : 'bg-slate-200 dark:bg-slate-700'}`}>
+src/pages/Users.tsx:              : 'text-slate-500 hover:text-pink'
+src/pages/Users.tsx:          <span className={`px-1.5 py-0.5 rounded-md text-[10px] ${activeTab === 'cancelados' ? 'bg-white/20' : 'bg-slate-200 dark:bg-slate-700'}`}>
+src/pages/Users.tsx:            <p className="text-slate-500">Carregando usuários...</p>
+src/pages/Users.tsx:          <div className="bg-white dark:bg-slate-800 rounded-3xl p-12 text-center border border-pink/10 shadow-soft">
+src/pages/Users.tsx:            <div className="bg-slate-50 dark:bg-slate-900 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+src/pages/Users.tsx:              <UsersIcon className="text-slate-300" size={32} />
+src/pages/Users.tsx:            <h3 className="text-lg font-bold text-slate-700 dark:text-slate-200">Nenhum usuário encontrado</h3>
+src/pages/Users.tsx:            <p className="text-slate-400">Tente buscar por outro termo ou mude a aba.</p>
+src/pages/Users.tsx:                className="bg-white dark:bg-slate-800 rounded-3xl p-5 shadow-soft border border-pink/5 hover:border-pink/20 transition-all group"
+src/pages/Users.tsx:                      <p className="text-sm text-slate-500 font-medium">{user.email}</p>
+src/pages/Users.tsx:                      <p className="text-[10px] text-slate-400 flex items-center gap-1 mt-1">
+src/pages/Users.tsx:                          className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-rose-50 dark:hover:bg-rose-500/10 text-slate-600 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 rounded-xl text-sm font-bold transition-all"
+src/pages/Users.tsx:                        <div className="flex items-center gap-1 text-slate-400 text-[10px] font-medium">
+src/pages/Users.tsx:                          className="mt-2 text-[10px] text-slate-400 hover:text-rose-500 font-bold underline decoration-dotted"
+src/pages/Users.tsx:                        <div className="flex items-center gap-1 text-slate-400 text-[10px] font-medium">
+src/pages/Users.tsx:                          className="mt-2 text-[10px] text-slate-400 hover:text-emerald-500 font-bold underline decoration-dotted"
+src/pages/Settings.tsx:        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Configurações</h1>
+src/pages/Settings.tsx:        <p className="text-slate-500 dark:text-slate-400">Ajustes do aplicativo e dados.</p>
+src/pages/Settings.tsx:      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+src/pages/Settings.tsx:          <div className="p-6 border-b border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+src/pages/Settings.tsx:                <h3 className="font-bold text-slate-900 dark:text-white">Sua Conta</h3>
+src/pages/Settings.tsx:                <p className="text-sm text-slate-500 dark:text-slate-400">{user.email}</p>
+src/pages/Settings.tsx:              className="flex items-center justify-center space-x-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 px-4 py-2 rounded-xl transition-colors font-medium text-slate-700 dark:text-slate-200 w-full sm:w-auto"
+src/pages/Settings.tsx:          <div className="p-6 border-b border-slate-200 dark:border-slate-700 space-y-4">
+src/pages/Settings.tsx:             <h4 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Ações Críticas</h4>
+src/pages/Settings.tsx:        <div className="p-6 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+src/pages/Settings.tsx:            <h3 className="font-bold text-slate-900 dark:text-white">Aparência</h3>
+src/pages/Settings.tsx:            <p className="text-sm text-slate-500 dark:text-slate-400">Alterne entre tema claro e escuro</p>
+src/pages/Settings.tsx:            className="flex items-center space-x-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 px-4 py-2 rounded-xl transition-colors font-medium text-slate-700 dark:text-slate-200"
+src/pages/Settings.tsx:      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 space-y-3">
+src/pages/Settings.tsx:          <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+src/pages/Settings.tsx:          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 mb-4">
+src/pages/Settings.tsx:        <div className="pt-6 border-t border-slate-200 dark:border-slate-700">
+src/pages/Settings.tsx:              <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+src/pages/Settings.tsx:              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+src/pages/Settings.tsx:            {saveStatus && <span className="text-xs text-slate-500 animate-pulse">{saveStatus}</span>}
+src/pages/Settings.tsx:            className="w-full h-32 px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-xs dark:text-slate-300 mb-4"
+src/pages/Settings.tsx:              className="px-4 py-2 bg-slate-900 hover:bg-black text-white dark:bg-slate-700 dark:hover:bg-slate-600 rounded-xl font-medium transition-colors disabled:opacity-50"
+src/pages/Settings.tsx:        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+src/pages/Settings.tsx:          <div className="bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200 dark:border-slate-700 animate-in fade-in zoom-in duration-200">
+src/pages/Settings.tsx:                <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">Atenção: Ação irreversível!</h3>
+src/pages/Settings.tsx:                <p className="text-slate-500 dark:text-slate-400 mb-6 font-medium leading-relaxed">
+src/pages/Settings.tsx:                    className="w-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 p-3 rounded-xl font-bold transition-all"
+src/pages/Settings.tsx:        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+src/pages/Settings.tsx:          <div className="bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200 dark:border-slate-700 animate-in fade-in zoom-in duration-200">
+src/pages/Settings.tsx:                  className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+src/pages/Settings.tsx:                   <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">Excluir Conta Permanentemente</h3>
+src/pages/Settings.tsx:                   <p className="text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+src/pages/Settings.tsx:                    <label className="block text-xs font-black uppercase text-slate-400 mb-2">Digite EXCLUIR para confirmar</label>
+src/pages/Settings.tsx:                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500 font-bold text-center tracking-widest text-rose-600"
+src/pages/Settings.tsx:                      className="w-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 p-3 rounded-xl font-bold transition-all"
+src/pages/Settings.tsx:        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+src/pages/Settings.tsx:          <div className="bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200 dark:border-slate-700 animate-in fade-in zoom-in duration-200">
+src/pages/Settings.tsx:                <div className="bg-slate-100 dark:bg-slate-700 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-600 dark:text-slate-300">
+src/pages/Settings.tsx:                <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">Sair da Conta</h3>
+src/pages/Settings.tsx:                <p className="text-slate-500 dark:text-slate-400 mb-6 font-medium leading-relaxed">
+src/pages/Settings.tsx:                    className="w-full bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 p-3 rounded-xl font-bold transition-all"
+src/pages/Settings.tsx:                    className="w-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 p-3 rounded-xl font-bold transition-all"
+src/pages/RecipeDetails.tsx:        <p className="text-xl text-slate-500 dark:text-slate-400">Receita não encontrada.</p>
+src/pages/RecipeDetails.tsx:          <button onClick={() => navigate('/receitas')} className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors shrink-0">
+src/pages/RecipeDetails.tsx:            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white truncate">{recipe.name}</h1>
+src/pages/RecipeDetails.tsx:            <p className="text-slate-500 dark:text-slate-400 truncate">{recipe.category || 'Sem categoria'}</p>
+src/pages/RecipeDetails.tsx:             className="inline-flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 px-4 py-2 rounded-xl transition-colors font-medium border border-slate-200 dark:border-slate-700 shadow-sm grow sm:grow-0"
+src/pages/RecipeDetails.tsx:             className="inline-flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 px-4 py-2 rounded-xl transition-colors font-medium border border-slate-200 dark:border-slate-700 shadow-sm grow sm:grow-0"
+src/pages/RecipeDetails.tsx:          <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">{recipe.name}</h1>
+src/pages/RecipeDetails.tsx:          <p className="text-lg text-slate-600 dark:text-slate-400 mt-2">Ficha Técnica e Precificação</p>
+src/pages/RecipeDetails.tsx:          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+src/pages/RecipeDetails.tsx:            <div className="p-6 border-b border-slate-200 dark:border-slate-700">
+src/pages/RecipeDetails.tsx:               <h3 className="text-lg font-bold text-slate-900 dark:text-white">Ingredientes Utilizados</h3>
+src/pages/RecipeDetails.tsx:              <thead className="bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400">
+src/pages/RecipeDetails.tsx:              <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+src/pages/RecipeDetails.tsx:                        <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">{ing.name}</td>
+src/pages/RecipeDetails.tsx:                          <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
+src/pages/RecipeDetails.tsx:                          <td className="px-6 py-4 text-slate-600 dark:text-slate-300 text-right">{formatCurrency(getRecipeIngredientCost(ri, ing))}</td>
+src/pages/RecipeDetails.tsx:              <tfoot className="bg-slate-50 dark:bg-slate-900/50">
+src/pages/RecipeDetails.tsx:                   <td colSpan={2} className="px-6 py-4 font-bold text-slate-900 dark:text-white text-right">Custo total de ingredientes:</td>
+src/pages/RecipeDetails.tsx:          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+src/pages/RecipeDetails.tsx:            <div className="p-6 border-b border-slate-200 dark:border-slate-700">
+src/pages/RecipeDetails.tsx:               <h3 className="text-lg font-bold text-slate-900 dark:text-white">Custos Extras</h3>
+src/pages/RecipeDetails.tsx:              <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+src/pages/RecipeDetails.tsx:                     <td className="px-6 py-4 text-slate-500 dark:text-slate-400">Nenhum custo extra cadastrado.</td>
+src/pages/RecipeDetails.tsx:                        <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">{ec.name}</td>
+src/pages/RecipeDetails.tsx:                        <td className="px-6 py-4 text-slate-600 dark:text-slate-300 text-right">{formatCurrency(ec.value)}</td>
+src/pages/RecipeDetails.tsx:              <tfoot className="bg-slate-50 dark:bg-slate-900/50">
+src/pages/RecipeDetails.tsx:                   <td className="px-6 py-4 font-bold text-slate-900 dark:text-white text-right">Custo extra total:</td>
+src/pages/RecipeDetails.tsx:          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+src/pages/RecipeDetails.tsx:             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Resumo de Produção</h3>
+src/pages/RecipeDetails.tsx:               <div className="flex justify-between items-center pb-4 border-b border-slate-100 dark:border-slate-700">
+src/pages/RecipeDetails.tsx:                 <span className="text-slate-500 dark:text-slate-400">Peso Total</span>
+src/pages/RecipeDetails.tsx:                 <span className="font-medium text-slate-900 dark:text-white">{formatNumber(recipe.finalWeight)} g/ml</span>
+src/pages/RecipeDetails.tsx:               <div className="flex justify-between items-center pb-4 border-b border-slate-100 dark:border-slate-700">
+src/pages/RecipeDetails.tsx:                 <span className="text-slate-500 dark:text-slate-400">Peso por Unidade</span>
+src/pages/RecipeDetails.tsx:                 <span className="font-medium text-slate-900 dark:text-white">{formatNumber(recipe.weightPerUnit)} g/ml</span>
+src/pages/RecipeDetails.tsx:               <div className="flex justify-between items-center pb-4 border-b border-slate-100 dark:border-slate-700 bg-indigo-50/50 dark:bg-indigo-500/5 p-3 rounded-lg">
+src/pages/RecipeDetails.tsx:                 <span className="text-slate-500 dark:text-slate-400">Custo Total da Receita</span>
+src/pages/RecipeDetails.tsx:                 <span className="font-bold text-slate-900 dark:text-white">{formatCurrency(totalCost)}</span>
+src/pages/RecipeDetails.tsx:                 <span className="text-slate-500 dark:text-slate-400">Custo por Unidade</span>
+src/pages/RecipeDetails.tsx:                 <span className="font-bold text-slate-900 dark:text-white">{formatCurrency(metrics.costPerUnit)}</span>
+src/pages/RecipeDetails.tsx:           <div className="space-y-4 pt-6 border-t border-slate-200 dark:border-slate-700 mt-10">
+src/pages/RecipeDetails.tsx:              <h3 className="text-lg font-bold text-slate-900 dark:text-white border-b border-slate-300 dark:border-slate-600 pb-2">Resumo de Precificação</h3>
+src/pages/RecipeDetails.tsx:                <span className="text-slate-600 dark:text-slate-400">Preço de Venda Definido:</span> 
+src/pages/RecipeDetails.tsx:                <span className="font-bold text-slate-900 dark:text-white">{formatCurrency(recipe.targetPricePerUnit)}</span>
+src/pages/RecipeDetails.tsx:                <span className="text-slate-600 dark:text-slate-400">Faturamento Estimado:</span> 
+src/pages/RecipeDetails.tsx:                <span className="text-slate-900 dark:text-white">{formatCurrency(metrics.targetTotalRevenue)}</span>
+src/pages/RecipeDetails.tsx:                <span className="text-slate-600 dark:text-slate-400">Lucro Líquido total:</span> 
+src/pages/RecipeDetails.tsx:                <span className="text-slate-900 dark:text-white">{formatCurrency(metrics.netProfitTotal)}</span>
+src/pages/RecipeDetails.tsx:                <span className="text-slate-600 dark:text-slate-400">Margem de Lucro:</span> 
+src/pages/RecipeDetails.tsx:                <span className="text-slate-900 dark:text-white">{formatNumber(metrics.profitMargin)}%</span>
+src/pages/RecipeDetails.tsx:                <span className="text-slate-600 dark:text-slate-400">Multiplicador:</span> 
+src/pages/RecipeDetails.tsx:                <span className="text-slate-900 dark:text-white">{formatNumber(metrics.actualMultiplier)}x</span>
+src/pages/Conversions.tsx:            <h1 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight">Conversões</h1>
+src/pages/Conversions.tsx:            <p className="text-slate-500 dark:text-slate-400 font-medium text-sm">Converta medidas culinárias e planeje suas compras.</p>
+src/pages/Conversions.tsx:          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm">
+src/pages/Conversions.tsx:            <h2 className="text-sm font-black uppercase tracking-widest text-slate-800 dark:text-slate-200 mb-6 flex items-center gap-2">
+src/pages/Conversions.tsx:                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wide">
+src/pages/Conversions.tsx:                  className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-pink/50 transition-all"
+src/pages/Conversions.tsx:                  <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wide">
+src/pages/Conversions.tsx:                      className="w-24 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-black text-slate-700 dark:text-slate-200 text-center focus:outline-none focus:ring-2 focus:ring-pink/50 transition-all font-mono"
+src/pages/Conversions.tsx:                      className="flex-1 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-pink/50 transition-all"
+src/pages/Conversions.tsx:                  <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wide">
+src/pages/Conversions.tsx:                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-pink/50 transition-all"
+src/pages/Conversions.tsx:                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/30 text-center border border-slate-200 dark:border-slate-800">
+src/pages/Conversions.tsx:                  <p className="text-slate-500 dark:text-slate-400 font-medium text-sm">Selecione um ingrediente para ver o resultado.</p>
+src/pages/Conversions.tsx:                <div className="relative mt-6 pt-6 border-t border-slate-200 dark:border-slate-800">
+src/pages/Conversions.tsx:                  <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest text-center mb-4">Resultado da Conversão</h3>
+src/pages/Conversions.tsx:                    <div className="text-center bg-slate-50 dark:bg-slate-800/50 py-4 px-6 rounded-2xl border border-slate-200 dark:border-slate-700 min-w-[140px]">
+src/pages/Conversions.tsx:                      <span className="block text-2xl font-black text-slate-800 dark:text-white font-mono">{formatNumber(parsedValue)}</span>
+src/pages/Conversions.tsx:                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1">{getShortUnit(sourceUnit)}</span>
+src/pages/Conversions.tsx:                    <div className="text-slate-300 dark:text-slate-600">
+src/pages/Conversions.tsx:                      className="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 text-white text-sm font-bold rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"
+src/pages/Conversions.tsx:          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm">
+src/pages/Conversions.tsx:             <h2 className="text-sm font-black uppercase tracking-widest text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2">
+src/pages/Conversions.tsx:              <Info size={14} className="text-slate-400 mt-0.5 shrink-0" />
+src/pages/Conversions.tsx:              <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Volumes baseados no padrão brasileiro. Variam conforme densidade do ingrediente (ex: 1 xícara de açúcar ≠ 1 xícara de farinha).</p>
+src/pages/Conversions.tsx:          <div className="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm">
+src/pages/Conversions.tsx:            <h2 className="text-sm font-black uppercase tracking-widest text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2">
+src/pages/Conversions.tsx:                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium text-center py-6 bg-white dark:bg-slate-800/30 rounded-2xl border border-slate-100 dark:border-slate-800">
+src/pages/Conversions.tsx:                  <div key={item.id} className="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-200/60 dark:border-slate-700 shadow-sm">
+src/pages/Conversions.tsx:                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 truncate">
+src/pages/Conversions.tsx:                      <span className="font-bold text-slate-700 dark:text-slate-300">
+src/pages/Conversions.tsx:                      <ArrowRight size={14} className="text-slate-300 dark:text-slate-600 shrink-0" />
+src/pages/RecipeForm.tsx:          <button onClick={() => navigate('/receitas')} className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+src/pages/RecipeForm.tsx:            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+src/pages/RecipeForm.tsx:            <p className="text-slate-500 dark:text-slate-400">Preencha os dados e ingredientes da receita.</p>
+src/pages/RecipeForm.tsx:          {saveStatus && <span className="text-sm font-medium text-slate-500 animate-pulse">{saveStatus}</span>}
+src/pages/RecipeForm.tsx:          <section className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-3">
+src/pages/RecipeForm.tsx:             <h2 className="text-xl font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">Informações Básicas</h2>
+src/pages/RecipeForm.tsx:                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nome da Receita</label>
+src/pages/RecipeForm.tsx:                   className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
+src/pages/RecipeForm.tsx:                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Categoria</label>
+src/pages/RecipeForm.tsx:                   className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
+src/pages/RecipeForm.tsx:                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Descrição</label>
+src/pages/RecipeForm.tsx:                   className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
+src/pages/RecipeForm.tsx:          <section className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-3">
+src/pages/RecipeForm.tsx:             <h2 className="text-xl font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">Ingredientes Utilizados</h2>
+src/pages/RecipeForm.tsx:             <div className="flex flex-col sm:flex-row gap-2 items-end bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-dashed border-slate-300 dark:border-slate-600">
+src/pages/RecipeForm.tsx:                 <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Ingrediente</label>
+src/pages/RecipeForm.tsx:                   className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
+src/pages/RecipeForm.tsx:                 <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Qtd</label>
+src/pages/RecipeForm.tsx:                   className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
+src/pages/RecipeForm.tsx:                 <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Unidade</label>
+src/pages/RecipeForm.tsx:                   className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
+src/pages/RecipeForm.tsx:                 <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-4">Nenhum ingrediente adicionado ainda.</p>
+src/pages/RecipeForm.tsx:                 <ul className="divide-y divide-slate-100 dark:divide-slate-700">
+src/pages/RecipeForm.tsx:                           <p className="font-medium text-slate-900 dark:text-white">{ing?.name || 'Ingrediente removido'}</p>
+src/pages/RecipeForm.tsx:                             <p className="text-sm text-slate-500 dark:text-slate-400">{ri.quantityUsed} {ri.unit}</p>
+src/pages/RecipeForm.tsx:                             className="p-2 text-slate-400 hover:text-indigo-600 transition-colors"
+src/pages/RecipeForm.tsx:                             className="p-2 text-slate-400 hover:text-green-600 transition-colors"
+src/pages/RecipeForm.tsx:                             className="p-2 text-slate-300 hover:text-rose-500 transition-colors"
+src/pages/RecipeForm.tsx:          <section className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-4">
+src/pages/RecipeForm.tsx:             <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-2 gap-4">
+src/pages/RecipeForm.tsx:               <h2 className="text-xl font-bold text-slate-900 dark:text-white">Rendimento e Porções</h2>
+src/pages/RecipeForm.tsx:               <div className="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-xl w-fit">
+src/pages/RecipeForm.tsx:                       ? "bg-white dark:bg-slate-800 text-indigo-600 shadow-sm" 
+src/pages/RecipeForm.tsx:                       : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+src/pages/RecipeForm.tsx:                       ? "bg-white dark:bg-slate-800 text-indigo-600 shadow-sm" 
+src/pages/RecipeForm.tsx:                       : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+src/pages/RecipeForm.tsx:                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Peso Final da Produção (g/ml)*</label>
+src/pages/RecipeForm.tsx:                     className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
+src/pages/RecipeForm.tsx:                       className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 px-2 py-1 rounded-md hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+src/pages/RecipeForm.tsx:                 <p className="text-xs text-slate-500 mt-1">Soma total da massa rendida{formData.isManualWeight ? " (Ajuste manual)" : " (Automático)"}.</p>
+src/pages/RecipeForm.tsx:                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Peso por Unidade (g/ml)*</label>
+src/pages/RecipeForm.tsx:                     className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
+src/pages/RecipeForm.tsx:                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Quantidade Desejada (unidades)*</label>
+src/pages/RecipeForm.tsx:                     className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white font-bold"
+src/pages/RecipeForm.tsx:                 <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl text-center border border-slate-200 dark:border-slate-800">
+src/pages/RecipeForm.tsx:                   <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">
+src/pages/RecipeForm.tsx:                     <strong className="text-2xl font-black text-slate-800 dark:text-white">
+src/pages/RecipeForm.tsx:                     <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">unidades</span>
+src/pages/RecipeForm.tsx:                   <p className="text-xs mt-2 text-slate-400">
+src/pages/RecipeForm.tsx:                   <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-amber-200 dark:border-amber-900/50 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
+src/pages/RecipeForm.tsx:                         <div className="space-y-2 text-xs text-slate-600 dark:text-slate-400">
+src/pages/RecipeForm.tsx:                           <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-1.5">
+src/pages/RecipeForm.tsx:                           <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-1.5">
+src/pages/RecipeForm.tsx:                           <div className="flex justify-between items-center pt-1 mt-1 font-bold text-slate-800 dark:text-slate-200">
+src/pages/RecipeForm.tsx:                         <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+src/pages/RecipeForm.tsx:                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+src/pages/RecipeForm.tsx:                                    <li key={idx} className="flex justify-between items-center bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-lg border border-slate-100 dark:border-slate-700/50">
+src/pages/RecipeForm.tsx:                                      <span className="text-slate-700 dark:text-slate-300 font-medium">{item.name}</span>
+src/pages/RecipeForm.tsx:                                      <span className="font-bold text-slate-900 dark:text-white px-2 py-0.5 bg-white dark:bg-slate-800 rounded shadow-sm text-[11px]">{item.display}</span>
+src/pages/RecipeForm.tsx:                                  className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 uppercase tracking-wider transition-colors"
+src/pages/RecipeForm.tsx:                       <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Validar para Demanda Específica (Opcional)</label>
+src/pages/RecipeForm.tsx:                         className="w-full px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
+src/pages/RecipeForm.tsx:          <section className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-3">
+src/pages/RecipeForm.tsx:             <h2 className="text-xl font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">Precificação Final</h2>
+src/pages/RecipeForm.tsx:                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Multiplicador de Lucro Desejado</label>
+src/pages/RecipeForm.tsx:                           : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
+src/pages/RecipeForm.tsx:                     className="w-20 px-2 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
+src/pages/RecipeForm.tsx:                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Preço de Venda Definido (Por Unidade)</label>
+src/pages/RecipeForm.tsx:                       className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white font-bold text-lg"
+src/pages/Sales.tsx:          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden relative group">
+src/pages/Sales.tsx:            <div className="p-8 text-center border-b border-slate-100 dark:border-slate-800 bg-gradient-to-b from-white to-slate-50 dark:from-slate-900 dark:to-slate-800/80 relative z-10">
+src/pages/Sales.tsx:              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Preço do Kit</p>
+src/pages/Sales.tsx:              <div className="flex items-center justify-center gap-3 text-[10px] font-bold text-slate-400 uppercase">
+src/pages/Sales.tsx:                 <span className="w-1 h-1 bg-slate-300 rounded-full" />
+src/pages/Sales.tsx:            <div className="grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-900 relative z-10">
+src/pages/Sales.tsx:              <div className="p-4 text-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+src/pages/Sales.tsx:                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Custo do Kit</p>
+src/pages/Sales.tsx:                <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{formatCurrency(totalProductionCost)}</p>
+src/pages/Sales.tsx:            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
+src/pages/Sales.tsx:                 <TrendingUp size={16} className="text-slate-400" />
+src/pages/Sales.tsx:                 <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Potencial da Produção Completa</h4>
+src/pages/Sales.tsx:                    <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Faturamento Total ({possibleKits} {possibleKits === 1 ? 'kit' : 'kits'})</p>
+src/pages/Sales.tsx:                    <p className="text-xl font-black text-slate-700 dark:text-slate-200">{formatCurrency(totalRevenue)}</p>
+src/pages/Sales.tsx:                    <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Lucro Total</p>
+src/pages/Sales.tsx:               <div className="mt-5 pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center">
+src/pages/Sales.tsx:                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">
+src/pages/Sales.tsx:                     <div className="w-32 h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+src/pages/Sales.tsx:             <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+src/pages/Sales.tsx:                 <Package className="text-slate-400 mt-0.5 flex-shrink-0" size={18} />
+src/pages/Sales.tsx:                   <h3 className="font-bold text-slate-700 dark:text-slate-300 text-[10px] uppercase tracking-widest mb-1">Produção Complementar</h3>
+src/pages/Sales.tsx:                     <div className="text-xs text-slate-500 dark:text-slate-400">
+src/pages/Sales.tsx:                     <div className="mt-3 text-[11px] text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-100 dark:border-slate-700/50">
+src/pages/Sales.tsx:                         <ChevronDown size={14} className="text-slate-400"/> Ingredientes para completar o kit:
+src/pages/Sales.tsx:                           <li key={idx} className="flex justify-between items-center border-b border-slate-200/50 dark:border-slate-700/50 py-1.5 last:border-0 hover:bg-white/50 dark:hover:bg-slate-800 transition-colors px-2 rounded -mx-2">
+src/pages/Sales.tsx:                             <span className="font-bold text-slate-800 dark:text-slate-200">{item.display}</span>
+src/pages/Sales.tsx:                         className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 uppercase tracking-wider transition-colors"
+src/pages/Sales.tsx:             <div className="flex justify-between items-center px-4 py-2.5 rounded-xl bg-slate-50/50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+src/pages/Sales.tsx:                <span className="text-slate-500 dark:text-slate-400 font-bold text-[9px] uppercase tracking-wider">Custo de produção por kit</span>
+src/pages/Sales.tsx:                <span className="font-bold text-slate-700 dark:text-slate-300 text-xs">{formatCurrency(totalProductionCost)}</span>
+src/pages/Sales.tsx:             <div className="flex justify-between items-center px-4 py-2.5 rounded-xl bg-slate-50/50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+src/pages/Sales.tsx:                <span className="text-slate-500 dark:text-slate-400 font-bold text-[9px] uppercase tracking-wider">Valor de venda (1 Doce)</span>
+src/pages/Sales.tsx:                <span className="font-bold text-slate-700 dark:text-slate-300 text-xs">{formatCurrency(unitCost)}</span>
+src/pages/Sales.tsx:               <div className="flex justify-between items-center px-4 py-2.5 rounded-xl bg-slate-50/50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+src/pages/Sales.tsx:                  <span className="text-slate-500 dark:text-slate-400 font-bold text-[9px] uppercase tracking-wider">Custo da Embalagem / Extra</span>
+src/pages/Sales.tsx:                  <span className="font-bold text-slate-700 dark:text-slate-300 text-xs">{formatCurrency(extraCost)}</span>
+src/pages/Sales.tsx:              <p className="text-slate-500 dark:text-slate-400">Monte seus kits e calcule o preço de venda dos seus doces.</p>
+src/pages/Sales.tsx:              <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-pink/10 dark:border-slate-700 space-y-4">
+src/pages/Sales.tsx:                <div className="flex items-center gap-3 border-b border-slate-100 dark:border-slate-700 pb-4">
+src/pages/Sales.tsx:                  <h2 className="text-xl font-bold text-slate-800 dark:text-white">Configuração do Kit</h2>
+src/pages/Sales.tsx:                    <label className="block text-xs font-black text-brown dark:text-slate-200 mb-2 uppercase tracking-widest">Receita Base</label>
+src/pages/Sales.tsx:                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink dark:text-white font-bold text-slate-700"
+src/pages/Sales.tsx:                    <label className="block text-xs font-black text-brown dark:text-slate-200 mb-2 uppercase tracking-widest">Quantidade de Doces no Kit</label>
+src/pages/Sales.tsx:                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink dark:text-white font-bold text-slate-700"
+src/pages/Sales.tsx:                    <label className="block text-xs font-black text-brown dark:text-slate-200 mb-2 uppercase tracking-widest">Embalagem / Itens Extras</label>
+src/pages/Sales.tsx:                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink dark:text-white font-bold text-slate-700"
+src/pages/Sales.tsx:               <div className="bg-pink-soft/30 dark:bg-slate-800/80 rounded-3xl p-6 shadow-sm border border-pink/20 dark:border-slate-700 h-full backdrop-blur-sm">
+src/pages/Sales.tsx:                  <div className="flex items-center gap-3 border-b border-pink/10 dark:border-slate-700 pb-4 mb-6">
+src/pages/Sales.tsx:          <p className="text-slate-500 dark:text-slate-400">Monte seus kits e calcule o preço de venda dos seus doces.</p>
+src/pages/Sales.tsx:          <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-sm border border-pink/10 dark:border-slate-700 space-y-4 text-center">
+src/pages/Sales.tsx:            <h2 className="text-xl font-bold text-slate-800 dark:text-white">Simulador de Kit</h2>
+src/pages/Sales.tsx:                <label className="block text-xs font-black text-brown dark:text-slate-200 mb-2 uppercase tracking-widest">Selecione uma Receita</label>
+src/pages/Sales.tsx:                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink dark:text-white font-bold text-slate-700"
+src/pages/Sales.tsx:              <p className="text-sm text-slate-400 text-center">Comece selecionando uma receita para montar seu kit personalizado.</p>
+src/pages/Sales.tsx:          <div className="bg-slate-50 dark:bg-slate-900/50 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl p-12 flex flex-col items-center justify-center text-center h-full">
+src/pages/Sales.tsx:            <div className="p-4 bg-white dark:bg-slate-800 rounded-full shadow-sm mb-4">
+src/pages/Sales.tsx:              <Package size={40} className="text-slate-300" />
+src/pages/Sales.tsx:            <h3 className="text-slate-400 dark:text-slate-500 font-bold">Resumo Financeiro Bloqueado</h3>
+src/pages/Sales.tsx:            <p className="text-xs text-slate-400 dark:text-slate-600 max-w-xs mt-2">Os cálculos aparecerão aqui assim que você selecionar uma receita e definir os itens do kit.</p>
+src/pages/Extra.tsx:          <p className="text-slate-500 dark:text-slate-400">Embalagens, adornos e outros custos fixos.</p>
+src/pages/Extra.tsx:        <section className="bg-white dark:bg-slate-800 rounded-3xl border border-pink/10 dark:border-slate-700 shadow-sm overflow-hidden transition-all duration-300">
+src/pages/Extra.tsx:            className="w-full p-5 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group"
+src/pages/Extra.tsx:              <p className="text-xs text-slate-500 dark:text-slate-400 italic">Toque para ver e editar suas categorias.</p>
+src/pages/Extra.tsx:            {showCategories ? <ChevronDown size={20} className="text-pink" /> : <ChevronRight size={20} className="text-slate-300 group-hover:text-pink" />}
+src/pages/Extra.tsx:              <div className="flex flex-wrap gap-2 pt-1 border-t border-pink/5 dark:border-slate-700 mt-2">
+src/pages/Extra.tsx:                  <span key={cat} className="inline-flex items-center gap-1.5 pl-3 pr-2 py-1 bg-mint-soft dark:bg-slate-900 border border-mint/10 dark:border-slate-700 rounded-xl transition-colors">
+src/pages/Extra.tsx:                      className="p-1 text-slate-400 hover:text-pink transition-colors cursor-pointer"
+src/pages/Extra.tsx:                      className="p-1 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
+src/pages/Extra.tsx:      <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-pink/10 dark:border-slate-700 overflow-hidden">
+src/pages/Extra.tsx:        <div className="p-4 border-b border-pink/10 bg-pink-soft/20 dark:bg-slate-800/50">
+src/pages/Extra.tsx:            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+src/pages/Extra.tsx:              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-mint/20 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint dark:text-white transition-shadow"
+src/pages/Extra.tsx:            <div className="col-span-full py-12 text-center text-slate-500 dark:text-slate-400">
+src/pages/Extra.tsx:                className="group relative bg-white dark:bg-slate-900 p-3 rounded-2xl border border-pink/10 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-pink/30 transition-all cursor-pointer"
+src/pages/Extra.tsx:                    <h3 className="font-bold text-slate-900 dark:text-white uppercase truncate group-hover:text-pink transition-colors text-[17px] tracking-tight leading-tight">
+src/pages/Extra.tsx:                      <p className="text-[11px] text-slate-400 font-medium italic mt-1 truncate uppercase tracking-wider">
+src/pages/Extra.tsx:                  <ChevronRight size={18} className="text-slate-300 group-hover:text-pink transition-colors shrink-0 ml-2" />
+src/pages/Extra.tsx:                <div className="flex items-center justify-end pt-2 mt-1 border-t border-slate-50 dark:border-slate-800">
+src/pages/Extra.tsx:                      className="p-1.5 text-slate-400 hover:text-pink hover:bg-pink-soft dark:hover:bg-pink-500/10 rounded-lg transition-colors"
+src/pages/Extra.tsx:                      className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-lg transition-colors"
+src/pages/Extra.tsx:                      className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
+src/pages/Extra.tsx:          <div className="bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-pink/10">
+src/pages/Extra.tsx:                       className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint dark:text-white disabled:opacity-75 disabled:cursor-not-allowed"
+src/pages/Extra.tsx:                       className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint dark:text-white disabled:opacity-75 disabled:cursor-not-allowed"
+src/pages/Extra.tsx:                   <div className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 rounded-xl text-slate-500 font-medium">
+src/pages/Extra.tsx:                  <div className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 rounded-xl text-slate-500 font-medium">
+src/pages/Extra.tsx:                <div className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-4">
+src/pages/Extra.tsx:                  <h4 className="text-md font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">Precificação Final</h4>
+src/pages/Extra.tsx:                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Multiplicador de Lucro Desejado</label>
+src/pages/Extra.tsx:                              : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
+src/pages/Extra.tsx:                        className="w-16 px-2 py-1 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-center text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white disabled:opacity-50"
+src/pages/Extra.tsx:                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Preço de Venda Definido (Por Unidade)</label>
+src/pages/Extra.tsx:                          className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white font-bold text-lg disabled:opacity-50"
+src/pages/Extra.tsx:                 {saveStatus && <span className="text-xs text-slate-500 animate-pulse mr-auto">{saveStatus}</span>}
+src/pages/Extra.tsx:                   className="px-4 py-3 text-slate-500 font-bold hover:bg-slate-50 rounded-xl transition-colors"
+src/pages/Extra.tsx:          <div className="bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden p-6 space-y-4 border border-pink/10">
+src/pages/Extra.tsx:                className="px-4 py-2 text-slate-500 font-bold hover:bg-slate-50 rounded-xl transition-colors cursor-pointer"
+src/pages/Extra.tsx:        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
+src/pages/Extra.tsx:          <div className="bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 space-y-4">
+src/pages/Extra.tsx:             <h3 className="text-lg font-bold text-slate-900 dark:text-white">Excluir Categoria</h3>
+src/pages/Extra.tsx:             <p className="text-sm text-slate-500 dark:text-slate-400">
+src/pages/Extra.tsx:                 className="px-3 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-sm font-medium transition-colors cursor-pointer"
+src/pages/Recipes.tsx:          <p className="text-slate-500 dark:text-slate-400">Cartão de ponto das suas delícias.</p>
+src/pages/Recipes.tsx:      <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-pink/10 dark:border-slate-700 overflow-hidden">
+src/pages/Recipes.tsx:        <div className="p-4 border-b border-pink/10 bg-pink-soft/20 dark:bg-slate-800/50">
+src/pages/Recipes.tsx:            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+src/pages/Recipes.tsx:              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-mint/20 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint dark:text-white transition-shadow"
+src/pages/Recipes.tsx:            <div className="col-span-full py-12 text-center text-slate-500 dark:text-slate-400">
+src/pages/Recipes.tsx:                  className="group relative bg-white dark:bg-slate-900 p-3 rounded-2xl border border-pink/10 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-pink/30 transition-all cursor-pointer"
+src/pages/Recipes.tsx:                      <h3 className="font-bold text-slate-900 dark:text-white uppercase truncate group-hover:text-pink transition-colors text-[17px] tracking-tight leading-tight">
+src/pages/Recipes.tsx:                        <p className="text-[11px] text-slate-400 font-medium italic mt-1 truncate uppercase tracking-wider">
+src/pages/Recipes.tsx:                    <ChevronRight size={18} className="text-slate-300 group-hover:text-pink transition-colors shrink-0 ml-2" />
+src/pages/Recipes.tsx:                  <div className="flex items-center justify-end pt-2 mt-1 border-t border-slate-50 dark:border-slate-800">
+src/pages/Recipes.tsx:                        className="p-1.5 text-slate-400 hover:text-pink hover:bg-pink-soft dark:hover:bg-pink-500/10 rounded-lg transition-colors"
+src/pages/Recipes.tsx:                        className="p-1.5 text-slate-400 hover:text-pink hover:bg-pink-soft dark:hover:bg-pink-500/10 rounded-lg transition-colors"
+src/pages/Recipes.tsx:                        className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-lg transition-colors"
+src/pages/Recipes.tsx:                        className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
+src/pages/ExtraDetails.tsx:        <p className="text-xl text-slate-500 dark:text-slate-400">Item extra não encontrado.</p>
+src/pages/ExtraDetails.tsx:          <button onClick={() => navigate('/extra')} className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+src/pages/ExtraDetails.tsx:            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white uppercase">{extra.name}</h1>
+src/pages/ExtraDetails.tsx:            <p className="text-slate-500 dark:text-slate-400">{extra.category || 'Sem categoria'}</p>
+src/pages/ExtraDetails.tsx:             className="inline-flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 px-4 py-2 rounded-xl transition-colors font-medium border border-slate-200 dark:border-slate-700"
+src/pages/ExtraDetails.tsx:        <h1 className="text-4xl font-bold text-slate-900">{extra.name}</h1>
+src/pages/ExtraDetails.tsx:        <p className="text-lg text-slate-600">Ficha de Custo e Precificação de Item Extra</p>
+src/pages/ExtraDetails.tsx:          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+src/pages/ExtraDetails.tsx:            <div className="p-6 border-b border-slate-200 dark:border-slate-700">
+src/pages/ExtraDetails.tsx:               <h3 className="text-lg font-bold text-slate-900 dark:text-white">Dados da Compra</h3>
+src/pages/ExtraDetails.tsx:                   <p className="text-xs text-slate-500 dark:text-slate-500 uppercase font-black mb-1">Marca</p>
+src/pages/ExtraDetails.tsx:                   <p className="font-bold text-slate-900 dark:text-white">{extra.brand || 'N/A'}</p>
+src/pages/ExtraDetails.tsx:                   <p className="text-xs text-slate-500 dark:text-slate-500 uppercase font-black mb-1">Quantidade Adquirida</p>
+src/pages/ExtraDetails.tsx:                   <p className="font-bold text-slate-900 dark:text-white">{formatNumber(extra.quantityBought)} {extra.unit}</p>
+src/pages/ExtraDetails.tsx:                   <p className="text-xs text-slate-500 dark:text-slate-500 uppercase font-black mb-1">Conteúdo por Unidade</p>
+src/pages/ExtraDetails.tsx:                   <p className="font-bold text-slate-900 dark:text-white">{extra.weightPerUn ? formatNumber(extra.weightPerUn) : '-'}{extra.weightPerUnUnit}</p>
+src/pages/ExtraDetails.tsx:                   <p className="text-xs text-slate-500 dark:text-slate-500 uppercase font-black mb-1">Preço Total Pago</p>
+src/pages/ExtraDetails.tsx:                   <p className="text-xs text-slate-500 dark:text-slate-500 uppercase font-black mb-1">Custo por Unidade</p>
+src/pages/ExtraDetails.tsx:                <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700">
+src/pages/ExtraDetails.tsx:                  <p className="text-xs text-slate-500 dark:text-slate-500 uppercase font-black mb-1">Observações</p>
+src/pages/ExtraDetails.tsx:                  <p className="text-slate-700 dark:text-slate-300 italic">{extra.notes}</p>
+src/pages/ExtraDetails.tsx:          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 no-print">
+src/pages/ExtraDetails.tsx:              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Resumo e Escala</h3>
+src/pages/ExtraDetails.tsx:              <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800 text-center">
+src/pages/ExtraDetails.tsx:                 <p className="text-[10px] text-slate-500 uppercase font-black mb-1">Rendimento (Estoque)</p>
+src/pages/ExtraDetails.tsx:                 <p className="text-2xl font-black text-slate-900 dark:text-white">{extra.quantityBought} <span className="text-sm font-normal text-slate-500">un</span></p>
+src/pages/ExtraDetails.tsx:               <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800 text-center">
+src/pages/ExtraDetails.tsx:                 <p className="text-[10px] text-slate-500 uppercase font-black mb-1">Custo Conteúdo (Total)</p>
+src/pages/ExtraDetails.tsx:                 <p className="text-2xl font-black text-slate-900 dark:text-white">{((extra.weightPerUn || 0) * extra.quantityBought).toFixed(0)} <span className="text-sm font-normal text-slate-500">{extra.weightPerUnUnit}</span></p>
+src/pages/ExtraDetails.tsx:              <h3 className="text-lg font-bold text-slate-900 border-b border-slate-300 pb-2">Precificação</h3>
+src/pages/ExtraDetails.tsx:              <div className="flex justify-between"><span className="text-slate-600">Preço de Venda Definido (Unidade):</span> <span className="font-bold">{formatCurrency(simulatedPrice)}</span></div>
+src/pages/ExtraDetails.tsx:              <div className="flex justify-between"><span className="text-slate-600">Lucro por Unidade:</span> <span>{formatCurrency(netProfitUnit)}</span></div>
+src/pages/ExtraDetails.tsx:              <div className="flex justify-between"><span className="text-slate-600">Margem de Lucro:</span> <span>{profitMargin.toFixed(1)}%</span></div>
+src/pages/ExtraDetails.tsx:              <div className="flex justify-between"><span className="text-slate-600">Faturamento Estimado (Total Estoque):</span> <span>{formatCurrency(simulatedPrice * extra.quantityBought)}</span></div>
+src/pages/ExtraDetails.tsx:              <div className="flex justify-between"><span className="text-slate-600">Lucro Total Estimado:</span> <span>{formatCurrency(netProfitUnit * extra.quantityBought)}</span></div>
+src/pages/Login.tsx:    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900 p-4">
+src/pages/Login.tsx:      <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-soft max-w-sm w-full text-center">
+src/pages/Login.tsx:        <p className="text-slate-500 dark:text-slate-400 mb-8 font-medium">
+src/pages/Login.tsx:            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+src/pages/Login.tsx:              className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink transition-all dark:text-white text-sm"
+src/pages/Login.tsx:              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+src/pages/Login.tsx:                className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink transition-all dark:text-white text-sm"
+src/pages/Login.tsx:              <div className="w-full border-t border-slate-200 dark:border-slate-700"></div>
+src/pages/Login.tsx:              <span className="px-2 bg-white dark:bg-slate-800 text-slate-400 font-medium">OU</span>
+src/pages/Login.tsx:            className="w-full flex items-center justify-center space-x-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 p-3 rounded-xl font-bold shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition-all mb-6"
+src/pages/Login.tsx:            className="text-slate-500 dark:text-slate-400 hover:underline font-medium block mx-auto"
+src/pages/Dashboard.tsx:          <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Análise Inteligente</h1>
+src/pages/Dashboard.tsx:          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+src/pages/Dashboard.tsx:        <div className="bg-slate-900 text-white p-6 rounded-3xl border border-slate-800 shadow-sm flex flex-col justify-between">
+src/pages/Dashboard.tsx:             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Saúde do Catálogo</p>
+src/pages/Dashboard.tsx:             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Baseado na margem média</p>
+src/pages/Dashboard.tsx:        <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+src/pages/Dashboard.tsx:              <h3 className="text-xs font-black uppercase tracking-widest text-slate-800 dark:text-white flex items-center gap-2">
+src/pages/Dashboard.tsx:              <div className="flex gap-4 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+src/pages/Dashboard.tsx:                <div className="flex items-center gap-1.5"><div className="w-2 h-2 bg-slate-200 dark:bg-slate-700 rounded-sm" /> Faturamento</div>
+src/pages/Dashboard.tsx:               <div className="flex items-center justify-center h-full text-slate-400 text-xs font-bold uppercase tracking-widest">
+src/pages/Dashboard.tsx:        <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col">
+src/pages/Dashboard.tsx:           <h3 className="text-xs font-black uppercase tracking-widest text-slate-800 dark:text-white mb-6 flex items-center gap-2">
+src/pages/Dashboard.tsx:                <div key={item.recipe.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 transition-colors hover:border-slate-200 dark:hover:border-slate-700 group">
+src/pages/Dashboard.tsx:                      idx === 0 ? "bg-yellow-100 text-yellow-700" : idx === 1 ? "bg-slate-200 text-slate-600" : idx === 2 ? "bg-orange-100 text-orange-700" : "bg-white dark:bg-slate-900 text-slate-400"
+src/pages/Dashboard.tsx:                    <Link to={`/receitas/${item.recipe.id}`} className="text-xs font-bold text-slate-700 dark:text-slate-300 group-hover:text-indigo-600 transition-colors">
+src/pages/Dashboard.tsx:                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Lucro Unid.</p>
+src/pages/Dashboard.tsx:                <div className="h-full flex items-center justify-center text-slate-400 text-xs font-bold uppercase tracking-widest">
+src/pages/Dashboard.tsx:            <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsSimulatorOpen(false)} />
+src/pages/Dashboard.tsx:            <div className="relative bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl w-full max-w-md rounded-[32px] shadow-2xl border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in duration-300">
+src/pages/Dashboard.tsx:                       <h2 className="text-lg font-black text-slate-800 dark:text-white">Simulador de Preço</h2>
+src/pages/Dashboard.tsx:                    <button onClick={() => setIsSimulatorOpen(false)} className="text-slate-400 hover:text-slate-600 p-1">
+src/pages/Dashboard.tsx:                  <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 mb-6">
+src/pages/Dashboard.tsx:                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Simulando para:</p>
+src/pages/Dashboard.tsx:                     <h3 className="text-md font-bold text-slate-800 dark:text-white">{simulatingRecipe.name}</h3>
+src/pages/Dashboard.tsx:                        <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Multiplicador de Lucro</label>
+src/pages/Dashboard.tsx:                        className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+src/pages/Dashboard.tsx:                       <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
+src/pages/Dashboard.tsx:                         <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Preço Atual</p>
+src/pages/Dashboard.tsx:                         <p className="text-sm font-black text-slate-800 dark:text-white">{formatCurrency(simulatedMetrics?.currentPrice || 0)}</p>
+src/pages/Dashboard.tsx:                      className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-4 rounded-2xl font-black transition-transform active:scale-95"
+src/pages/Dashboard.tsx:    pink: 'bg-pink-soft/30 dark:bg-slate-900/40 border-pink-100 dark:border-pink-900/20 text-pink-700 dark:text-pink-400 icon-pink',
+src/pages/Dashboard.tsx:    mint: 'bg-mint-soft/30 dark:bg-slate-900/40 border-mint-100 dark:border-mint-900/20 text-mint-700 dark:text-mint-400 icon-mint',
+src/pages/Dashboard.tsx:    indigo: 'bg-indigo-50 dark:bg-slate-900/40 border-indigo-100 dark:border-indigo-900/20 text-indigo-700 dark:text-indigo-400 icon-indigo',
+src/pages/Dashboard.tsx:    yellow: 'bg-yellow-50 dark:bg-slate-900/40 border-yellow-100 dark:border-yellow-900/20 text-yellow-700 dark:text-yellow-400 icon-yellow'
+src/pages/Dashboard.tsx:         <div className="p-2 rounded-xl bg-white/80 dark:bg-slate-800 shadow-sm">{icon}</div>
+src/pages/Dashboard.tsx:         <h2 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white truncate">{value}</h2>
+src/pages/Dashboard.tsx:    champion: "border-yellow-200 dark:border-yellow-900/30 bg-yellow-50/50 dark:bg-slate-900 shadow-sm",
+src/pages/Dashboard.tsx:    opportunity: "border-blue-200 dark:border-blue-900/30 bg-blue-50/50 dark:bg-slate-900 shadow-sm",
+src/pages/Dashboard.tsx:    alert: "border-pink-200 dark:border-pink-900/30 bg-pink-50/50 dark:bg-slate-900 shadow-sm",
+src/pages/Dashboard.tsx:    gem: "border-indigo-200 dark:border-indigo-900/30 bg-indigo-50/50 dark:bg-slate-900 shadow-sm"
+src/pages/Dashboard.tsx:            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 flex items-center gap-2">
+src/pages/Dashboard.tsx:            <div className="p-2 rounded-xl bg-white dark:bg-slate-800 shadow-sm">{icon}</div>
+src/pages/Dashboard.tsx:         <Link to={link} className="block group-hover:transform group-hover:translate-x-1 transition-transform">
+src/pages/Dashboard.tsx:           <h4 className="text-lg font-black text-slate-800 dark:text-white leading-tight mb-4">{recipeName}</h4>
+src/pages/Dashboard.tsx:            <div className="flex justify-between items-end border-b border-white/50 dark:border-slate-800/50 pb-2">
+src/pages/Dashboard.tsx:               <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase">{dataLabel}</span>
+src/pages/Dashboard.tsx:               <span className={cn("text-md font-black", isCritical ? "text-pink" : "text-slate-800 dark:text-white")}>{dataValue}</span>
+src/pages/Dashboard.tsx:               <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase">{footerLabel}</span>
+src/pages/Dashboard.tsx:               <span className="text-sm font-bold text-slate-600 dark:text-slate-300">{footerValue}</span>
+src/pages/Dashboard.tsx:         <div className={cn("p-3 rounded-2xl flex items-center gap-2 mb-4", isCritical ? "bg-pink-100 dark:bg-pink-900/20 text-pink-700 dark:text-pink-400" : "bg-white/80 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300")}>
+src/pages/Dashboard.tsx:           <Link to={link} className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-black hover:opacity-90 transition-opacity">
+src/pages/Dashboard.tsx:    <div className="p-6 rounded-[32px] border border-dashed border-slate-300 dark:border-slate-700 flex flex-col items-center justify-center text-center">
+src/pages/Dashboard.tsx:       <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-3">
+src/pages/Dashboard.tsx:       <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">{title}</h3>
+src/pages/Dashboard.tsx:       <p className="text-[10px] text-slate-400">Aguardando dados</p>
+src/App.tsx:      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900 p-4">
+src/App.tsx:      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900 p-4">
+src/App.tsx:        <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-soft max-w-md w-full text-center">
+src/App.tsx:          <p className="text-slate-500 dark:text-slate-400 mb-8 font-medium">Sua conta está aguardando a aprovação do administrador. Por favor, aguarde.</p>
+src/App.tsx:            className="w-full flex items-center justify-center space-x-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 p-3 rounded-xl font-bold transition-all"

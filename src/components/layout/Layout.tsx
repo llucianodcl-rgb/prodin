@@ -57,7 +57,7 @@ export default function Layout() {
       <ActionFAB />
       
       {/* Fixed Bottom Navigation for All Screens */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-pink/20 dark:border-slate-800/80 pb-safe z-10 flex justify-center py-2 px-1 sm:px-4 shadow-[0_-4px_16px_rgba(0,0,0,0.04)]">
+      <div className="fixed bottom-0 left-0 right-0 bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl border-t border-pink/10 dark:border-slate-800/40 pb-safe z-10 flex justify-center py-2 px-1 sm:px-4 shadow-[0_-4px_24px_rgba(0,0,0,0.06)]">
         <nav className="flex items-center w-full max-w-lg">
           {navItems.map((item) => {
             const isActive = item.href === "/" 

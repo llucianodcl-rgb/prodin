@@ -36,7 +36,7 @@ export default function Ingredients() {
     totalWeight: 0
   });
 
-  const categories = Array.from(new Set(ingredients.map(i => i.category).filter(Boolean)));
+  const categories = Array.from(new Set(ingredients.map(i => i.category).filter(Boolean))).sort();
 
   const [editingCategory, setEditingCategory] = useState<string | null>(null);
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -348,7 +348,7 @@ export default function Ingredients() {
 
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brown/20 backdrop-blur-sm">
-          <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-pink/10">
+          <div className="bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-pink/10">
              <div className="flex items-center justify-between p-6 border-b border-pink/10 bg-pink-soft/30 shrink-0">
                <h3 className="text-xl font-bold text-brown dark:text-white">
                  {editingId ? 'Editar produto' : 'Novo Produto'}
@@ -519,7 +519,7 @@ export default function Ingredients() {
       {/* Modal para Editar Categoria */}
       {editingCategory && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brown/20 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden p-6 space-y-4 border border-pink/10">
+          <div className="bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden p-6 space-y-4 border border-pink/10">
             <h3 className="text-xl font-bold text-pink dark:text-pink-400">Editar Categoria</h3>
             <div>
               <label className="block text-xs font-bold text-brown uppercase tracking-wider mb-2">Nome da Categoria</label>
@@ -554,7 +554,7 @@ export default function Ingredients() {
       {/* Modal para Confirmar Exclusão de Categoria */}
       {deletingCategory && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 space-y-4">
+          <div className="bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 space-y-4">
             <h3 className="text-lg font-bold text-slate-900 dark:text-white">Excluir Categoria</h3>
             <p className="text-sm text-slate-500 dark:text-slate-400">
               Tem certeza que deseja excluir a categoria <strong className="text-slate-800 dark:text-white">"{deletingCategory}"</strong>? Todos os ingredientes associados a ela terão sua categoria redefinida para vazia/geral.

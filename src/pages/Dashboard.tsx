@@ -327,22 +327,36 @@ export default function Dashboard() {
                    />
                    <Tooltip 
                      cursor={{ fill: 'transparent' }}
-                     formatter={(value: number, name: string) => {
-                       const label = name === 'lucro' ? 'Lucro' : 'Faturamento';
-                       return [formatCurrency(value), label];
-                     }}
-                     labelFormatter={(_, payload) => {
-                       if (payload && payload.length > 0) {
-                         return payload[0].payload.fullName;
+                     content={({ active, payload, label }) => {
+                       if (active && payload && payload.length) {
+                         const fullName = payload[0].payload.fullName || label;
+                         return (
+                           <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800 p-3 rounded-2xl shadow-2xl animate-in fade-in zoom-in duration-200 text-slate-900 dark:text-white">
+                             <p className="font-black mb-2 text-[11px] truncate max-w-[200px] leading-tight">{fullName}</p>
+                             <div className="space-y-1.5 min-w-[140px]">
+                               {payload.map((entry: any, index: number) => {
+                                 const isLucro = entry.dataKey === 'lucro';
+                                 const value = Number(entry.value);
+                                 const color = isLucro 
+                                   ? (value > 0 ? '#10b981' : '#ef4444') 
+                                   : '#3b82f6';
+                                 
+                                 return (
+                                   <div key={index} className="flex items-center justify-between gap-2">
+                                     <span className="text-[10px] font-bold" style={{ color }}>
+                                       {isLucro ? 'Lucro' : 'Faturamento'}:
+                                     </span>
+                                     <span className="text-[10px] font-black">
+                                       {formatCurrency(value)}
+                                     </span>
+                                   </div>
+                                 );
+                               })}
+                             </div>
+                           </div>
+                         );
                        }
-                       return '';
-                     }}
-                     contentStyle={{ 
-                        borderRadius: '12px', 
-                        border: 'none', 
-                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-                        fontSize: '11px',
-                        fontWeight: 'bold'
+                       return null;
                      }}
                    />
                    <Bar dataKey="lucro" fill="#4F46E5" radius={[0, 4, 4, 0]} barSize={12} />
@@ -426,7 +440,7 @@ export default function Dashboard() {
       {isSimulatorOpen && simulatingRecipe && (
          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsSimulatorOpen(false)} />
-            <div className="relative bg-white dark:bg-slate-900 w-full max-w-md rounded-[32px] shadow-2xl border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in duration-300">
+            <div className="relative bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl w-full max-w-md rounded-[32px] shadow-2xl border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in duration-300">
                <div className="p-6">
                   <header className="flex justify-between items-center mb-6">
                     <div className="flex items-center gap-3">
@@ -600,5 +614,3 @@ function EmptyCard({ title }: { title: string }) {
     </div>
   );
 }
-
-
