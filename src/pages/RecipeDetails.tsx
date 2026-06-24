@@ -99,13 +99,23 @@ export default function RecipeDetails() {
 
       const element = pdfRef.current;
 
-      // Select elements to ignore entirely
+      const desktopWidth = 1024;
+      
+      // Store original inline styles
+      const originalWidth = element.style.width;
+      const originalMaxWidth = element.style.maxWidth;
+      const originalPadding = element.style.padding;
+      
+      // Force desktop size
+      element.style.width = `${desktopWidth}px`;
+      element.style.maxWidth = `${desktopWidth}px`;
+      element.style.padding = "20px";
+      
+      // Allow DOM to update layout before capturing
+      await new Promise(resolve => setTimeout(resolve, 50));
+
       const filter = (node: HTMLElement) => {
-        const exclusionClasses = ["no-print"];
-        if (
-          node.classList &&
-          exclusionClasses.some((cls) => node.classList.contains(cls))
-        ) {
+        if (node.classList && node.classList.contains("no-print")) {
           return false;
         }
         if (node.hasAttribute && node.hasAttribute("data-html2canvas-ignore")) {
@@ -119,15 +129,17 @@ export default function RecipeDetails() {
         pixelRatio: 2,
         backgroundColor: "#ffffff",
         filter: filter,
-        style: {
-          padding: "20px", // Add some padding inside the image
-        },
       });
 
       const pdfWidth = 210; // A4 width in mm
       const pageHeight = 297; // A4 height in mm
       const imgWidth = element.offsetWidth;
       const imgHeight = element.offsetHeight;
+
+      // Restore original styles
+      element.style.width = originalWidth;
+      element.style.maxWidth = originalMaxWidth;
+      element.style.padding = originalPadding;
 
       // Calculate scaled height matching A4 width
       const scaledImgHeight = (imgHeight * pdfWidth) / imgWidth;
@@ -305,17 +317,31 @@ export default function RecipeDetails() {
                     const unitCost = getIngredientUnitCost(ing);
                     const cost = unitCost * ri.quantityUsed; // Assumes units are normalized correctly via input
                     return (
-                      <div key={ri.id} className="flex items-center px-4 py-4 sm:px-6">
-                        <div className="w-[55%] pr-2 font-medium text-slate-900 dark:text-white truncate" title={ing.name}>
+                      <div
+                        key={ri.id}
+                        className="flex items-center px-4 py-4 sm:px-6"
+                      >
+                        <div
+                          className="w-[55%] pr-2 font-medium text-slate-900 dark:text-white truncate"
+                          title={ing.name}
+                        >
                           {ing.name}
                         </div>
                         <div className="w-[25%] pr-2 text-slate-600 dark:text-slate-300 flex flex-col items-start justify-center min-w-0">
-                          <span className="truncate w-full">{formatIngredientQuantity(ri.quantityUsed, ri.unit || ing.unit)}</span>
+                          <span className="truncate w-full">
+                            {formatIngredientQuantity(
+                              ri.quantityUsed,
+                              ri.unit || ing.unit,
+                            )}
+                          </span>
                           {ri.unit === "un" &&
                             ing.unit === "un" &&
                             ing.weightPerUn &&
                             ing.weightPerUn > 0 && (
-                              <span className="text-xs text-indigo-500 font-medium truncate w-full" title={`(${formatIngredientQuantity(ri.quantityUsed * ing.weightPerUn, ing.weightPerUnUnit || "g")})`}>
+                              <span
+                                className="text-xs text-indigo-500 font-medium truncate w-full"
+                                title={`(${formatIngredientQuantity(ri.quantityUsed * ing.weightPerUn, ing.weightPerUnUnit || "g")})`}
+                              >
                                 (
                                 {formatIngredientQuantity(
                                   ri.quantityUsed * ing.weightPerUn,
@@ -325,7 +351,12 @@ export default function RecipeDetails() {
                               </span>
                             )}
                         </div>
-                        <div className="w-[20%] text-slate-600 dark:text-slate-300 text-right truncate" title={formatCurrency(getRecipeIngredientCost(ri, ing))}>
+                        <div
+                          className="w-[20%] text-slate-600 dark:text-slate-300 text-right truncate"
+                          title={formatCurrency(
+                            getRecipeIngredientCost(ri, ing),
+                          )}
+                        >
                           {formatCurrency(getRecipeIngredientCost(ri, ing))}
                         </div>
                       </div>
@@ -337,7 +368,10 @@ export default function RecipeDetails() {
                   <div className="w-[80%] font-bold text-slate-900 dark:text-white text-right pr-4">
                     Custo total de ingredientes:
                   </div>
-                  <div className="w-[20%] font-bold text-indigo-600 dark:text-indigo-400 text-right truncate" title={formatCurrency(ingCost)}>
+                  <div
+                    className="w-[20%] font-bold text-indigo-600 dark:text-indigo-400 text-right truncate"
+                    title={formatCurrency(ingCost)}
+                  >
                     {formatCurrency(ingCost)}
                   </div>
                 </div>
@@ -358,11 +392,20 @@ export default function RecipeDetails() {
                     </div>
                   ) : (
                     recipe.extraCosts.map((ec) => (
-                      <div key={ec.id} className="flex items-center px-4 py-4 sm:px-6">
-                        <div className="w-[80%] pr-4 font-medium text-slate-900 dark:text-white truncate" title={ec.name}>
+                      <div
+                        key={ec.id}
+                        className="flex items-center px-4 py-4 sm:px-6"
+                      >
+                        <div
+                          className="w-[80%] pr-4 font-medium text-slate-900 dark:text-white truncate"
+                          title={ec.name}
+                        >
                           {ec.name}
                         </div>
-                        <div className="w-[20%] text-slate-600 dark:text-slate-300 text-right truncate" title={formatCurrency(ec.value)}>
+                        <div
+                          className="w-[20%] text-slate-600 dark:text-slate-300 text-right truncate"
+                          title={formatCurrency(ec.value)}
+                        >
                           {formatCurrency(ec.value)}
                         </div>
                       </div>
@@ -374,7 +417,10 @@ export default function RecipeDetails() {
                   <div className="w-[80%] font-bold text-slate-900 dark:text-white text-right pr-4">
                     Custo extra total:
                   </div>
-                  <div className="w-[20%] font-bold text-rose-600 dark:text-rose-400 text-right truncate" title={formatCurrency(extCost)}>
+                  <div
+                    className="w-[20%] font-bold text-rose-600 dark:text-rose-400 text-right truncate"
+                    title={formatCurrency(extCost)}
+                  >
                     {formatCurrency(extCost)}
                   </div>
                 </div>
